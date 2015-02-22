@@ -514,7 +514,30 @@ Plugged.prototype.wsaprocessor = function(self, msg) {
             break;
 
         case self.ADVANCE:
-            var previous = self.state.room.playback.media;
+            var previous = {
+                // standard plug.dj ADVANCE event properties
+                media: self.getCurrentMedia(),
+                dj: self.getCurrentDJ(),
+                score: {
+                    positive: 0,
+                    negative: 0,
+                    grabs: self.getGrabs().length,
+                    listeners: self.getUsers().length
+                },
+                // goodies
+                historyID: self.getPlayback().historyID,
+                playlistID: self.getPlayback().playlistID,
+                startTime: self.getStartTime()
+            };
+
+            var votesMap = self.getVotes().reduce(function (votesMap, vote) {
+                votesMap[vote.id] = vote.direction;
+                return votesMap;
+            }, {});
+            for (var uid in votesMap) {
+                if (votesMap[uid] === 1) previous.positive++;
+                if (votesMap[uid] === -1) previous.negative++;
+            }
 
             self.state.room.booth.dj = data.p.c;
             self.state.room.booth.waitlist = data.p.d;
@@ -527,7 +550,7 @@ Plugged.prototype.wsaprocessor = function(self, msg) {
             self.state.room.playback.playlistID = data.p.p;
             self.state.room.playback.startTime = data.p.t;
 
-            self.emit(self.ADVANCE, self.state.room.booth, self.state.room.playback, self.previous);
+            self.emit(self.ADVANCE, self.state.room.booth, self.state.room.playback, previous);
             break;
 
         case self.CHAT:
