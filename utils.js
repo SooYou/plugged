@@ -76,7 +76,7 @@ var decode = function(str) {
         return str;
 
     return str
-    .replace(/&#34;/g, '"')
+    .replace(/&#34;/g, '\\\"')
     .replace(/&#39;/g, '\'')
     .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
