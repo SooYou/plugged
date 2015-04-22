@@ -1,3 +1,4 @@
+var utils = require("./utils");
 var util = require("util");
 
 var convertPlugTimeToDate = function(plugTime) {
@@ -32,10 +33,10 @@ var parseSelf = function(data) {
 
     return {
         joined: convertPlugTimeToDate(data.joined),
-        username: data.username || "",
+        username: utils.decode(data.username) || "",
         avatarID: data.avatarID || "base01",
         language: data.language || "en",
-        blurb: data.blurb || "",
+        blurb: utils.decode(data.blurb) || "",
         slug: data.slug || "",
         notifications: data.notification || [],
         ignores: data.ignores || [],
@@ -57,10 +58,10 @@ var parseUser = function(data) {
 
     return {
         joined: convertPlugTimeToDate(data.joined),
-        username: data.username || "",
+        username: utils.decode(data.username) || "",
         avatarID: data.avatarID || "base01",
         language: data.language || "en",
-        blurb: data.blurb || "",
+        blurb: utils.decode(data.blurb) || "",
         slug: data.slug || "",
         level: data.level || 0,
         gRole: data.gRole || 0,                 //global role
@@ -88,7 +89,7 @@ var parseUserUpdate = function(data) {
         id: data.i || -1,
         level: data.level || undefined,
         avatarID: data.avatarID || undefined,
-        username: data.username || undefined
+        username: utils.decode(data.username) || undefined
     };
 };
 
@@ -96,8 +97,8 @@ var parseMedia = function(data) {
     data = data || {};
 
     return {
-        author: data.author || "",
-        title: data.title || "",
+        author: utils.decode(data.author) || "",
+        title: utils.decode(data.title) || "",
         image: data.image || "",
         cid: data.cid || "",
         duration: data.duration || 0,
@@ -110,9 +111,9 @@ var parseMute = function(data, expireDate) {
     data = data || {};
 
     return {
-        username: data.username || data.t || "",      //name of the user
+        username: utils.decode(data.username) || data.t || "",      //name of the user
         id: data.id || data.i || -1,            //user ID
-        moderator: data.moderator || data.m || "",
+        moderator: utils.decode(data.moderator) || data.m || "",
         reason: data.reason || data.r || 1,
         expires: data.expires || expireDate || -1
     };
@@ -132,9 +133,9 @@ var parseModAddDJ = function(data) {
     data = data || {};
 
     return {
-        moderator: data.m || "",
+        moderator: utils.decode(data.m) || "",
         moderatorID: data.mi || -1,
-        username: data.t || ""
+        username: utils.decode(data.t) || ""
     };
 };
 
@@ -142,9 +143,9 @@ var parseModMove = function(data) {
     data = data || {};
 
     return {
-        moderator: data.m || "",
+        moderator: utils.decode(data.m) || "",
         moderatorID: data.mi || -1,
-        username: data.u || "",
+        username: utils.decode(data.u) || "",
         oldIndex: data.o || 0,
         newIndex: data.n || 0
     };
@@ -207,14 +208,14 @@ var parseExtendedRoom = function(data) {
 
     return {
         cid: data.cid || "",
-        dj: data.dj,
+        dj: utils.decode(data.dj) || "",
         favorite: data.favorite || false,
         format: data.format || 1,
-        host: data.host || "",
+        host: utils.decode(data.host) || "",
         id: data.id || -1,
         image: data.image || "",
-        media: data.media || "",
-        name: data.name || "",
+        media: utils.decode(data.media) || "",
+        name: utils.decode(data.name) || "",
         capacity: data.capacity || 5000,
         population: data.population || 0,
         private: data.private || false,
@@ -241,16 +242,16 @@ var parseMeta = function(data) {
     data = data || {};
 
     return {
-        description: data.description || "",
+        description: utils.decode(data.description) || "",
         favorite: data.favorite || false,
         hostID: data.hostID || -1,
-        hostName: data.hostName || "",
+        hostName: utils.decode(data.hostName) || "",
         id: data.id || -1,
         minChatLevel: data.minChatLevel || 0,
-        name: data.name || "",
+        name: utils.decode(data.name) || "",
         population: data.population || 0,
         slug: data.slug || undefined,
-        welcome: data.welcome || ""
+        welcome: utils.decode(data.welcome) || ""
     };
 };
 
@@ -269,9 +270,9 @@ var parseModBan = function(data) {
     data = data || {};
 
     return {
-        moderator: data.m || "",
+        moderator: utils.decode(data.m) || "",
         moderatorID: data.mi || -1,
-        username: data.t || "",
+        username: utils.decode(data.t) || "",
         duration: data.d || 'h'
     };
 };
@@ -280,9 +281,9 @@ var parseModRemove = function(data) {
     data = data || {};
 
     return {
-        moderator: data.m || "",
+        moderator: utils.decode(data.m) || "",
         moderatorID: data.mi || -1,
-        username: data.t || "",
+        username: utils.decode(data.t) || "",
         wasPlaying: data.d || false
     };
 };
@@ -301,7 +302,7 @@ var parseCycle = function(data) {
 
     return {
         shouldCycle: data.f || false,
-        moderator: data.m || "",
+        moderator: utils.decode(data.m) || "",
         moderatorID: data.mi || -1
     };
 };
@@ -312,7 +313,7 @@ var parseLock = function(data) {
     return {
         clearWaitlist: data.c || false,
         isLocked: data.f || false,
-        moderator: data.m || "",
+        moderator: utils.decode(data.m) || "",
         moderatorID: data.mi || -1
     };
 };
@@ -322,9 +323,9 @@ var parsePromotion = function(data) {
 
     if(data.hasOwnProperty('u') && data.u.length === 1) {
         return {
-            moderator: data.m || "",
+            moderator: utils.decode(data.m) || "",
             moderatorID: data.mi || -1,
-            username: data.u[0].n || "",
+            username: utils.decode(data.u[0].n) || "",
             id: data.u[0].i || -1,
             role: data.u[0].p || 0
         };
@@ -347,8 +348,8 @@ var parseChat = function(data) {
     data = data || {};
 
     return {
-        message: data.message || "",
-        username: data.un || "",
+        message: utils.decode(data.message) || "",
+        username: utils.decode(data.un) || "",
         id: data.uid || -1,         //user ID
         cid: data.cid || -1,        //chat ID
         sub: data.sub || 0          //subscription identification
@@ -380,7 +381,7 @@ var parseRoomNameUpdate = function(data) {
     data = data || {};
 
     return {
-        name: data.n || "",
+        name: utils.decode(data.n) || "",
         moderatorID: data.u || -1
     };
 };
@@ -389,7 +390,7 @@ var parseRoomDescriptionUpdate = function(data) {
     data = data || {};
 
     return {
-        description: data.d || "",
+        description: utils.decode(data.d) || "",
         moderatorID: data.u || -1
     };
 };
@@ -398,7 +399,7 @@ var parseRoomWelcomeUpdate = function(data) {
     data = data || {};
 
     return {
-        welcome: data.w || "",
+        welcome: utils.decode(data.w) || "",
         moderatorID: data.u || -1
     };
 };
