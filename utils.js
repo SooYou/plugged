@@ -3,7 +3,7 @@ var setErrorMessage = function(statusCode, msg) {
         code: statusCode,
         message: msg
     };
-}
+};
 
 var createIterator = function(arr) {
     currentIndex = 0;
@@ -45,7 +45,7 @@ var waterfall = function(funcs, callback) {
     };
 
     obj();
-}
+};
 
 var loginClient = function(client, tries) {
     tries = tries || 0;
@@ -71,7 +71,20 @@ var loginClient = function(client, tries) {
     });
 };
 
+var decode = function(str) {
+    if(typeof str !== "string")
+        return str;
+
+    return str
+    .replace(/&#34;/g, '"')
+    .replace(/&#39;/g, '\'')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>');
+};
+
 exports.setErrorMessage = setErrorMessage;
 exports.createIterator = createIterator;
 exports.loginClient = loginClient;
 exports.waterfall = waterfall;
+exports.decode = decode;
