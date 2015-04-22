@@ -208,25 +208,6 @@ Plugged.prototype.MAINTENANCE_MODE = "plugMaintenance";
 Plugged.prototype.ROOM_WELCOME_UPDATE = "roomWelcomeUpdate";
 Plugged.prototype.ROOM_DESCRIPTION_UPDATE = "roomDescriptionUpdate";
 
-var escape = function(str) {
-    if(typeof str !== "string")
-        return "";
-
-    return str.replace(/&(#?[^;\W]+;?)/g, _match);
-};
-
-var _match = function(_, match) {
-    
-};
-
-var _keys = {
-    "&amp;": '&',
-    "&#34;": '"',
-    "&#39;": '\'',
-    "&gt;": '>',
-    "&lt;": '<'
-};
-
 Plugged.prototype._keepAlive = function() {
     if(this.keepAliveTries >= 6) {
         this.log("haven't received a keep alive message from host for more than 3 minutes, is it on fire?", 1, "red");
@@ -265,7 +246,6 @@ Plugged.prototype._processChatQueue = function(lastMessage) {
         var msg = this.chatQueue.shift();
 
         if(lastMessage + this.chatTimeout <= Date.now()) {
-            msg.message = msg.message.replace(/"/g, '\"');
             this.sock.sendMessage("chat", msg.message);
 
             //timeouts can't get lower than 4ms but anything below 1000ms is ridiculous anyway
@@ -654,17 +634,17 @@ Plugged.prototype._wsaprocessor = function(self, msg) {
             break;
 
         case self.ROOM_NAME_UPDATE:
-            self.state.room.meta.name = data.p.n;
+            self.state.room.meta.name = utils.decode(data.p.n);
             self.emit(self.ROOM_NAME_UPDATE, models.parseRoomNameUpdate(data.p));
             break;
 
         case self.ROOM_DESCRIPTION_UPDATE:
-            self.state.room.meta.description = data.p.d;
+            self.state.room.meta.description = utils.decode(data.p.d);
             self.emit(self.ROOM_DESCRIPTION_UPDATE, models.parseRoomDescriptionUpdate(data.p));
             break;
 
         case self.ROOM_WELCOME_UPDATE:
-            self.state.room.meta.welcome = data.p.w;
+            self.state.room.meta.welcome = utils.decode(data.p.w);
             self.emit(self.ROOM_WELCOME_UPDATE, models.parseRoomWelcomeUpdate(data.p));
             break;
 
@@ -704,12 +684,12 @@ Plugged.prototype._wsaprocessor = function(self, msg) {
 
         case self.FRIEND_REQUEST:
             var user = self.getUserByName(data.p);
-            self.emit(self.FRIEND_REQUEST, user ? user : data.p);
+            self.emit(self.FRIEND_REQUEST, user ? user : utils.decode(data.p));
             break;
 
         case self.FRIEND_ACCEPT:
             var user = self.getUserByName(data.p);
-            self.emit(self.FRIEND_ACCEPT, user ? user : data.p);
+            self.emit(self.FRIEND_ACCEPT, user ? user : utils.decode(data.p));
             break;
 
         case self.VOTE:
@@ -739,7 +719,7 @@ Plugged.prototype._wsaprocessor = function(self, msg) {
             break;
 
         case self.PLUG_MESSAGE:
-            self.emit(self.PLUG_MESSAGE, data.p);
+            self.emit(self.PLUG_MESSAGE, utils.decode(data.p));
             break;
 
         case self.MAINTENANCE_MODE:
@@ -1447,20 +1427,24 @@ Plugged.prototype.searchMediaPlaylist = function(playlistID, query, callback) {
     this.query.query("GET", [endpoints["PLAYLISTS"], '/', playlistID, "/media"].join(''), function(err, data) {
         if(!err && data) {
             var result = [];
-            query = encodeURIComponent(query);
-            query = query.replace(/%20/, '|');
-            var regex = new RegExp('(' + query + ')', 'i');
+            try {
+                query = encodeURIComponent(query);
+                query = query.replace(/%20/, '|');
+                var regex = new RegExp('(' + query + ')', 'i');
 
-            for(var i = 0, l = data.length; i < l; i++) {
-                if(data[i].title && data[i].title.match(regex) || data[i].author && data[i].author.match(regex))
-                    result.push(data[i]);
+                for(var i = 0, l = data.length; i < l; i++) {
+                    if(data[i].title && data[i].title.match(regex) || data[i].author && data[i].author.match(regex))
+                        result.push(data[i]);
+                }
+
+                callback(err, result);
+            } catch(err) {
+                callback(err);
             }
-
-            callback(err, result);
         } else {
             callback(err);
         }
-    });
+    }.bind(this));
 };
 
 Plugged.prototype.getPlaylist = function(playlistID, callback) {
