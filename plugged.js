@@ -946,7 +946,6 @@ Plugged.prototype.getPopulation = function() {
     return this.state.room.meta.population;
 };
 
-// TODO: add to documentation
 Plugged.prototype.getMinChatLevel = function() {
     return this.state.room.meta.minChatLevel;
 };
