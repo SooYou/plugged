@@ -370,7 +370,7 @@ Plugged.prototype.removeChatMessagesByUser = function(username, cacheOnly) {
 
             this.state.chatcache.splice(i, 1);
         }
-    } 
+    }
 };
 
 Plugged.prototype.removeChatMessage = function(cid, cacheOnly) {
@@ -1010,8 +1010,10 @@ Plugged.prototype.removeCachedUserByID = function(id) {
 };
 
 Plugged.prototype.removeCachedUserByName = function(username) {
+    username = username.toLowerCase();
+    
     for(var i = 0, l = this.state.usercache.length; i < l; i++) {
-        if(this.state.usercache[i].user.username === username) {
+        if(this.state.usercache[i].user.username.toLowerCase() === username) {
             this.state.usercache.splice(i, 1);
             return true;
         }
@@ -1503,11 +1505,6 @@ Plugged.prototype.setAvatar = function(avatarID, callback) {
 
         callback(err);
     }.bind(this), true);
-};
-
-//PUT plug.dj/_/status
-Plugged.prototype.setStatus = function(status, callback) {
-    console.log("plug has removed user statuses");
 };
 
 //PUT plug.dj/_/language
