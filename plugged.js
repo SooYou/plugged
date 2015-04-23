@@ -136,14 +136,6 @@ Plugged.prototype.GLOBALROLE = {
     ADMIN:              5
 };
 
-//TODO: remove after 1.1.3, plug removed user statuses
-Plugged.prototype.USERSTATUS = {
-    AVAILABLE:  1,
-    AWAY:       2,
-    WORKING:    3,
-    GAMING:     4
-};
-
 /*===== GENERAL EVENTS =====*/
 /* LOGIN BASED EVENTS */
 Plugged.prototype.LOGIN_ERROR = "loginError";
@@ -347,14 +339,6 @@ Plugged.prototype._connectSocket = function() {
     });
 };
 
-Plugged.prototype.clearMutes = function() {
-    console.log("clearMutes is deprecated and will be removed with 1.1.3");
-};
-
-Plugged.prototype.clearMute = function(id) {
-    console.log("clearMute is deprecated and will be removed with 1.1.3");
-};
-
 Plugged.prototype.clearUserCache = function() {
     this.state.usercache = [];
 };
@@ -375,12 +359,6 @@ Plugged.prototype.getChat = function() {
     return this.state.chatcache;
 };
 
-//TODO: remove this function after release of 1.1.3
-Plugged.prototype.removeChatByUser = function(username, cacheOnly) {
-    console.log("removeChatByUser is deprecated by 1.1.3, please use removeChatMessagesByUser");
-    this.removeChatMessagesByUser(username, cacheOnly);
-};
-
 Plugged.prototype.removeChatMessagesByUser = function(username, cacheOnly) {
     cacheOnly = cacheOnly || false;
     username = username.toLowerCase();
@@ -393,12 +371,6 @@ Plugged.prototype.removeChatMessagesByUser = function(username, cacheOnly) {
             this.state.chatcache.splice(i, 1);
         }
     } 
-};
-
-//TODO: remove this function after release of 1.1.3
-Plugged.prototype.removeChat = function(cid, cacheOnly) {
-    console.log("removeChat is deprecated by 1.1.3, please use removeChatMessage");
-    this.removeChatMessage(cid, cacheOnly);
 };
 
 Plugged.prototype.removeChatMessage = function(cid, cacheOnly) {
@@ -1460,12 +1432,6 @@ Plugged.prototype.getPlaylist = function(playlistID, callback) {
 Plugged.prototype.getPlaylists = function(callback) {
     callback = (typeof callback !== "undefined" ? callback.bind(this) : undefined);
     this.query.query("GET", endpoints["PLAYLISTS"], callback);
-};
-
-//TODO: deprecated, remove after 1.1.3 release
-Plugged.prototype.getHistory = function(callback) {
-    console.log("please use getRoomHistory, this function is deprecated and will be removed with 1.1.3");
-    this.getRoomHistory(callback);
 };
 
 Plugged.prototype.getIgnores = function(callback) {
