@@ -316,9 +316,14 @@ Plugged.prototype._connectSocket = function() {
 
     /*================= SOCK CLOSED =================*/
     this.sock.on("close", function _sockClose() {
+        if(self.keepAliveTries < 6 && self.keepAliveID >= 0) {
+            self.keepAliveTries = 6;
+            self._keepAlive();
+        }
+
         self.log("sock closed", 3, "magenta");
         self.emit(self.SOCK_CLOSED, self);
-    })
+    });
 
     /*================= SOCK ERROR ==================*/
     this.sock.on("error", function _sockError(err) {
@@ -1011,7 +1016,7 @@ Plugged.prototype.removeCachedUserByID = function(id) {
 
 Plugged.prototype.removeCachedUserByName = function(username) {
     username = username.toLowerCase();
-    
+
     for(var i = 0, l = this.state.usercache.length; i < l; i++) {
         if(this.state.usercache[i].user.username.toLowerCase() === username) {
             this.state.usercache.splice(i, 1);
@@ -1342,8 +1347,10 @@ Plugged.prototype.logout = function() {
             this.clearUserCache();
             this.clearChatCache();
             this.query.flushQuery();
-            clearTimeout(this.keepAliveID);
             this.state = models.createState();
+
+            clearTimeout(this.keepAliveID);
+            this.keepAliveID = -1;
 
             this.sock.close();
             this.sock.removeAllListeners();
@@ -1354,7 +1361,6 @@ Plugged.prototype.logout = function() {
             this.auth = null;
             this.chatQueue = [];
             this.keepAliveTries = 0;
-            this.keepAliveID = -1;
 
             this.emit(this.LOGOUT_SUCCESS);
         } else {
