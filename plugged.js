@@ -212,6 +212,7 @@ Plugged.prototype._keepAlive = function() {
     if(this.keepAliveTries >= 6) {
         this.log("haven't received a keep alive message from host for more than 3 minutes, is it on fire?", 1, "red");
         this.emit(this.CONN_PART, this.getRoomMeta());
+        this.logout();
         clearInterval(this.keepAliveID);
         this.keepAliveID = -1;
     } else {
@@ -754,6 +755,9 @@ Plugged.prototype._keepAliveCheck = function() {
 
 Plugged.prototype.sendChat = function(message, deleteTimeout) {
     deleteTimeout = deleteTimeout || -1;
+
+    if(this.sock == null)
+        throw new Error("Not connected to service!");
 
     if(!message || message.length <= 0)
         return;
@@ -1365,6 +1369,7 @@ Plugged.prototype.logout = function() {
             this.clearChatCache();
             this.query.flushQuery();
             clearTimeout(this.keepAliveID);
+            this.state = models.createState();
 
             this.sock.close();
             this.sock.removeAllListeners();
@@ -1373,6 +1378,7 @@ Plugged.prototype.logout = function() {
 
             this.sock = null;
             this.auth = null;
+            this.chatQueue = [];
             this.keepAliveTries = 0;
             this.keepAliveID = -1;
 
