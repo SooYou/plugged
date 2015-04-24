@@ -361,7 +361,7 @@ var parseChatDelete = function(data) {
 
     return {
         moderatorID: data.mi || -1,     //ID of mod that issued the deletion
-        cid: data.c || -1               //chat ID
+        cid: data.c || ""               //chat ID
     };
 };
 
