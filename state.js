@@ -350,8 +350,8 @@ var parseChat = function(data) {
     return {
         message: utils.decode(data.message) || "",
         username: utils.decode(data.un) || "",
+        cid: data.cid || "",        //chat ID
         id: data.uid || -1,         //user ID
-        cid: data.cid || -1,        //chat ID
         sub: data.sub || 0          //subscription identification
     };
 };
