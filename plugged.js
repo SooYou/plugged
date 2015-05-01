@@ -327,8 +327,7 @@ Plugged.prototype._connectSocket = function() {
 
     /*================= SOCK ERROR ==================*/
     this.sock.on("error", function _sockError(err) {
-        self.log("sock error!", 3, "magenta");
-        self.log(err, 3, "red");
+        self.log("sock error!", 3, "red");
         self.emit(self.SOCK_ERROR, self, err);
     });
 
@@ -718,7 +717,7 @@ Plugged.prototype._wsaprocessor = function(self, msg) {
             break;
 
         default:
-            self.log("unknown action: " + data.a, 1, "white");
+            self.log("unknown action: " + data.a, 1, "yellow");
             break;
     }
 };
@@ -767,7 +766,7 @@ Plugged.prototype.login = function(credentials, authToken) {
 
         this.credentials = credentials;
 
-        this.log("logging in with account: " + credentials.email, 2, "yellow");
+        this.log("logging in with account: " + credentials.email, 2, "white");
 
         utils.loginClient(this);
     } else {
@@ -1473,7 +1472,7 @@ Plugged.prototype.getCSRF = function(callback) {
             body = body.substr(idx, body.indexOf('\"', idx) - idx);
 
             if(body.length == 60) {
-                this.log("CSRF token: " + body, 2, "yellow");
+                this.log("CSRF token: " + body, 2, "white");
                 callback(null, body);
             } else {
                 callback(utils.setErrorMessage(200, "CSRF token was not found"));
