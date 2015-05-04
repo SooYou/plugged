@@ -1181,6 +1181,11 @@ Plugged.prototype.addToWaitlist = function(userID, callback) {
     this.query.query("POST", endpoints["ADDBOOTH"], { id: userID }, callback);
 };
 
+Plugged.prototype.addPlaylist = function(name, callback) {
+    callback = (typeof callback === "function" ? callback.bind(this) : undefined);
+    this.query.query("POST", endpoints["PLAYLISTS"], { name: name, media: null }, callback);
+};
+
 Plugged.prototype.grab = function(playlistID, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
 
