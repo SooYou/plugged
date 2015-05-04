@@ -164,6 +164,8 @@ Plugged.prototype.GRAB = "grab";
 Plugged.prototype.EARN = "earn";
 Plugged.prototype.SKIP = "skip";
 Plugged.prototype.BAN_IP = "banIP";
+Plugged.prototype.NOTIFY = "notify";
+Plugged.prototype.GIFTED = "gifted";
 Plugged.prototype.MOD_BAN = "modBan";
 Plugged.prototype.ADVANCE = "advance";
 Plugged.prototype.LEVEL_UP = "levelUp";
@@ -508,6 +510,14 @@ Plugged.prototype._wsaprocessor = function(self, msg) {
                 self.removeChatMessage(chat.cid, true);
 
             self.emit(self.CHAT_DELETE, chat);
+            break;
+
+        case self.NOTIFY:
+            self.emit(self.NOTIFY, data.p);
+            break;
+
+        case self.GIFTED:
+            self.emit(self.GIFTED, data.p);
             break;
 
         case self.PLAYLIST_CYCLE:
@@ -1174,8 +1184,8 @@ Plugged.prototype.addToWaitlist = function(userID, callback) {
 Plugged.prototype.grab = function(playlistID, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
 
-    for(var i = 0, l = self.state.room.grabs.length; i < l; i++) {
-        if(self.state.room.grabs[i] == self.state.self.id)
+    for(var i = 0, l = this.state.room.grabs.length; i < l; i++) {
+        if(this.state.room.grabs[i] == this.state.self.id)
             return -1;
     }
 
