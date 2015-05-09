@@ -72,10 +72,11 @@ var CHAT_TIMEOUT_MAX = 700;
 
 WebSocket.prototype.sendMessage = function(type, data) {
     if(typeof type === "string" && (typeof data === "string" || typeof data === "number")) {
-        this.send([
-            '{"a":"', type, '","p":"', data, 
-            '","t":', Date.now(), '}'
-            ].join(''));
+        this.send(JSON.stringify({
+            a: type,
+            p: data,
+            t: Date.now()
+        }));
     }
 };
 
