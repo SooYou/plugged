@@ -244,7 +244,7 @@ Plugged.prototype._processChatQueue = function(lastMessage) {
         if(lastMessage + this.chatTimeout <= Date.now()) {
             this.sock.sendMessage("chat", msg.message);
 
-            //timeouts can't get lower than 4ms but anything below 1000ms is ridiculous anyway
+            // timeouts can't get lower than 4ms but anything below 1000ms is ridiculous anyway
             if(msg.timeout >= 0) {
                 setTimeout(
                     this._removeChatMessageByDelay.bind(this), 
@@ -281,7 +281,7 @@ Plugged.prototype._removeChatMessageByDelay = function(message) {
 Plugged.prototype._checkForPreviousVote = function(vote) {
     for(var i = 0, l = this.state.room.votes.length; i < l; i++) {
         if(this.state.room.votes[i].id == vote.id) {
-            //only return true if vote direction hasn't changed
+            // only return true if vote direction hasn't changed
             if(this.state.room.votes[i].direction !== vote.direction) {
                 this.state.room.votes[i].direction = vote.direction;
                 return false;
@@ -297,7 +297,7 @@ Plugged.prototype._checkForPreviousVote = function(vote) {
 Plugged.prototype._getAuthToken = function(data, callback) {
     this.getAuthToken(function(err, token) {
         this.auth = token;
-        callback(null, token);
+        callback && callback(null, token);
     });
 };
 
@@ -543,7 +543,6 @@ Plugged.prototype._wsaprocessor = function(self, msg) {
 
         case self.EARN:
             self.state.self.xp = data.p.xp;
-            self.state.self.ep = data.p.ep;
             self.emit(self.EARN, models.parseXP(data.p));
             break;
 
@@ -723,7 +722,7 @@ Plugged.prototype._wsaprocessor = function(self, msg) {
             self.emit(self.BAN, models.parseBan(data.p));
             break;
 
-        //TODO: find out if the new username is returned only
+        // TODO: find out if the new username is returned only
         case self.NAME_CHANGED:
             self.emit(self.NAME_CHANGED, data.p);
             break;
@@ -750,8 +749,8 @@ Plugged.prototype.sendChat = function(message, deleteTimeout) {
     if(!message || message.length <= 0)
         return;
 
-    //256 is the max length a chat message can have, 
-    //but the chat window caps the message at 250.
+    // 256 is the max length a chat message can have, 
+    // but the chat window caps the message at 250.
     for(var i = 0, l = Math.ceil(message.length/250); i < l; i++) {
         this.chatQueue.push({
             message: message.slice(i*250, (i+1)*250),
@@ -802,7 +801,8 @@ Plugged.prototype.connect = function(room) {
             self.getRoomStats(function(err, stats) {
 
                 if(!err) {
-                    self.state.room = models.parseRoom(stats);
+                    self.state.room = stats;
+                    self.state.self.role = stats.role;
                     self.emit(self.JOINED_ROOM, self.state.room);
                 } else {
                     self.emit(self.PLUG_ERROR, err);
@@ -1081,26 +1081,32 @@ Plugged.prototype.getStaffByRole = function(role, callback) {
     });
 };
 
+// GET plug.dj/_/news
 Plugged.prototype.getNews = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", endpoints["NEWS"], callback);
 };
 
+// GET plug.dj/_/auth/token
 Plugged.prototype.getAuthToken = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", endpoints["TOKEN"], callback, true);
 };
 
+// GET plug.dj/_/rooms/state
 Plugged.prototype.getRoomStats = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-    this.query.query("GET", endpoints["ROOMSTATS"], callback, true);
+    this.query.query("GET", endpoints["ROOMSTATS"], function _sanitizeRoomStats(err, stats) {
+        callback && callback(err, models.parseRoom(stats));
+    }, true);
 };
 
-Plugged.prototype.findRooms = function(name, page, limit, callback) {
+// GET plug.dj/_/rooms?q=<query>&page=<page=0>&limit=<limit=50>
+Plugged.prototype.findRooms = function(query, page, limit, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : 
-        typeof page === "function" ? page : 
-        typeof limit === "function" ? limit : undefined);
-    name = name || "";
+        typeof limit === "function" ? limit : 
+        typeof page === "function" ? page : undefined);
+    query = query || "";
 
     if(typeof page !== "number")
         page = 0;
@@ -1108,44 +1114,77 @@ Plugged.prototype.findRooms = function(name, page, limit, callback) {
     if(typeof limit !== "number")
         limit = 50;
 
-    this.query.query("GET", [endpoints["ROOMS"], "?q=", name, "&page=", page, "&limit=", limit].join(''), callback);
+    this.query.query("GET", [endpoints["ROOMS"], "?q=", query, "&page=", page, "&limit=", limit].join(''), function _sanitizeFoundRooms(err, rooms) {
+
+        callback && callback(err, rooms.map(function(room) {
+            return models.parseExtendedRoom(room);
+        }));
+    });
 };
 
+// GET plug.dj/_/rooms?q=<query>&page=0&limit=50
 Plugged.prototype.getRooms = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-    this.query.query("GET", endpoints["ROOMS"] + "?q=&page=0&limit=50", callback);
+    this.query.query("GET", endpoints["ROOMS"] + "?q=&page=0&limit=50", function _sanitizeRooms(err, rooms) {
+        callback && callback(err, rooms.map(function(room) {
+            return models.parseExtendedRoom(room);
+        }));
+    });
 };
 
+// GET plug.dj/_/staff
 Plugged.prototype.getStaff = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-    this.query.query("GET", endpoints["STAFF"], callback);
+    this.query.query("GET", endpoints["STAFF"], function _sanitizeStaff(err, staff) {
+
+        callback && callback(err, staff.map(function(staffEntry) {
+            return models.parseUser(staffEntry);
+        }));
+    });
 };
 
+// GET plug.dj/_/users/<id>
 Plugged.prototype.getUser = function(id, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-    this.query.query("GET", endpoints["USERSTATS"] + '/' + id, callback, true);
+    this.query.query("GET", endpoints["USERSTATS"] + '/' + id, function _sanitizeUser(err, user) {
+        callback && callback(err, models.parseUser(user));
+    }, true);
 };
 
+// GET plug.dj/_/rooms/history
 Plugged.prototype.getRoomHistory = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-    this.query.query("GET", endpoints["HISTORY"], callback);
+    this.query.query("GET", endpoints["HISTORY"], function _sanitizeHistory(err, history) {
+
+        callback && callback(err, history.map(function(historyEntry) {
+            return models.parseHistoryEntry(historyEntry);
+        }));
+    });
 };
 
+// GET plug.dj/_/rooms/validate/<name>
 Plugged.prototype.validateRoomName = function(name, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", endpoints["VALIDATEROOM"] + name, callback, true);
 };
 
+// GET plug.dj/_/users/validate/<name>
 Plugged.prototype.validateUsername = function(name, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", endpoints["VALIDATEUSER"] + name, callback, true);
 };
 
+// GET plug.dj/_/mutes
 Plugged.prototype.getMutes = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-    this.query.query("GET", endpoints["MUTES"], callback);
+    this.query.query("GET", endpoints["MUTES"], function _sanitizeMutes(err, mutes) {
+        callback && callback(err, mutes.map(function (mute) {
+            return models.parseMute(mute);
+        }));
+    });
 };
 
+// PUT plug.dj/_/booth/lock
 Plugged.prototype.setLock = function(lock, removeAllDJs, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("PUT", endpoints["LOCK"], { 
@@ -1154,11 +1193,13 @@ Plugged.prototype.setLock = function(lock, removeAllDJs, callback) {
     }, callback);
 };
 
+// PUT plug.dj/_/booth/cycle
 Plugged.prototype.setCycle = function(shouldCycle, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("PUT", endpoints["CYCLE"], { shouldCycle: shouldCycle }, callback);
 };
 
+// POST plug.dj/_/auth/login
 Plugged.prototype.setLogin = function(csrf, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("POST", endpoints["LOGIN"], {
@@ -1168,26 +1209,31 @@ Plugged.prototype.setLogin = function(csrf, callback) {
     }, callback);
 };
 
+// POST plug.dj/_/rooms/join
 Plugged.prototype.joinRoom = function(slug, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("POST", endpoints["JOINROOM"], { slug: slug }, callback);
 };
 
+// POST plug.dj/_/booth/join
 Plugged.prototype.joinWaitlist = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("POST", endpoints["JOINBOOTH"], callback);
 };
 
+// POST plug.dj/_/booth/add
 Plugged.prototype.addToWaitlist = function(userID, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("POST", endpoints["ADDBOOTH"], { id: userID }, callback);
 };
 
+// POST plug.dj/_/playlists
 Plugged.prototype.addPlaylist = function(name, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-    this.query.query("POST", endpoints["PLAYLISTS"], { name: name, media: null }, callback);
+    this.query.query("POST", endpoints["PLAYLISTS"], { name: name, media: null }, callback, true);
 };
 
+// POST plug.dj/_/grabs
 Plugged.prototype.grab = function(playlistID, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
 
@@ -1204,14 +1250,17 @@ Plugged.prototype.grab = function(playlistID, callback) {
     return 0;
 };
 
+// POST plug.dj/_/booth/skip
 Plugged.prototype.skipDJ = function(userID, callback) {
-    callback = (typeof callback === "function" ? callback.bind(this) : function() {});
+    callback = (typeof callback === "function" ? callback.bind(this) : undefined);
 
-    //fallback in case that plug failed at assigning a valid history ID
+    // fallback in case that plug failed at assigning a valid history ID
     if(!this.state.room.playback.historyID) {
         this.removeDJ(userID, function(err) {
             if(!err)
                 this.addToWaitlist(userID, callback);
+
+            callback && callback(err);
         });
     } else {
 
@@ -1225,6 +1274,7 @@ Plugged.prototype.skipDJ = function(userID, callback) {
     }
 };
 
+// POST plug.dj/_/booth/move
 Plugged.prototype.moveDJ = function(userID, position, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("POST", endpoints["MOVEBOOTH"], {
@@ -1233,6 +1283,7 @@ Plugged.prototype.moveDJ = function(userID, position, callback) {
     }, callback);
 };
 
+// POST plug.dj/_/rooms
 Plugged.prototype.createRoom = function(name, private, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("POST", endpoints["CREATEROOM"], { 
@@ -1241,6 +1292,7 @@ Plugged.prototype.createRoom = function(name, private, callback) {
     }, callback, true);
 };
 
+// POST plug.dj/_/rooms/update
 Plugged.prototype.updateRoomInfo = function(name, description, welcome, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("POST", endpoints["UPDATEROOM"], { 
@@ -1250,6 +1302,7 @@ Plugged.prototype.updateRoomInfo = function(name, description, welcome, callback
     }, callback);
 };
 
+// POST plug.dj/_/bans/add
 Plugged.prototype.banUser = function(userID, time, reason, callback) {
     if(typeof reason === "function") {
         callback = reason;
@@ -1264,6 +1317,7 @@ Plugged.prototype.banUser = function(userID, time, reason, callback) {
     }, callback);
 };
 
+// POST plug.dj/_/mutes
 Plugged.prototype.muteUser = function(userID, time, reason, callback) {
     if(typeof reason === "function") {
         callback = reason;
@@ -1278,6 +1332,7 @@ Plugged.prototype.muteUser = function(userID, time, reason, callback) {
     }, callback);
 };
 
+// POST plug.dj/_/staff/update
 Plugged.prototype.addStaff = function(userID, role, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("POST", endpoints["STAFF"] + "/update", { 
@@ -1286,8 +1341,9 @@ Plugged.prototype.addStaff = function(userID, role, callback) {
     }, callback, true);
 };
 
+// POST plug.dj/_/ignores
 Plugged.prototype.ignoreUser = function(userID, callback) {
-    callback = (typeof callback === "function" ? callback.bind(this) : function() {});
+    callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("POST", endpoints["IGNORES"], { id: userID }, function(err, data) {
         if(!err && data) {
 
@@ -1299,19 +1355,19 @@ Plugged.prototype.ignoreUser = function(userID, callback) {
             }
 
         }
-        callback(err);
+        callback && callback(err);
     }.bind(this), true);
 };
 
-//DELETE plug.dj/_/playlists/<id>
+// DELETE plug.dj/_/playlists/<id>
 Plugged.prototype.deletePlaylist = function(playlistID, callback) {
-    callback = (typeof callback === "function" ? callback.bind(this) : function() {});
+    callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("DELETE", endpoints["PLAYLISTS"] + '/' + playlistID, callback, true);
 };
 
-//DELETE plug.dj/_/ignores/<id>/
+// DELETE plug.dj/_/ignores/<userID>/
 Plugged.prototype.removeIgnore = function(userID, callback) {
-    callback = (typeof callback === "function" ? callback.bind(this) : function() {});
+    callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("DELETE", endpoints["IGNORES"] + '/' + userID, function(err, data) {
         if(!err && data) {
             for(var i = 0, l = this.state.self.ignores.length; i < l; i++) {
@@ -1322,40 +1378,47 @@ Plugged.prototype.removeIgnore = function(userID, callback) {
             }
         }
 
-        callback(err, data);
+        callback && callback(err, data);
     }.bind(this), true);
 };
 
+// DELETE plug.dj/_/staff/<userID>
 Plugged.prototype.removeStaff = function(userID, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("DELETE", endpoints["STAFF"] + '/' + userID, callback);
 };
 
+// DELETE plug.dj/_/booth/remove/<userID>
 Plugged.prototype.removeDJ = function(userID, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("DELETE", endpoints["REMOVEBOOTH"] + '/' + userID, callback, true);
 };
 
+// DELETE plug.dj/_/booth
 Plugged.prototype.leaveWaitlist = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("DELETE", endpoints["JOINBOOTH"], callback);
 };
 
+// DELETE plug.dj/_/bans/<userID>
 Plugged.prototype.unbanUser = function(userID, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("DELETE", endpoints["BANS"] + '/' + userID, callback);
 };
 
+// DELETE plug.dj/_/mutes/<userID>
 Plugged.prototype.unmuteUser = function(userID, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("DELETE", endpoints["MUTES"] + '/' + userID, callback);
 };
 
+// DELETE plug.dj/_/chat/<cid>
 Plugged.prototype.deleteMessage = function(chatID, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("DELETE", endpoints["CHAT"] + chatID, callback);
 };
 
+// DELETE plug.dj/_/auth/session
 Plugged.prototype.logout = function() {
     this.query.query("DELETE", endpoints["SESSION"], function _loggedOut(err, body) {
         if(!err) {
@@ -1387,8 +1450,9 @@ Plugged.prototype.logout = function() {
 
 /*================ USER CALLS ================*/
 
+// GET plug.dj/_/users/me
 Plugged.prototype.requestSelf = function(callback) {
-    callback = (typeof callback === "function" ? callback.bind(this) : function () {});
+    callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     var self = this;
     this.query.query("GET", endpoints["USERSTATS"] + "me", function _requestedSelf(err, data) {
         if(!err && data) {
@@ -1400,29 +1464,41 @@ Plugged.prototype.requestSelf = function(callback) {
                         self.state.self.friends.push(data[i].id);
                 }
 
-                callback(err, self.state.self);
+                callback && callback(err, self.state.self);
             });
         } else {
-            callback(err);
+            callback && callback(err);
         }
     }, true);
 };
 
+// GET plug.dj/_/users/me/history
 Plugged.prototype.getMyHistory = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", endpoints["USERHISTORY"], callback);
 };
 
+// GET plug.dj/_/friends
 Plugged.prototype.getFriends = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-    this.query.query("GET", endpoints["FRIENDS"], callback);
+    this.query.query("GET", endpoints["FRIENDS"], function _sanitizeFriends(err, friends) {
+        callback && callback(err, friends.map(function(friend) {
+            return models.parseUser(friend);
+        }));
+    });
 };
 
+// GET plug.dj/_/friends/invites
 Plugged.prototype.getFriendRequests = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-    this.query.query("GET", endpoints["INVITES"], callback);
+    this.query.query("GET", endpoints["INVITES"], function _sanitizeFriendRequests(err, requests) {
+        callback && callback(err, requests.map(function(request) {
+            return models.parseFriendRequest(request);
+        }));
+    });
 };
 
+// GET plug.dj/_/playlists/<id>/media
 Plugged.prototype.searchMediaPlaylist = function(playlistID, query, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", [endpoints["PLAYLISTS"], '/', playlistID, "/media"].join(''), function(err, data) {
@@ -1438,49 +1514,52 @@ Plugged.prototype.searchMediaPlaylist = function(playlistID, query, callback) {
                         result.push(data[i]);
                 }
 
-                callback(err, result);
+                callback && callback(err, result);
             } catch(err) {
-                callback(err);
+                callback && callback(err);
             }
         } else {
-            callback(err);
+            callback && callback(err);
         }
     }.bind(this));
 };
 
+// GET plug.dj/_/playlists/<id>/media
 Plugged.prototype.getPlaylist = function(playlistID, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", [endpoints["PLAYLISTS"], '/', playlistID, "/media"].join(''), callback, true);
 };
 
+// GET plug.dj/_/playlists
 Plugged.prototype.getPlaylists = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", endpoints["PLAYLISTS"], callback);
 };
 
+// GET plug.dj/_/ignores
 Plugged.prototype.getIgnores = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", endpoints["IGNORES"], callback);
 };
 
+// GET plug.dj/_/favorites
 Plugged.prototype.getFavoriteRooms = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-    this.query.query("GET", endpoints["FAVORITEROOM"], function(err, data) {
+    this.query.query("GET", endpoints["FAVORITEROOM"], function(err, rooms) {
         if(!err) {
-            var results = [];
-
-            for(var i = 0, l = data.length; i < l; i++)
-                results.push(models.parseExtendedRoom(data[i]));
-
-            callback(err, results);
+            callback && callback(err, rooms.map(function(room) {
+                return models.parseExtendedRoom(room);
+            }));
         } else {
-            callback(err);
+            callback && callback(err);
         }
     });
 };
 
+// MitM protection, only available before login
+// GET plug.dj
 Plugged.prototype.getCSRF = function(callback) {
-    callback = (typeof callback === "function" ? callback.bind(this) : function() {});
+    callback = (typeof callback === "function" ? callback.bind(this) : undefined);
 
     this.query.query("GET", endpoints["CSRF"], function _gotCSRF(err, body) {
         if(!err) {
@@ -1490,61 +1569,64 @@ Plugged.prototype.getCSRF = function(callback) {
 
             if(body.length == 60) {
                 this.log("CSRF token: " + body, 2, "white");
-                callback(null, body);
+                callback && callback(null, body);
             } else {
-                callback(utils.setErrorMessage(200, "CSRF token was not found"));
+                callback && callback(utils.setErrorMessage(200, "CSRF token was not found"));
             }
 
         } else {
-            callback(err);
+            callback && callback(err);
         }
     }.bind(this));
 };
 
-//PUT plug.dj/_/blurb
+// PUT plug.dj/_/blurb
 Plugged.prototype.setProfileMessage = function(message, callback) {
-    callback = (typeof callback === "function" ? callback.bind(this) : function() {});
+    callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("PUT", endpoints["BLURB"], { blurb: message }, function(err) {
         if(!err)
             this.state.self.blurb = message;
 
-        callback(err);
+        callback && callback(err);
     }.bind(this), true);
 };
 
-//PUT plug.dj/_/playlists/<id>/rename
-Plugged.prototype.renamePlaylist = function(playlistID, callback) {
-    callback = (typeof callback === "function" ? callback.bind(this) : function() {});
-    this.query.query("PUT", [endpoints["PLAYLISTS"], '/', playlistID, '/rename'].join(''), callback);
+// PUT plug.dj/_/playlists/<id>/rename
+Plugged.prototype.renamePlaylist = function(playlistID, name, callback) {
+    callback = (typeof callback === "function" ? callback.bind(this) : undefined);
+    this.query.query("PUT", [endpoints["PLAYLISTS"], '/', playlistID, '/rename'].join(''), { name: name }, callback);
 };
 
-//PUT plug.dj/_/avatar
+// PUT plug.dj/_/avatar
 Plugged.prototype.setAvatar = function(avatarID, callback) {
-    callback = (typeof callback === "function" ? callback.bind(this) : function() {});
+    callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("PUT", endpoints["AVATAR"], { id: avatarID }, function(err) {
         if(!err)
             this.state.self.avatarID = avatarID;
 
-        callback(err);
+        callback && callback(err);
     }.bind(this), true);
 };
 
-//PUT plug.dj/_/language
+// PUT plug.dj/_/language
 Plugged.prototype.setLanguage = function(language, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("PUT", endpoints["LANGUAGE"], { language: language }, callback);
 };
 
+// PUT plug.dj/_/friends/ignore
 Plugged.prototype.rejectFriendRequest = function(userID, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("PUT", endpoints["IGNOREFRIEND"], { id: userID }, callback);
 };
 
+// PUT plug.dj/_/playlists/<id>
 Plugged.prototype.activatePlaylist = function(playlistID, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("PUT", endpoints["PLAYLISTS"] + '/' + playlistID + "/activate", callback, true);
 };
 
+// PUT plug.dj/_/playlists/<id>/media/move
 Plugged.prototype.moveMedia = function(playlistID, mediaArray, beforeID, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("PUT", 
@@ -1552,6 +1634,7 @@ Plugged.prototype.moveMedia = function(playlistID, mediaArray, beforeID, callbac
         { ids: mediaArray, beforeID: beforeID }, callback);
 };
 
+// PUT plug.dj/_/playlists/<id>/media/update
 Plugged.prototype.updateMedia = function(playlistID, mediaID, author, title, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("PUT",
@@ -1559,21 +1642,24 @@ Plugged.prototype.updateMedia = function(playlistID, mediaID, author, title, cal
         { id: mediaID, author: author, title: title }, callback);
 };
 
+// PUT plug.dj/_/playlists/<id>/shuffle
 Plugged.prototype.shufflePlaylist = function(playlistID, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("PUT", endpoints["PLAYLISTS"] + '/' + playlistID + "/shuffle", callback);
 };
 
+// POST plug.dj/_/friends
 Plugged.prototype.addFriend = function(userID, callback) {
-    callback = (typeof callback === "function" ? callback.bind(this) : function() {});
+    callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("POST", endpoints["FRIENDS"], { id: userID }, function(err, data) {
         if(!err)
             this.state.self.friends.push(userID);
 
-        callback(err);
+        callback && callback(err);
     }.bind(this));
 };
 
+// POST plug.dj/_/playlists/<id>/media/delete
 Plugged.prototype.deleteMedia = function(playlistID, mediaIDs, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("POST",
@@ -1582,6 +1668,17 @@ Plugged.prototype.deleteMedia = function(playlistID, mediaIDs, callback) {
         callback);
 };
 
+// TODO: add to documentation
+// POST plug.dj/_/playlists/<id>/media/insert
+Plugged.prototype.addMedia = function(playlistID, mediaObjects, append, callback) {
+    callback = (typeof callback === "function" ? callback.bind(this) : undefined);
+    this.query.query("POST",
+        endpoints["PLAYLISTS"] + '/' + playlistID + "/media/insert",
+        { media: models.serializeMediaObjects(mediaObjects), append: append },
+        callback);
+};
+
+// POST plug.dj/_/playlists/<id>/media/insert
 Plugged.prototype.insertMedia = function(playlistID, mediaIDs, append, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("POST",
@@ -1590,6 +1687,7 @@ Plugged.prototype.insertMedia = function(playlistID, mediaIDs, append, callback)
         callback);
 };
 
+// POST plug.dj/_/votes
 Plugged.prototype.woot = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.state.self.vote = 1;
@@ -1599,6 +1697,7 @@ Plugged.prototype.woot = function(callback) {
     }, callback);
 };
 
+// POST plug.dj/_/votes
 Plugged.prototype.meh = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.state.self.vote = -1;
@@ -1608,18 +1707,21 @@ Plugged.prototype.meh = function(callback) {
     }, callback);
 };
 
+// POST plug.dj/_/favorites
 Plugged.prototype.favoriteRoom = function(roomID, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("POST", endpoints["FAVORITEROOM"], { id: roomID }, callback, true);
 };
 
+// DELETE plug.dj/_/notifications
 Plugged.prototype.deleteNotification = function(id, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("DELETE", endpoints["NOTIFICATION"] + id, callback);
 };
 
+// DELETE plug.dj/_/friends
 Plugged.prototype.removeFriend = function(userID, callback) {
-    callback = (typeof callback === "function" ? callback.bind(this) : function() {});
+    callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("DELETE", endpoints["FRIENDS"] + '/' + userID, function(err, data) {
         if(!err) {
             for(var i = 0, l = this.state.self.friends.length; i < l; i++) {
@@ -1630,17 +1732,19 @@ Plugged.prototype.removeFriend = function(userID, callback) {
             }
         }
 
-        callback(err);
+        callback && callback(err);
     }.bind(this));
 };
 
 /*================ STORE CALLS ================*/
 
+// GET plug.dj/_/inventory
 Plugged.prototype.getInventory = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", endpoints["INVENTORY"], callback);
 };
 
+// GET plug.dj/_/products
 Plugged.prototype.getProducts = function(type, category, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", [endpoints["PRODUCTS"], '/', type, '/', category].join(''), callback);
@@ -1648,16 +1752,19 @@ Plugged.prototype.getProducts = function(type, category, callback) {
 
 // TODO: objects returned need further investigation
 // TODO: add to documentation
+// GET plug.dj/_/users/me/transactions
 Plugged.prototype.getTransactions = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", endpoints["TRANSACTIONS"], callback);
 };
 
+// POST plug.dj/_/store/purchase/username
 Plugged.prototype.purchaseUsername = function(itemID, username, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("POST", endpoints["PURCHASE"] + "/username", { id: itemID, username: username }, callback);
 };
 
+// POST plug.dj/_/store/purchase
 Plugged.prototype.purchaseItem = function(itemID, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("POST", endpoints["PURCHASE"], { id: itemID }, callback, true);
