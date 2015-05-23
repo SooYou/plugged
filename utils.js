@@ -28,7 +28,7 @@ var waterfall = function(funcs, callback) {
 
     var iterator = createIterator(funcs);
 
-    var obj = function() {
+    (function _obj() {
         var nxt = iterator.next();
         var err = arguments[0];
         var args = [];
@@ -36,15 +36,13 @@ var waterfall = function(funcs, callback) {
         //not so nice looking copy to keep vm optimizations
         for(var i = (nxt.done ? 0 : 1), l = arguments.length; i < l; i++)
             args.push(arguments[i]);
-        args.push(obj);
+        args.push(_obj);
 
         if(!nxt.done && !err)
             nxt.value.apply(nxt.value, args);
         else
-            callback.apply(callback, (!err ? args : err));
-    };
-
-    obj();
+            callback.apply(callback, (!err ? args : [err]));
+    })();
 };
 
 var loginClient = function(client, tries) {
@@ -56,14 +54,14 @@ var loginClient = function(client, tries) {
         client._getAuthToken.bind(client)
     ], function _loginCredentialCheck(err) {
         if(err) {
-            if(tries < 2) {
+            if(tries < 2 && err.code !== 401) {
                 client.log("an error occured while trying to log in", 0, "red");
-                client.log("err: " + err.code, 1, "red");
-                client.log("trying to reconnect...", 0);
+                client.log(err, 2, "red");
+                client.log("retrying...", 0);
                 loginClient(client, ++tries);
             } else {
                 client.log("couldn't log in.", 0, "red");
-                client.emit(client.LOGIN_ERROR, "couldn't log in");
+                client.emit(client.LOGIN_ERROR, err);
             }
         } else {
             client._loggedIn.call(client);
