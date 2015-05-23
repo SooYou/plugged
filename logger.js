@@ -1,7 +1,13 @@
-function Logger() {
-    this.level = 0;
+var fs = require("fs");
+var path = require("path");
+var util = require("util");
 
-    this.colors = {
+module.exports = function Logger(options) {
+    options = options || {};
+    this.verbosity = options.verbosity || 0;
+    this.inspect = options.inspect || false;
+    this.file = options.file || null;
+    this.colors = options.colors || {
         gray: "\x1b[0m",
         red: "\x1b[31;1m",
         blue: "\x1b[34;1m",
@@ -12,39 +18,46 @@ function Logger() {
         magenta: "\x1b[35;1m"
     };
 
-    this.write = function() {};
-}
+    if(fs.existsSync(this.file))
+        fs.unlink(path.resolve(this.file));
 
-Logger.prototype.setVerbosity = function(verbosity) {
-    this.level = verbosity;
-};
+    return function _logger(msg, verbosity, color) {
+        verbosity = verbosity || 0;
+        color = color || "white";
+        var tag;
 
-Logger.prototype.setFile = function(file) {
-    if(typeof file !== "undefined") {
-        this.write = function(msg) {
-            fs.appendFile(file, [new Date().toUTCString(), ": ", msg, '\n'].join(''),
-                function(err) {
-                    if(err) {
-                        console.error([
-                            "Couldn't save: ", msg,
-                            " to file. Error: ", err
-                            ]);
-                    }
-                });
+        switch(color) {
+            case "red":
+                tag = "  error  ";
+                break;
+            case "green":
+                tag = " success ";
+                break;
+            case "yellow":
+                tag = " warning ";
+                break;
+            default:
+                tag = "  info   ";
+                break;
         }
-    } else {
-        this.write = function() {};
-    }
-};
 
-Logger.prototype.log = function(msg, verbosity, color) {
-    verbosity = verbosity || 0;
-    color = color || "gray";
+        if(msg && this.verbosity > verbosity) {
+            msg = [
+                '[',
+                this.colors[color],
+                tag,
+                this.colors["gray"],
+                ']',
+                ' ',
+                this.colors[color],
+                (this.inspect && typeof msg === "object" ? util.inspect(msg) : msg),
+                this.colors["gray"]
+                ].join('');
 
-    if(this.level >= verbosity) {
-        this.write(msg);
-        console.log([this.colors[color], msg, "\x1b[0m"].join(''));
-    }
-};
+            console.log(msg);
 
-module.exports = Logger;
+            if(this.file)
+                fs.appendFile(this.file, msg.replace(/\x1b\[\d+(;\d)?m/g, '') + '\r\n');
+        }
+    }.bind(this);
+}
