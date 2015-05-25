@@ -84,6 +84,7 @@ function Plugged() {
     Plugged.super_.call(this);
     
     this.log = function() {};
+    this._keepAlive = this._keepAlive.bind(this);
     this.state = models.createState();
     this.query = new Query();
     this.chatQueue = [];
@@ -208,10 +209,12 @@ Plugged.prototype._keepAlive = function() {
         this.log("haven't received a keep alive message from host for more than 3 minutes, is it on fire?", 1, "red");
         this.emit(this.CONN_PART, this.getRoomMeta());
         this.logout();
-        clearInterval(this.keepAliveID);
+        clearTimeout(this.keepAliveID);
         this.keepAliveID = -1;
     } else {
         this.keepAliveTries++;
+        clearTimeout(this.keepAliveID);
+        this.keepAliveID = setTimeout(this._keepAlive, 30*1000);
 
         if(this.keepAliveTries > 1)
             this.emit(this.CONN_WARNING, this.keepAliveTries);
@@ -319,7 +322,7 @@ Plugged.prototype._connectSocket = function() {
 
     /*================= SOCK CLOSED =================*/
     this.sock.on("close", function _sockClose() {
-        if(self.keepAliveTries < 6 && self.keepAliveID >= 0) {
+        if(self.keepAliveTries < 6 && self.keepAliveID !== -1) {
             self.keepAliveTries = 6;
             self._keepAlive();
         }
@@ -416,6 +419,10 @@ Plugged.prototype.cacheChat = function(enabled) {
     this.ccache = enabled;
 };
 
+Plugged.prototype.isChatCached = function() {
+    return this.ccache;
+};
+
 Plugged.prototype.setChatCacheSize = function(size) {
     if(typeof size === "number" && size >= 0)
         return this.chatcachesize = size;
@@ -424,8 +431,13 @@ Plugged.prototype.setChatCacheSize = function(size) {
 };
 
 Plugged.prototype.cacheUserOnLeave = function(enabled) {
-    if(this.cleanCacheInterval >= 0 && enabled)
+    if(this.cleanCacheInterval !== -1)
         this.sleave = enabled;
+    return this.sleave;
+};
+
+Plugged.prototype.isUserCachedOnLeave = function() {
+    return this.sleave;
 };
 
 Plugged.prototype.clearUserFromLists = function(id) {
@@ -734,10 +746,10 @@ Plugged.prototype._wsaprocessor = function(self, msg) {
 };
 
 Plugged.prototype._keepAliveCheck = function() {
+    // the hiccup counter gets set back to zero
     this.keepAliveTries = 0;
-
-    if(this.keepAliveID < 0)
-        this.keepAliveID = setInterval(this._keepAlive.bind(this), 30*1000);
+    clearTimeout(this.keepAliveID);
+    this.keepAliveID = setTimeout(this._keepAlive, 30*1000);
 };
 
 Plugged.prototype.sendChat = function(message, deleteTimeout) {
@@ -916,11 +928,9 @@ Plugged.prototype.getFX = function() {
 
 Plugged.prototype.checkGlobalRole = function(gRole) {
     return (gRole === 5 ?
-                        this.GLOBALROLE.ADMIN
-                        :
+                        this.GLOBALROLE.ADMIN :
                         (gRole > 0 && gRole < 5 ?
-                                     this.GLOBALROLE.BRAND_AMBASSADOR
-                                     :
+                                     this.GLOBALROLE.BRAND_AMBASSADOR :
                                      this.GLOBALROLE.NONE
                         )
             );
@@ -1011,8 +1021,11 @@ Plugged.prototype.getGrabs = function(withUserObject) {
 };
 
 Plugged.prototype.cacheUser = function(user) {
-    if(typeof user === "object")
+    if(typeof user === "object") {
         this.state.usercache.push({ user: user, timestamp: Date.now() });
+        return true;
+    }
+    return false;
 };
 
 Plugged.prototype.removeCachedUserByID = function(id) {
@@ -1527,7 +1540,7 @@ Plugged.prototype.searchMediaPlaylist = function(playlistID, query, callback) {
 // GET plug.dj/_/playlists/<id>/media
 Plugged.prototype.getPlaylist = function(playlistID, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-    this.query.query("GET", [endpoints["PLAYLISTS"], '/', playlistID, "/media"].join(''), callback, true);
+    this.query.query("GET", [endpoints["PLAYLISTS"], '/', playlistID, "/media"].join(''), callback);
 };
 
 // GET plug.dj/_/playlists
