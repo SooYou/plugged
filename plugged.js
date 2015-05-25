@@ -1230,7 +1230,7 @@ Plugged.prototype.getMutes = function(callback) {
 // PUT plug.dj/_/users/settings
 Plugged.prototype.saveSettings = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-    this.query.query("PUT", endpoints["LOCK"], this.state.self.settings, callback);
+    this.query.query("PUT", endpoints["SETTINGS"], this.state.self.settings, callback);
 };
 
 // PUT plug.dj/_/booth/lock
