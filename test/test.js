@@ -1425,6 +1425,7 @@ describe("Local", function () {
         var chatImages = client.getSetting("chatImages");
         it("should change a setting and save it", function (done) {
             client.setSetting("chatImages", !chatImages, function (err) {
+                expect(err).to.be.a("null");
                 expect(chatImages).to.not.equal(client.getSetting("chatImages"));
                 done();
             });
@@ -1433,7 +1434,7 @@ describe("Local", function () {
 
     describe("#getSetting", function () {
         it("should return one setting (exp: chatImages)", function () {
-            expect(client.getSetting("chatImages")).to.not.be("null");
+            expect(client.getSetting("chatImages")).to.be.a("boolean");
         });
     });
 
