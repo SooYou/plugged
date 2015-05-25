@@ -23,7 +23,8 @@
         "utils.js",
         "package.json",
         "LICENSE",
-        "test/test.js"
+        "test/test.js",
+        "test/README.md"
     ],
 
     "keywords" : [
