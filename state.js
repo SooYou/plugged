@@ -108,7 +108,7 @@ var parseUser = function(data) {
         slug: data.slug || "",
         level: data.level || 0,
         gRole: data.gRole || 0,                 //global role
-        badge: data.badge || "",                //long time users got a badge
+        badge: data.badge || "",
         role: data.role || 0,
         sub: data.sub || 0,
         id: data.id || -1
