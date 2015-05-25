@@ -468,21 +468,21 @@ describe("REST", function () {
         });
     });
 
+    describe("#saveSettings", function () {
+        it("should save the settings object on the server", function (done) {
+            client.saveSettings(done);
+        });
+    });
+
     describe("#setLock", function () {
         it("should unlock the waitlist", function (done) {
-            client.setLock(false, false, function (err) {
-                expect(err).to.be.a("null");
-                done();
-            });
+            client.setLock(false, false, done);
         });
     });
 
     describe("#setCycle", function () {
         it("should set if the waitlist should cycle", function (done) {
-            client.setCycle(true, function (err) {
-                expect(err).to.be.a("null");
-                done();
-            });
+            client.setCycle(true, done);
         });
     });
 
@@ -502,21 +502,13 @@ describe("REST", function () {
 
     describe("#meh", function () {
         it("should meh a song", function (done) {
-            client.meh(function (err) {
-                expect(err).to.be.a("null");
-
-                done();
-            });
+            client.meh(done);
         });
     });
 
     describe("#woot", function () {
         it("should woot a song", function (done) {
-            client.woot(function (err) {
-                expect(err).to.be.a("null");
-
-                done();
-            });
+            client.woot(done);
         });
     });
 
@@ -538,11 +530,7 @@ describe("REST", function () {
 
     describe("#grab", function () {
         it("should grab a song", function (done) {
-            client.grab(_playlist, function (err) {
-                expect(err).to.be.a("null");
-
-                done();
-            });
+            client.grab(_playlist, done);
         });
     });
 
@@ -565,32 +553,20 @@ describe("REST", function () {
                 "artwork_url": "https://i1.sndcdn.com/artworks-000015183915-7m8l9z-large.jpg"
             };
 
-            client.addMedia(_playlist, [ytObj, sndObj], true, function (err) {
-                expect(err).to.be.a("null");
-
-                done();
-            });
+            client.addMedia(_playlist, [ytObj, sndObj], true, done);
         });
     });
 
     describe("#skipDJ", function () {
         it("should skip the current DJ", function (done) {
-            client.skipDJ(client.getCurrentDJ().id, function(err) {
-                expect(err).to.be.a("null");
-
-                done();
-            });
+            client.skipDJ(client.getCurrentDJ().id, done);
         });
     });
 
     describe("#moveDJ", function () {
         it("should move a DJ to a new position in the waitlist", function (done) {
             var waitlist = client.getWaitlist();
-            client.moveDJ(waitlist[waitlist.length - 1], 0, function (err) {
-                expect(err).to.be.a("null");
-
-                done();
-            });
+            client.moveDJ(waitlist[waitlist.length - 1], 0, done);
         });
     });
 
@@ -677,21 +653,13 @@ describe("REST", function () {
 
     describe("#addStaff", function () {
         it("should add a user as staff", function (done) {
-            client.addStaff(_user.id, client.USERROLE.BOUNCER, function (err) {
-                expect(err).to.be.a("null");
-
-                done();
-            });
+            client.addStaff(_user.id, client.USERROLE.BOUNCER, done);
         });
     });
 
     describe("#ignoreUser", function () {
         it("should ignore a user", function (done) {
-            client.ignoreUser(_user.id, function (err) {
-                expect(err).to.be.a("null");
-
-                done();
-            });
+            client.ignoreUser(_user.id, done);
         });
     });
 
@@ -773,11 +741,7 @@ describe("REST", function () {
 
     describe("#unmuteUser", function () {
         it("should unmute the previously muted user", function (done) {
-            client.unmuteUser(_user.id, function (err) {
-                expect(err).to.be.a("null");
-
-                done();
-            });
+            client.unmuteUser(_user.id, done);
         });
     });
 
@@ -797,11 +761,7 @@ describe("REST", function () {
 
     describe("#unbanUser", function () {
         it("should unban the previously banned user", function (done) {
-            client.unbanUser(_user.id, function (err) {
-                expect(err).to.be.a("null");
-
-                done();
-            });
+            client.unbanUser(_user.id, done);
         });
     });
 
@@ -1023,41 +983,25 @@ describe("REST", function () {
 
     describe("#setProfileMessage", function () {
         it("should change its profile message", function (done) {
-            client.setProfileMessage("testProfileMessage", function (err) {
-                expect(err).to.be.a("null");
-
-                done();
-            });
+            client.setProfileMessage("testProfileMessage", done);
         });
     });
 
     describe("#renamePlaylist", function () {
         it("should rename a playlist", function (done) {
-            client.renamePlaylist(_playlist, "testName", function (err) {
-                expect(err).to.be.a("null");
-
-                done();
-            });
+            client.renamePlaylist(_playlist, "testName", done);
         });
     });
 
     describe("#setAvatar", function () {
         it("should set the avatar of itself to base01", function (done) {
-            client.setAvatar("base01", function (err) {
-                expect(err).to.be.a("null");
-
-                done();
-            });
+            client.setAvatar("base01", done);
         });
     });
 
     describe("#setLanguage", function () {
         it("should set the language of itself to english (en)", function (done) {
-            client.setLanguage("en", function (err) {
-                expect(err).to.be.a("null");
-
-                done();
-            });
+            client.setLanguage("en", done);
         });
     });
 
@@ -1109,11 +1053,7 @@ describe("REST", function () {
 
     describe("#updateMedia", function () {
         it("should update the media title and author with testTitle and testAuthor", function (done) {
-            client.updateMedia(_playlist, _media.id, "testAuthor", "testTitle", function (err) {
-                expect(err).to.be.a("null");
-
-                done();
-            });
+            client.updateMedia(_playlist, _media.id, "testAuthor", "testTitle", done);
         });
     });
 
@@ -1133,11 +1073,7 @@ describe("REST", function () {
 
     describe("#addFriend", function () {
         it("should add a user as a friend", function (done) {
-            client.addFriend(_user.id, function (err) {
-                expect(err).to.be.a("null");
-
-                done();
-            });
+            client.addFriend(_user.id, done);
         });
     });
 
@@ -1181,21 +1117,13 @@ describe("REST", function () {
 
     describe("#deletePlaylist", function () {
         it("should delete a playlist", function (done) {
-            client.deletePlaylist(_playlist, function (err) {
-                expect(err).to.be.a("null");
-
-                done();
-            });
+            client.deletePlaylist(_playlist, done);
         });
     });
 
     describe("#favoriteRoom", function () {
         it("should favorite a room", function (done) {
-            client.favoriteRoom(_room.meta.id, function (err) {
-                expect(err).to.be.a("null");
-
-                done();
-            });
+            client.favoriteRoom(_room.meta.id, done);
         });
     });
 
@@ -1213,11 +1141,7 @@ describe("REST", function () {
 
     describe("#removeFriend", function () {
         it("should remove a user as a friend", function (done) {
-            client.removeFriend(_user.id, function (err) {
-                expect(err).to.be.a("null");
-
-                done();
-            });
+            client.removeFriend(_user.id, done);
         });
     });
 
@@ -1494,6 +1418,22 @@ describe("Local", function () {
     describe("#getSelf", function () {
         it("should get a representation of itself", function () {
             testUser(client.getSelf());
+        });
+    });
+
+    describe("#setSetting", function () {
+        var chatImages = client.getSetting("chatImages");
+        it("should change a setting and save it", function (done) {
+            client.setSetting("chatImages", !chatImages, function (err) {
+                expect(chatImages).to.not.equal(client.getSetting("chatImages"));
+                done();
+            });
+        });
+    });
+
+    describe("#getSetting", function () {
+        it("should return one setting (exp: chatImages)", function () {
+            expect(client.getSetting("chatImages")).to.not.be("null");
         });
     });
 
