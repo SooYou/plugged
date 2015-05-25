@@ -14,15 +14,15 @@ Add test.json in test folder. It should look like this:
 }
 ```
 
-2. You need to have at least 2 other accounts in the test room and the waitlist
+1. You need to have at least 2 other accounts in the test room and the waitlist
 
-3. One of the 2 should have no moderation rights
+2. One of the 2 should have no moderation rights
 
-4. You need to set a test room (obviously)
+3. You need to set a test room (obviously)
 
-5. The account on which you let the test run should at least be CO-HOST
+4. The account on which you let the test run should at least be CO-HOST
 
-6. All 3 accounts should have at least one playlist and 2 media files in it
+5. All 3 accounts should have at least one playlist and 2 media files in it
 
 
 Usage
