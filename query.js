@@ -57,13 +57,21 @@ function watcher(query) {
         query.process();
 }
 
-function Query(jar) {
-    this.jar = (typeof jar === "undefined" ? request.jar() : jar);
+function Query() {
+    this.jar = null;
     this.queue = [];
     this.active = 0;
     this.watcherID = 0;
     this.startWatcher();
 }
+
+Query.prototype.setJar = function(jar, storage) {
+    this.jar = jar || request.jar(storage);
+};
+
+Query.prototype.getJar = function() {
+    return this.jar;
+};
 
 Query.prototype.query = function(verb, url, data, callback, extractArray, flush) {
     extractArray = extractArray || false;
