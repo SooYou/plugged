@@ -900,6 +900,25 @@ Plugged.prototype.getSelf = function() {
     return this.state.self;
 };
 
+Plugged.prototype.setSetting = function(setting, value, callback) {
+    if(this.state.self.settings.hasOwnProperty(setting)) {
+        this.state.self.settings[setting] = value;
+
+        this.saveSettings(function(err) {
+            callback && callback(err, true);
+        });
+        return true;
+    }
+    callback && callback(null, false);
+    return false;
+};
+
+Plugged.prototype.getSetting = function(setting) {
+    if(this.state.self.settings.hasOwnProperty(setting))
+        return this.state.self.settings[setting];
+    return null;
+};
+
 Plugged.prototype.isFriend = function(userID) {
     for(var i = 0, l = this.state.self.friends.length; i < l; i++) {
         if(this.state.self.friends[i] == userID)
@@ -1206,6 +1225,12 @@ Plugged.prototype.getMutes = function(callback) {
             return models.parseMute(mute);
         }));
     });
+};
+
+// PUT plug.dj/_/users/settings
+Plugged.prototype.saveSettings = function(callback) {
+    callback = (typeof callback === "function" ? callback.bind(this) : undefined);
+    this.query.query("PUT", endpoints["LOCK"], this.state.self.settings, callback);
 };
 
 // PUT plug.dj/_/booth/lock
