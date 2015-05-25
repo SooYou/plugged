@@ -28,6 +28,38 @@ var convertPlugTimeToDate = function(plugTime) {
     return time;
 };
 
+var serializeMedia = function(data) {
+    data = data || {};
+    var title = utils.splitTitle(data.title);
+
+    if(typeof data.id !== "string")
+        data.id = String(data.id);
+
+    return {
+        id: 0,
+        format: (!data.hasOwnProperty("artwork_url") ? 1 : 0),
+        cid: data.id || "",
+        author: title[0] || "",
+        title: title[1] || "",
+        image: (!data.hasOwnProperty("artwork_url") ?
+            "https://i.ytimg.com/vi/" + data.id + "/default.jpg" :
+            data.artwork_url),
+        duration: (!data.hasOwnProperty("artwork_url") ?
+            0 :
+            Math.round((data.duration ? data.duration : 0) / 1000))
+    };
+};
+
+var serializeMediaObjects = function(data) {
+    data = data || {};
+    var arr = [];
+
+    for(var i = 0, l = data.length; i < l; i++)
+        arr[i] = serializeMedia(data[i]);
+
+    return arr;
+};
+
 var parseSelf = function(data) {
     data = data || {};
 
@@ -39,16 +71,27 @@ var parseSelf = function(data) {
         blurb: utils.decode(data.blurb) || "",
         slug: data.slug || "",
         notifications: data.notification || [],
+        settings: data.settings || {
+            chatTimestamps: 12,
+            notifyFriendJoin: true,
+            notifyScore: true,
+            chatImages: true,
+            videoOnly: true,
+            tooltips: true,
+            notifyDJ: true,
+            emoji: true,
+        },
         ignores: data.ignores || [],
         friends: data.friends || [],
+        pw: data.pw || false,
         level: data.level || 0,
         gRole: data.gRole || 0,
         badge: data.badge || 0,
         role: data.role || 0,
         vote: data.vote || 0,
         sub: data.sub || 0,
-        ep: data.ep || 0,
         xp: data.xp || 0,
+        pp: data.pp || 0,
         id: data.id || -1
     };
 };
@@ -162,6 +205,74 @@ var parsePlayback = function(data) {
     };
 };
 
+var parseHistoryEntry = function (data) {
+    data = data || {};
+
+    return {
+        id: data.id || "",
+        media: (data.media ? {
+            cid: data.media.cid || "",
+            title: utils.decode(data.media.title) || "",
+            author: utils.decode(data.media.author) || "",
+            image: data.media.image || "",
+            duration: data.media.duration || 0,
+            format: data.media.format || 1,
+            id: data.media.id || -1,
+        } : {
+            cid: "",
+            title: "",
+            author: "",
+            image: "",
+            duration: 0,
+            format: 1,
+            id: -1
+        }),
+        room: (data.room ? {
+            name: utils.decode(data.room.name) || "",
+            slug: data.room.slug || ""
+        } : {
+            name: "",
+            slug: ""
+        }),
+        score: (data.score ? {
+            grabs: data.score.grabs || 0,
+            listeners: data.score.listeners || 0,
+            negative: data.score.negative || 0,
+            positive: data.score.positive || 0,
+            skipped: data.score.skipped || 0
+        } : {
+            grabs: 0,
+            listeners: 0,
+            negative: 0,
+            positive: 0,
+            skipped: 0
+        }),
+        timestamp: convertPlugTimeToDate(data.timestamp),
+        user: (data.user ? {
+            id: data.user.id || -1,
+            username: utils.decode(data.user.username) || ""
+        } : {
+            id: -1,
+            username: ""
+        })
+    };
+};
+
+var parseFriendRequest = function(data) {
+    data = data || {};
+
+    return {
+        username: utils.decode(data.username) || "",
+        avatarID: data.avatarID || "",
+        timestamp: convertPlugTimeToDate(data.timestamp) || "",
+        joined: convertPlugTimeToDate(data.joined) || "",
+        status: data.status || 0,
+        gRole: data.gRole || 0,
+        level: data.level || 0,
+        id: data.id || -1
+    };
+};
+
 var parseVotes = function(data) {
     data = data || {};
     var arr = [];
@@ -208,7 +319,11 @@ var parseExtendedRoom = function(data) {
 
     return {
         cid: data.cid || "",
-        dj: utils.decode(data.dj) || "",
+        dj: (typeof data.dj === "string" ?
+                utils.decode(data.dj) :
+                typeof data.dj === "object" ?
+                parseUser(data.dj) :
+                ""),
         favorite: data.favorite || false,
         format: data.format || 1,
         host: utils.decode(data.host) || "",
@@ -217,7 +332,7 @@ var parseExtendedRoom = function(data) {
         media: utils.decode(data.media) || "",
         name: utils.decode(data.name) || "",
         capacity: data.capacity || 5000,
-        population: data.population || 0,
+        population: parseInt(data.population) || 0,
         private: data.private || false,
         slug: data.slug || ""
     };
@@ -339,7 +454,6 @@ var parseXP = function(data) {
 
     return {
         xp: data.xp || 0,
-        ep: data.ep || 0,
         level: data.level || -1
     };
 };
@@ -425,12 +539,16 @@ exports.parseModMove = parseModMove;
 exports.parseSettings = parseSettings;
 exports.parseModAddDJ = parseModAddDJ;
 exports.parsePlayback = parsePlayback;
+exports.serializeMedia = serializeMedia;
 exports.parsePromotion = parsePromotion;
 exports.parseModRemove = parseModRemove;
 exports.parseUserUpdate = parseUserUpdate;
 exports.parseChatDelete = parseChatDelete;
 exports.parseExtendedRoom = parseExtendedRoom;
+exports.parseHistoryEntry = parseHistoryEntry;
+exports.parseFriendRequest = parseFriendRequest;
 exports.parseRoomNameUpdate = parseRoomNameUpdate;
+exports.serializeMediaObjects = serializeMediaObjects;
 exports.convertPlugTimeToDate = convertPlugTimeToDate;
 exports.parseRoomWelcomeUpdate = parseRoomWelcomeUpdate;
 exports.parseRoomDescriptionUpdate = parseRoomDescriptionUpdate;
