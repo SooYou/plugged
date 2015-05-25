@@ -67,7 +67,7 @@ var endpoints = {
 chat offset incrementation idea by 
 https://github.com/welovekpop/SekshiBot/blob/master/src/Sekshi.js
 */
-var CHAT_TIMEOUT_INC = 60;
+var CHAT_TIMEOUT_INC = 70;
 var CHAT_TIMEOUT_MAX = 700;
 
 WebSocket.prototype.sendMessage = function(type, data) {
@@ -242,9 +242,8 @@ Plugged.prototype._processChatQueue = function(lastMessage) {
     lastMessage = lastMessage || 0;
 
     if(this.chatQueue.length > 0) {
-        var msg = this.chatQueue.shift();
-
         if(lastMessage + this.chatTimeout <= Date.now()) {
+            var msg = this.chatQueue.shift();
             this.sock.sendMessage("chat", msg.message);
 
             // timeouts can't get lower than 4ms but anything below 1000ms is ridiculous anyway
@@ -774,7 +773,7 @@ Plugged.prototype.sendChat = function(message, deleteTimeout) {
     for(var i = 0, l = Math.ceil(message.length/250); i < l; i++) {
         this.chatQueue.push({
             message: message.slice(i*250, (i+1)*250),
-            timeout: (l - 1 <= i ? deleteTimeout : -1)
+            timeout: (l - 1 === i ? deleteTimeout : -1)
         });
     }
 
@@ -1693,7 +1692,6 @@ Plugged.prototype.deleteMedia = function(playlistID, mediaIDs, callback) {
         callback);
 };
 
-// TODO: add to documentation
 // POST plug.dj/_/playlists/<id>/media/insert
 Plugged.prototype.addMedia = function(playlistID, mediaObjects, append, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
@@ -1775,8 +1773,6 @@ Plugged.prototype.getProducts = function(type, category, callback) {
     this.query.query("GET", [endpoints["PRODUCTS"], '/', type, '/', category].join(''), callback);
 };
 
-// TODO: objects returned need further investigation
-// TODO: add to documentation
 // GET plug.dj/_/users/me/transactions
 Plugged.prototype.getTransactions = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
