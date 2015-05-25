@@ -69,6 +69,21 @@ var loginClient = function(client, tries) {
     });
 };
 
+var splitTitle = function(title) {
+    title = title || "";
+
+    if(typeof title === "string") {
+        if(title.indexOf('-') >= 0)
+            title = title.split('-').map(function(str) { return str.trim(); });
+        else if(title.indexOf(' ') >= 0)
+            title = title.split(' ').map(function(str) { return str.trim(); });
+        else
+            title = [title, title];
+    }
+
+    return title;
+};
+
 var decode = function(str) {
     if(typeof str !== "string")
         return str;
@@ -84,5 +99,6 @@ var decode = function(str) {
 exports.setErrorMessage = setErrorMessage;
 exports.createIterator = createIterator;
 exports.loginClient = loginClient;
+exports.splitTitle = splitTitle;
 exports.waterfall = waterfall;
 exports.decode = decode;
