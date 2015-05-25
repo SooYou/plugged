@@ -1704,11 +1704,11 @@ Plugged.prototype.addMedia = function(playlistID, mediaObjects, append, callback
 };
 
 // POST plug.dj/_/playlists/<id>/media/insert
-Plugged.prototype.insertMedia = function(playlistID, mediaIDs, append, callback) {
+Plugged.prototype.insertMedia = function(playlistID, media, append, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("POST",
         endpoints["PLAYLISTS"] + '/' + playlistID + "/media/insert",
-        { ids: mediaIDs, append: append },
+        { media: media, append: append },
         callback);
 };
 
@@ -1784,9 +1784,9 @@ Plugged.prototype.getTransactions = function(callback) {
 };
 
 // POST plug.dj/_/store/purchase/username
-Plugged.prototype.purchaseUsername = function(itemID, username, callback) {
+Plugged.prototype.purchaseUsername = function(username, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-    this.query.query("POST", endpoints["PURCHASE"] + "/username", { id: itemID, username: username }, callback);
+    this.query.query("POST", endpoints["PURCHASE"] + "/username", { id: 454, username: username }, callback);
 };
 
 // POST plug.dj/_/store/purchase
