@@ -456,6 +456,14 @@ Plugged.prototype.clearUserFromLists = function(id) {
     }
 };
 
+Plugged.prototype.getJar = function() {
+    return this.query.getJar();
+};
+
+Plugged.prototype.setJar = function(jar, storage) {
+    this.query.setJar(jar, storage);
+};
+
 // WebSocket action processor
 Plugged.prototype._wsaprocessor = function(self, msg) {
     var data = JSON.parse(msg)[0];
@@ -788,6 +796,10 @@ Plugged.prototype.login = function(credentials, authToken) {
             throw new Error("property email or password are not defined");
 
         this.credentials = credentials;
+
+        // requests a new cookie jar
+        if(!this.getJar())
+            this.setJar(null);
 
         this.log("logging in with account: " + credentials.email, 2, "white");
 
@@ -1438,7 +1450,7 @@ Plugged.prototype.logout = function() {
             this.watchUserCache(false);
             this.clearUserCache();
             this.clearChatCache();
-            this.query.flushQuery();
+            this.query.flushQueue();
             this.state = models.createState();
 
             clearTimeout(this.keepAliveID);
