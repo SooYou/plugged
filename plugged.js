@@ -1,9 +1,9 @@
 var EventEmitter = require("events").EventEmitter;
-var models = require("./state");
 var Query = require("./query");
 var utils = require("./utils");
 var WebSocket = require("ws");
 var util = require("util");
+var models;
 
 var baseURL = "https://plug.dj";
 
@@ -80,12 +80,15 @@ WebSocket.prototype.sendMessage = function(type, data) {
     }
 };
 
-function Plugged() {
+function Plugged(options) {
     Plugged.super_.call(this);
+
+    options = options || {};
     
-    this.log = function() {};
+    models = (!options.debug ? require("./state.js") : require("./raw.js"));
+    this.log = options.log || function() {};
     this._keepAlive = this._keepAlive.bind(this);
-    this.state = models.createState();
+    this.state = models.createState(options.state);
     this.query = new Query();
     this.chatQueue = [];
     this.chatTimeout = 0;

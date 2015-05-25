@@ -9,7 +9,7 @@ var convertPlugTimeToDate = function(plugTime) {
         return time;
 
     for(var i = res.length - 1; i >= 0; i--) {
-        //clean array from unnecessary info
+        // clean array from unnecessary info
         if(isNaN(res[i]) && !isFinite(res[i]))
             res.splice(i, 1);
     }
