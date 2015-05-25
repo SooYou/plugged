@@ -3,7 +3,7 @@ Test suite requirements
 In order to make the test run successfully you need to have the following requirements set:
 
 
-Add test.json in test folder. It should look like this:
+Add the file 'test.json' in your test folder. It should look like this:
 
 ```JavaScript
 {
