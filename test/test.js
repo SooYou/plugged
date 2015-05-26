@@ -4,7 +4,7 @@ var chai = require("chai");
 var testLogin = require("./test.json");
 var expect = chai.expect;
 var client = new Plugged({
-    debug: testLogin.noParse
+    test: testLogin.noParse
 });
 
 var logger = new Logger({
