@@ -3,7 +3,9 @@ var Logger = require("../logger");
 var chai = require("chai");
 var testLogin = require("./test.json");
 var expect = chai.expect;
-var client = new Plugged();
+var client = new Plugged({
+    debug: testLogin.noParse
+});
 
 var logger = new Logger({
     verbosity: 5,
@@ -12,6 +14,7 @@ var logger = new Logger({
 
 var _playlists;
 var _playlist;
+var _message;
 var _store;
 var _media;
 var _user;
@@ -31,6 +34,9 @@ function testUser(user) {
         "id"
     ]);
 
+    if(!testLogin.noParse)
+        expect(user.badge).to.be.a("string");
+
     expect(user.username).to.be.a("string");
     expect(user.avatarID).to.be.a("string");
     expect(user.language).to.be.a("string");
@@ -38,13 +44,12 @@ function testUser(user) {
     expect(user.joined).to.be.a("string");
     expect(user.level).to.be.a("number");
     expect(user.gRole).to.be.a("number");
-    expect(user.badge).to.be.a("string");
     expect(user.sub).to.be.a("number");
     expect(user.id).to.be.a("number");
 }
 
 function testMedia(media) {
-    expect(media).to.contain.all.keys([
+    expect(media).to.have.all.keys([
         "author",
         "title",
         "image",
@@ -64,29 +69,47 @@ function testMedia(media) {
 }
 
 function testRoom(room) {
-    expect(room).to.contain.all.keys([
-        "booth",
-        "fx",
-        "grabs",
-        "meta",
-        "playback",
-        "role",
-        "users",
-        "votes"
-    ]);
+    if(testLogin.noParse) {
+        expect(room).to.have.all.keys([
+            "booth",
+            "fx",
+            "grabs",
+            "meta",
+            "playback",
+            "role",
+            "users",
+            "votes",
+            "mutes"
+        ]);
+
+        expect(room.grabs).to.be.an("object");
+        expect(room.votes).to.be.an("object");
+    } else {
+        expect(room).to.have.all.keys([
+            "booth",
+            "fx",
+            "grabs",
+            "meta",
+            "playback",
+            "role",
+            "users",
+            "votes"
+        ]);
+
+        expect(room.grabs).to.be.an("array");
+        expect(room.votes).to.be.an("array");
+    }
 
     expect(room.booth).to.be.an("object");
     expect(room.fx).to.be.an("array");
-    expect(room.grabs).to.be.an("array");
     expect(room.meta).to.be.an("object");
     expect(room.playback).to.be.an("object");
     expect(room.role).to.be.a("number");
     expect(room.users).to.be.an("array");
-    expect(room.votes).to.be.an("array");
 }
 
 function testExtendedRoom(room) {
-    expect(room).to.contain.all.keys([
+    expect(room).to.have.all.keys([
         "capacity",
         "cid",
         "dj",
@@ -101,27 +124,31 @@ function testExtendedRoom(room) {
         "private",
         "slug"
     ]);
-
-    expect(room.capacity).to.be.a("number");
-    expect(room.cid).to.be.a("string");
     
-    if(typeof room.dj !== "string")
+    if(typeof room.dj !== "string") {
         expect(room.dj).to.be.an("object");
+        testUser(room.dj);
+    }
+
+    if(!testLogin.noParse) {
+        expect(room.capacity).to.be.a("number");
+        expect(room.population).to.be.a("number");
+    }
 
     expect(room.favorite).to.be.a("boolean");
     expect(room.format).to.be.a("number");
     expect(room.host).to.be.a("string");
+    expect(room.cid).to.be.a("string");
     expect(room.id).to.be.a("number");
     expect(room.image).to.be.a("string");
     expect(room.media).to.be.a("string");
     expect(room.name).to.be.a("string");
-    expect(room.population).to.be.a("number");
     expect(room.private).to.be.a("boolean");
     expect(room.slug).to.be.a("string");
 }
 
 function testPlaylist(playlist) {
-    expect(playlist).to.contain.all.keys([
+    expect(playlist).to.have.all.keys([
         "active",
         "count",
         "id",
@@ -136,7 +163,7 @@ function testPlaylist(playlist) {
 
 function testHistoryObject(entry) {
     expect(entry).to.be.an("object");
-    expect(entry).to.contain.all.keys([
+    expect(entry).to.have.all.keys([
         "id",
         "media",
         "room",
@@ -147,7 +174,7 @@ function testHistoryObject(entry) {
 
     expect(entry.id).to.be.a("string").and.have.length.above(0);
     expect(entry.media).to.be.an("object");
-    expect(entry.media).to.contain.all.keys([
+    expect(entry.media).to.have.all.keys([
         "cid",
         "title",
         "author",
@@ -166,7 +193,7 @@ function testHistoryObject(entry) {
     expect(entry.media.id).to.be.a("number").and.not.equal(-1);
 
     expect(entry.room).to.be.an("object");
-    expect(entry.room).to.contain.all.keys([
+    expect(entry.room).to.have.all.keys([
         "name",
         "slug"
     ]);
@@ -175,7 +202,7 @@ function testHistoryObject(entry) {
     expect(entry.room.slug).to.be.a("string").and.have.length.above(0);
 
     expect(entry.score).to.be.an("object");
-    expect(entry.score).to.contain.all.keys([
+    expect(entry.score).to.have.all.keys([
         "grabs",
         "listeners",
         "negative",
@@ -191,7 +218,7 @@ function testHistoryObject(entry) {
 
     expect(entry.timestamp).to.be.a("string").and.have.length.above(0);
     expect(entry.user).to.be.an("object");
-    expect(entry.user).to.contain.all.keys([
+    expect(entry.user).to.have.all.keys([
         "id",
         "username"
     ]);
@@ -271,17 +298,37 @@ describe("Chat", function () {
             var func = function (msg) {
                 expect(msg).to.be.an("object");
 
-                expect(msg).to.contain.key("username");
-                expect(msg.username).to.be.a("string");
+                if(testLogin.noParse) {
+                    expect(msg).to.have.all.keys([
+                        "message",
+                        "cid",
+                        "uid",
+                        "sub",
+                        "un"
+                    ]);
 
-                expect(msg).to.contain.key("cid");
-                expect(msg.cid).to.be.a("string");
+                    expect(msg.message).to.be.a("string");
+                    expect(msg.cid).to.be.a("string");
+                    expect(msg.uid).to.be.a("number");
+                    expect(msg.sub).to.be.a("number");
+                    expect(msg.un).to.be.a("string");
+                } else {
+                    expect(msg).to.have.all.keys([
+                        "username",
+                        "message",
+                        "cid",
+                        "sub",
+                        "id"
+                    ]);
 
-                expect(msg).to.contain.key("id");
-                expect(msg.id).to.be.a("number");
+                    expect(msg.username).to.be.a("string");
+                    expect(msg.cid).to.be.a("string");
+                    expect(msg.id).to.be.a("number");
+                    expect(msg.message).to.be.a("string").and.equal("test");
+                }
 
-                expect(msg).to.contain.key("message");
-                expect(msg.message).to.be.a("string").and.equal("test");
+                _message = msg;
+
                 client.removeListener(client.CHAT, func);
                 done();
             };
@@ -293,28 +340,31 @@ describe("Chat", function () {
 
     describe("#deleteChat", function () {
         it("should delete a message", function (done) {
-
-            var func = function (msg) {
-                client.removeListener(client.CHAT, func);
-                client.deleteMessage(msg.cid);
-            };
-
             var funcDel = function (msg) {
                 expect(msg).to.be.an("object");
 
-                expect(msg).to.contain.key("cid");
-                expect(msg.cid).to.be.a("string");
-
-                expect(msg).to.contain.key("moderatorID");
-                expect(msg.moderatorID).to.be.a("number").and.not.equal(-1);
+                if(testLogin.noParse) {
+                    expect(msg).to.have.all.keys([
+                        "c",
+                        "mi"
+                    ]);
+                    expect(msg.c).to.be.a("string");
+                    expect(msg.mi).to.be.a("number");
+                } else {
+                    expect(msg).to.have.all.keys([
+                        "cid",
+                        "moderatorID"
+                    ]);
+                    expect(msg.cid).to.be.a("string");
+                    expect(msg.moderatorID).to.be.a("number").and.not.equal(-1);
+                }
 
                 client.removeListener(client.CHAT_DELETE, funcDel);
                 done();
             };
 
-            client.on(client.CHAT, func);
             client.on(client.CHAT_DELETE, funcDel);
-            client.sendChat("test");
+            client.deleteMessage(_message.cid);
         });
     });
 });
@@ -326,16 +376,18 @@ describe("REST", function () {
                 expect(err).to.be.a("null");
                 expect(news).to.be.an("array").and.to.have.length.above(0);
 
-                expect(news[0]).to.be.an("object");
+                if(news.length > 0) {
+                    expect(news[0]).to.be.an("object");
+                    expect(news[0]).to.have.all.keys([
+                        "desc",
+                        "href",
+                        "title"
+                    ]);
 
-                expect(news[0]).to.contain.key("desc");
-                expect(news[0].desc).to.be.a("string");
-
-                expect(news[0]).to.contain.key("href");
-                expect(news[0].href).to.be.a("string");
-
-                expect(news[0]).to.contain.key("title");
-                expect(news[0].title).to.be.a("string");
+                    expect(news[0].desc).to.be.a("string");
+                    expect(news[0].href).to.be.a("string");
+                    expect(news[0].title).to.be.a("string");
+                }
                 done();
             });
         });
@@ -356,8 +408,13 @@ describe("REST", function () {
             client.getRoomStats(function (err, room) {
                 expect(err).to.be.a("null");
                 expect(room).to.be.an("object");
-
                 testRoom(room);
+
+                // transform state when raw objects are enabled
+                if(testLogin.noParse) {
+                    client.state.room.votes = [];
+                    client.state.room.grabs = [];
+                }
 
                 if(!_room)
                     _room = room;
@@ -389,7 +446,9 @@ describe("REST", function () {
                 expect(err).to.be.a("null");
                 expect(rooms).to.be.an("array").and.to.have.length.above(0);
                 expect(rooms[0]).to.be.an("object");
-                testExtendedRoom(rooms[0]);
+
+                if(!testLogin.noParse)
+                    testExtendedRoom(rooms[0]);
 
                 done();
             });
@@ -401,8 +460,8 @@ describe("REST", function () {
             client.getStaff(function (err, staff) {
                 expect(err).to.be.a("null");
                 expect(staff).to.be.an("array").and.to.have.length.above(0);
-
                 testUser(staff[0]);
+
                 expect(staff[0]).to.contain.key("role");
                 expect(staff[0].role).to.be.a("number");
 
@@ -559,7 +618,7 @@ describe("REST", function () {
 
     describe("#skipDJ", function () {
         it("should skip the current DJ", function (done) {
-            client.skipDJ(client.getCurrentDJ().id, done);
+            client.skipDJ(testLogin.noParse ? client.getBooth().currentDJ : client.getCurrentDJ().id, done);
         });
     });
 
@@ -581,7 +640,7 @@ describe("REST", function () {
 
                     expect(err).to.be.a("null");
                     expect(room).to.be.an("object");
-                    expect(room).to.contain.all.keys([
+                    expect(room).to.have.all.keys([
                         "id",
                         "name",
                         "slug"
@@ -631,7 +690,7 @@ describe("REST", function () {
 
                 if(mutes.length > 0) {
                     expect(mutes[0]).to.be.an("object");
-                    expect(mutes[0]).to.contain.all.keys([
+                    expect(mutes[0]).to.have.all.keys([
                         "moderator",
                         "username",
                         "expires",
@@ -671,7 +730,7 @@ describe("REST", function () {
 
                 if(ignores.length > 0) {
                     expect(ignores[0]).to.be.an("object");
-                    expect(ignores[0]).to.contain.all.keys([
+                    expect(ignores[0]).to.have.all.keys([
                         "id",
                         "username"
                     ]);
@@ -691,7 +750,7 @@ describe("REST", function () {
                 expect(err).to.be.a("null");
 
                 expect(ignore).to.be.an("object");
-                expect(ignore).to.contain.all.keys([
+                expect(ignore).to.have.all.keys([
                     "id",
                     "username"
                 ]);
@@ -770,21 +829,21 @@ describe("REST", function () {
             client.requestSelf(function (err, self) {
                 expect(err).to.be.a("null");
                 testUser(self);
+
                 expect(self).to.contain.keys([
                     "notifications",
                     "settings",
                     "ignores",
                     "friends",
-                    "vote",
                     "pw",
                     "pp",
                     "xp"
-                ]);
+                    ]);
 
+                expect(Object.keys(self).length).to.equal(18);
                 expect(self.notifications).to.be.an("array");
                 expect(self.ignores).to.be.an("array");
                 expect(self.friends).to.be.an("array");
-                expect(self.vote).to.be.a("number");
                 expect(self.xp).to.be.a("number");
 
                 done();
@@ -799,7 +858,7 @@ describe("REST", function () {
                 expect(history).to.be.an("array");
 
                 if(history.length > 0) {
-                    expect(history[0]).to.contain.all.keys([
+                    expect(history[0]).to.have.all.keys([
                         "id",
                         "media",
                         "room",
@@ -811,7 +870,7 @@ describe("REST", function () {
                     expect(history[0].id).to.be.a("string").and.have.length.above(0);
 
                     expect(history[0].media).to.be.an("object");
-                    expect(history[0].media).to.contain.all.keys([
+                    expect(history[0].media).to.have.all.keys([
                         "author",
                         "cid",
                         "duration",
@@ -830,7 +889,7 @@ describe("REST", function () {
                     expect(history[0].media.title).to.be.a("string");
 
                     expect(history[0].room).to.be.an("object");
-                    expect(history[0].room).to.contain.all.keys([
+                    expect(history[0].room).to.have.all.keys([
                         "name",
                         "slug"
                     ]);
@@ -839,7 +898,7 @@ describe("REST", function () {
                     expect(history[0].room.slug).to.be.a("string");
 
                     expect(history[0].score).to.be.an("object");
-                    expect(history[0].score).to.contain.all.keys([
+                    expect(history[0].score).to.have.all.keys([
                         "grabs",
                         "listeners",
                         "negative",
@@ -856,7 +915,7 @@ describe("REST", function () {
                     expect(history[0].timestamp).to.be.a("string");
 
                     expect(history[0].user).to.be.an("object");
-                    expect(history[0].user).to.contain.all.keys([
+                    expect(history[0].user).to.have.all.keys([
                         "id",
                         "username"
                     ]);
@@ -891,7 +950,7 @@ describe("REST", function () {
 
                 if(requests.length > 0) {
                     expect(requests[0]).to.be.an("object");
-                    expect(requests[0]).to.contain.all.keys([
+                    expect(requests[0]).to.have.all.keys([
                         "avatarID",
                         "gRole",
                         "id",
@@ -1022,7 +1081,7 @@ describe("REST", function () {
             client.activatePlaylist(_playlist, function (err, status) {
                 expect(err).to.be.a("null");
                 expect(status).to.be.an("object");
-                expect(status).to.contain.all.keys([
+                expect(status).to.have.all.keys([
                     "activated",
                     "deactivated"
                 ]);
@@ -1087,7 +1146,7 @@ describe("REST", function () {
                     expect(status).to.be.an("array");
 
                     if(status.length > 0) {
-                        expect(status[0]).to.contain.all.keys([
+                        expect(status[0]).to.have.all.keys([
                             "count",
                             "id"
                         ]);
@@ -1152,7 +1211,7 @@ describe("REST", function () {
                 expect(inventory).to.be.an("array");
 
                 if(inventory.length > 0) {
-                    expect(inventory[0]).to.contain.all.keys([
+                    expect(inventory[0]).to.have.all.keys([
                         "category",
                         "id",
                         "type"
@@ -1175,7 +1234,7 @@ describe("REST", function () {
                 expect(base).to.be.an("array");
 
                 if(base.length > 0) {
-                    expect(base[0]).to.contain.all.keys([
+                    expect(base[0]).to.have.all.keys([
                         "category",
                         "id",
                         "level",
@@ -1208,7 +1267,7 @@ describe("REST", function () {
                 expect(transactions).to.be.an("array");
 
                 if(transactions.length > 0) {
-                    expect(transactions[0]).to.contain.all.keys([
+                    expect(transactions[0]).to.have.all.keys([
                         "id",
                         "item",
                         "pp",
@@ -1228,12 +1287,14 @@ describe("REST", function () {
         });
     });
 
+    return;
+
     describe("#purchaseUsername", function () {
         it("should purchase a new username", function (done) {
             client.purchaseUsername(testLogin.usernameToBuy, function (err, item) {
                 if(item) {
                     expect(item).to.be.an("object");
-                    expect(item).to.contain.all.keys([
+                    expect(item).to.have.all.keys([
                         "count",
                         "name",
                         "pp"
@@ -1254,7 +1315,7 @@ describe("REST", function () {
             client.purchaseItem(_store.id, function (err, item) {
                 if(item) {
                     expect(item).to.be.an("object");
-                    expect(item).to.contain.all.keys([
+                    expect(item).to.have.all.keys([
                         "count",
                         "name",
                         "pp"
@@ -1272,6 +1333,11 @@ describe("REST", function () {
 });
 
 describe("Local", function () {
+    if(testLogin.noParse) {
+        console.log("Object test is running. Local state functions will be skipped.");
+        return;
+    }
+
     describe("#getChatByUser", function () {
         it("should get the messages written by a user", function () {
             _user = client.getUsers()[0];
@@ -1281,7 +1347,7 @@ describe("Local", function () {
 
             if(messages.length > 0) {
                 expect(messages[0]).to.be.an("object");
-                expect(messages[0]).to.contain.all.keys([
+                expect(messages[0]).to.have.all.keys([
                     "message",
                     "username",
                     "cid",
@@ -1422,8 +1488,8 @@ describe("Local", function () {
     });
 
     describe("#setSetting", function () {
-        var chatImages = client.getSetting("chatImages");
         it("should change a setting and save it", function (done) {
+            var chatImages = client.getSetting("chatImages");
             client.setSetting("chatImages", !chatImages, function (err) {
                 expect(err).to.be.a("null");
                 expect(chatImages).to.not.equal(client.getSetting("chatImages"));
@@ -1464,7 +1530,7 @@ describe("Local", function () {
             var playback = client.getPlayback();
 
             expect(playback).to.be.an("object");
-            expect(playback).to.contain.all.keys([
+            expect(playback).to.have.all.keys([
                 "media",
                 "historyID",
                 "playlistID",
@@ -1489,7 +1555,7 @@ describe("Local", function () {
             var booth = client.getBooth();
 
             expect(booth).to.be.an("object");
-            expect(booth).to.contain.all.keys([
+            expect(booth).to.have.all.keys([
                 "dj",
                 "isLocked",
                 "shouldCycle",
@@ -1508,7 +1574,7 @@ describe("Local", function () {
             var meta = client.getRoomMeta();
 
             expect(meta).to.be.an("object");
-            expect(meta).to.contain.all.keys([
+            expect(meta).to.have.all.keys([
                 "description",
                 "favorite",
                 "hostID",
@@ -1627,7 +1693,7 @@ describe("Local", function () {
 
                 if (votes.length > 0) {
                     expect(votes[0]).to.be.an("object");
-                    expect(votes[0]).to.contain.all.keys([
+                    expect(votes[0]).to.have.all.keys([
                         "direction",
                         "user"
                     ]);
@@ -1647,7 +1713,7 @@ describe("Local", function () {
 
                 if (votes.length > 0) {
                     expect(votes[0]).to.be.an("object");
-                    expect(votes[0]).to.contain.all.keys([
+                    expect(votes[0]).to.have.all.keys([
                         "direction",
                         "id"
                     ]);
