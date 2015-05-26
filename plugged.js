@@ -498,7 +498,6 @@ Plugged.prototype._wsaprocessor = function(self, msg) {
 
             self.state.room.booth.dj = data.p.c;
             self.state.room.booth.waitlist = data.p.d;
-            self.state.self.vote = 0;
             self.state.room.grabs = [];
             self.state.room.votes = [];
 
@@ -1743,7 +1742,6 @@ Plugged.prototype.insertMedia = function(playlistID, media, append, callback) {
 // POST plug.dj/_/votes
 Plugged.prototype.woot = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-    this.state.self.vote = 1;
     this.query.query("POST", endpoints["VOTES"], { 
         direction: 1, 
         historyID: this.state.room.playback.historyID 
@@ -1753,7 +1751,6 @@ Plugged.prototype.woot = function(callback) {
 // POST plug.dj/_/votes
 Plugged.prototype.meh = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-    this.state.self.vote = -1;
     this.query.query("POST", endpoints["VOTES"], { 
         direction: -1,
         historyID: this.state.room.playback.historyID
