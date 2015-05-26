@@ -312,7 +312,9 @@ Plugged.prototype._connectSocket = function() {
         return "sock is already open!";
 
     var self = this;
-    this.sock = new WebSocket("wss://godj.plug.dj:443/socket");
+    this.sock = new WebSocket("wss://godj.plug.dj:443/socket", {
+        origin: "https://plug.dj"
+    });
 
     /*================= SOCK OPENED =================*/
     this.sock.on("open", function _sockOpen() {
