@@ -88,7 +88,6 @@ var parseSelf = function(data) {
         gRole: data.gRole || 0,
         badge: data.badge || "",
         role: data.role || 0,
-        vote: data.vote || 0,
         sub: data.sub || 0,
         xp: data.xp || 0,
         pp: data.pp || 0,
