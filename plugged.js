@@ -1,9 +1,9 @@
 var EventEmitter = require("events").EventEmitter;
+var models = require("./state.js");
 var Query = require("./query");
 var utils = require("./utils");
 var WebSocket = require("ws");
 var util = require("util");
-var models;
 
 var baseURL = "https://plug.dj";
 
@@ -85,7 +85,9 @@ function Plugged(options) {
 
     options = options || {};
     
-    models = (!options.test ? require("./state.js") : require("./test/raw.js"));
+    if(options.test)
+        models = require("./test/raw.js");
+    
     this.log = options.log || function() {};
     this._keepAlive = this._keepAlive.bind(this);
     this.state = models.createState(options.state);
