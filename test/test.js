@@ -1336,6 +1336,20 @@ describe("Local", function () {
         return;
     }
 
+    describe("#getJar", function () {
+        it("should return the jar used for http requests", function() {
+            expect(client.getJar()).to.be.an("object");
+        });
+    });
+
+    describe("#setJar", function () {
+        it("should set the jar that is used for http requests", function () {
+            var jar = client.getJar();
+            client.setJar(jar);
+            expect(client.getJar()).to.equal(jar);
+        });
+    });
+
     describe("#getChatByUser", function () {
         it("should get the messages written by a user", function () {
             _user = client.getUsers()[0];
