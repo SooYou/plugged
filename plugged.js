@@ -85,7 +85,7 @@ function Plugged(options) {
 
     options = options || {};
     
-    models = (!options.debug ? require("./state.js") : require("./raw.js"));
+    models = (!options.debug ? require("./state.js") : require("./test/raw.js"));
     this.log = options.log || function() {};
     this._keepAlive = this._keepAlive.bind(this);
     this.state = models.createState(options.state);

@@ -840,7 +840,7 @@ describe("REST", function () {
                     "xp"
                     ]);
 
-                expect(Object.keys(self).length).to.equal(18);
+                expect(Object.keys(self).length).to.equal(testLogin.noParse ? 18 : 19);
                 expect(self.notifications).to.be.an("array");
                 expect(self.ignores).to.be.an("array");
                 expect(self.friends).to.be.an("array");
@@ -1286,8 +1286,6 @@ describe("REST", function () {
             });
         });
     });
-
-    return;
 
     describe("#purchaseUsername", function () {
         it("should purchase a new username", function (done) {
