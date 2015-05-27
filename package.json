@@ -35,7 +35,7 @@
         "plug.dj",
         "wrapper",
         "bot",
-        "api",
+        "api"
     ],
 
     "scripts": {
