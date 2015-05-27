@@ -30,7 +30,7 @@ function processEntry(query, entry) {
                     entry.options = {};
                     entry.callback({
                         code: (res ? res.statusCode : 0),
-                        message: (body ? (body.status !== "ok" ? body.status : (body.data.length > 0 ? body.data[0] : err)) : err)
+                        message: (body ? (body.data.length > 0 ? body.data[0] : (body.status ? body.status : err)) : err)
                     });
                 }
 
