@@ -6,12 +6,11 @@ function processEntry(query, entry) {
         query.active--;
 
         if(typeof entry.callback !== "undefined") {
-
-            // remove unnecessary information.
-            if(body && body.hasOwnProperty("data"))
-                body = body.data;
-
              if(!err && res.statusCode == 200) {
+
+                // remove unnecessary information.
+                if(body && body.hasOwnProperty("data"))
+                    body = body.data;
 
                 // extract unnecessary array
                 if(entry.extractArray && body.length === 1)
@@ -31,7 +30,7 @@ function processEntry(query, entry) {
                     entry.options = {};
                     entry.callback({
                         code: (res ? res.statusCode : 0),
-                        message: (body && body.length > 0 ? body[0] : err)
+                        message: (body ? (body.status !== "ok" ? body.status : (body.data.length > 0 ? body.data[0] : err)) : err)
                     });
                 }
 
