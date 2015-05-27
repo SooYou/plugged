@@ -30,7 +30,9 @@ Usage
 Obviously you need to install mocha and switch to this folder to install chai.
 
 >npm install -g mocha
+
 >cd /test
+
 >npm install chai
 
 Once the requirements are fulfilled and the dependencies installed you can run the test via:
