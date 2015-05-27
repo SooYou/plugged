@@ -59,7 +59,7 @@ to keep the behaivour clear, if you enter both email and facebook login credenti
 
 Restart without the whole login procedure
 ==========
-To save some time you can restart your application without logging back in. All you have to do is to save the cookie jar and the auth token and return them to plugged once you start your application again.
+To save some time you can restart your application without going through the whole login procedure. All you have to do is to save the cookie jar and the auth token and return them to plugged once you start your application again.
 
 getting the necessary data:
 
