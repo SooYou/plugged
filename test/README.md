@@ -27,6 +27,12 @@ Add the file 'test.json' in your test folder. It should look like this:
 
 Usage
 ===========
-Once the requirements are fulfilled you can run the test via 
+Obviously you need to install mocha and switch to this folder to install chai.
+
+>npm install -g mocha
+>cd /test
+>npm install chai
+
+Once the requirements are fulfilled and the dependencies installed you can run the test via:
 
 >npm test
