@@ -23,6 +23,8 @@
         "utils.js",
         "package.json",
         "LICENSE",
+        "README.md",
+        "test/raw.js",
         "test/test.js",
         "test/README.md"
     ],
@@ -31,8 +33,9 @@
         "plug",
         "dj",
         "plug.dj",
+        "wrapper",
         "bot",
-        "api"
+        "api",
     ],
 
     "scripts": {
