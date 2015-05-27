@@ -797,8 +797,43 @@ Plugged.prototype.login = function(credentials, authToken) {
         if(typeof credentials !== "object")
             throw new Error("credentials has to be of type object");
 
-        if(!credentials.hasOwnProperty("email") || !credentials.hasOwnProperty("password"))
-            throw new Error("property email or password are not defined");
+        var errorMsg = [];
+        var flag = 0;
+
+        flag |= (!credentials.hasOwnProperty("email") ? 1 << 0 : 0);
+        flag |= (!credentials.hasOwnProperty("password") ? 1 << 1 : 0);
+        flag |= (!credentials.hasOwnProperty("accessToken") ? 1 << 2 : 0);
+        flag |= (!credentials.hasOwnProperty("userID") ? 1 << 3 : 0);
+
+        // doing this with hasOwnProperty would have been possible but would be a real mess
+        if(flag & 0x03 && ((flag & 0x0C) === 0x0C)) {           // missing email but no facebook credentials
+            if(flag & 0x01)
+                errorMsg.push("email missing");
+
+            if(flag & 0x02)
+                errorMsg.push("password missing");
+
+        } else if(flag & 0x0C && ((flag & 0x03) === 0x03)) {    // missing facebook but no email credentials
+            if(flag & 0x04)
+                errorMsg.push("accessToken missing");
+
+            if(flag & 0x08)
+                errorMsg.push("userID missing");
+        } else {                                                // credentials for both are set
+            if(flag & 0x03 && !(flag & 0x0C)) {                 // nullify malformed email credentials
+                delete credentials.email;
+                delete credentials.password;
+            // same for
+            } else if(flag & 0x0C && !(flag & 0x03)) {          // nullify malformed facebook credentials
+                delete credentials.accessToken;
+                delete credentials.userID;
+            } else {                                            // both are malformed
+                errorMsg.push("credentials are malformed");
+            }
+        }
+
+        if(errorMsg.length > 0)
+            throw new Error(errorMsg.join(", "));
 
         this.credentials = credentials;
 
@@ -806,7 +841,7 @@ Plugged.prototype.login = function(credentials, authToken) {
         if(!this.getJar())
             this.setJar(null);
 
-        this.log("logging in with account: " + credentials.email, 2, "white");
+        this.log("logging in with account: " + (credentials.email || credentials.userID), 2, "white");
 
         utils.loginClient(this);
     } else {
@@ -1257,11 +1292,20 @@ Plugged.prototype.setCycle = function(shouldCycle, callback) {
 // POST plug.dj/_/auth/login
 Plugged.prototype.setLogin = function(csrf, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-    this.query.query("POST", endpoints["LOGIN"], {
-        "csrf": csrf,
-        "email": this.credentials.email,
-        "password": this.credentials.password
-    }, callback);
+
+    if(this.credentials.hasOwnProperty("email")) {
+        this.query.query("POST", endpoints["LOGIN"], {
+            "csrf": csrf,
+            "email": this.credentials.email,
+            "password": this.credentials.password
+        }, callback);
+    } else if(this.credentials.hasOwnProperty("accessToken")) {
+        this.query.query("POST", endpoints["FACEBOOK"], {
+            "csrf": csrf,
+            "accessToken": this.credentials.accessToken,
+            "userID": this.credentials.userID
+        }, callback);
+    };
 };
 
 // POST plug.dj/_/rooms/join
