@@ -89,7 +89,7 @@ function Plugged(options) {
         models = require("./test/raw.js");
 
     this.log = options.log || function() {};
-    this.messageProc = options.messageProc || defaultMessageProc;
+    this.messageProc = options.messageProc || this.defaultMessageProc;
     this._keepAlive = this._keepAlive.bind(this);
     this.state = models.createState(options.state);
     this.query = new Query();
