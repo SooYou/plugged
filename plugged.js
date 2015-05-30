@@ -87,8 +87,9 @@ function Plugged(options) {
     
     if(options.test)
         models = require("./test/raw.js");
-    
+
     this.log = options.log || function() {};
+    this.messageProc = options.messageProc || defaultMessageProc;
     this._keepAlive = this._keepAlive.bind(this);
     this.state = models.createState(options.state);
     this.query = new Query();
@@ -765,6 +766,26 @@ Plugged.prototype._keepAliveCheck = function() {
     this.keepAliveID = setTimeout(this._keepAlive, 30*1000);
 };
 
+Plugged.prototype.defaultMessageProc = function(message) {
+    var msgs = [];
+
+    // 256 is the max length a chat message can have,
+    // but the chat window caps the message at 250.
+    for(var i = 0, l = Math.ceil(message.length/250); i < l; i++)
+        msgs.push(message.slice(i*250, (i+1)*250));
+
+    return msgs;
+};
+
+Plugged.prototype.setMessageProcessor = function(func) {
+    if(typeof fun === "function") {
+        this.messageProc = func;
+        return true;
+    }
+
+    return false;
+};
+
 Plugged.prototype.sendChat = function(message, deleteTimeout) {
     deleteTimeout = deleteTimeout || -1;
 
@@ -774,22 +795,31 @@ Plugged.prototype.sendChat = function(message, deleteTimeout) {
     if(!message || message.length <= 0)
         return;
 
-    // 256 is the max length a chat message can have, 
-    // but the chat window caps the message at 250.
-    for(var i = 0, l = Math.ceil(message.length/250); i < l; i++) {
+    message = this.messageProc(message);
+
+    if(!Array.isArray(message))
+        return null;
+
+    for(var i = 0, l = message.length; i < l; i++) {
         this.chatQueue.push({
-            message: message.slice(i*250, (i+1)*250),
+            message: message[i],
             timeout: (l - 1 === i ? deleteTimeout : -1)
         });
     }
 
     if(this.chatTimeout === 0)
         this._processChatQueue();
+
+    return message;
 };
 
 Plugged.prototype.invokeLogger = function(logfunc) {
-    logfunc = logfunc || function(msg, verbosity) { if(verbosity <= 1) console.log(msg); };
-    this.log = logfunc;
+    if(typeof logfunc === "function") {
+        this.log = logfunc;
+        return true;
+    }
+
+    return false;
 };
 
 Plugged.prototype.login = function(credentials, authToken) {
