@@ -778,7 +778,7 @@ Plugged.prototype.defaultMessageProc = function(message) {
 };
 
 Plugged.prototype.setMessageProcessor = function(func) {
-    if(typeof fun === "function") {
+    if(typeof func === "function") {
         this.messageProc = func;
         return true;
     }
