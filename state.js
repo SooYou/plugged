@@ -330,6 +330,7 @@ var parseExtendedRoom = function(data) {
         image: data.image || "",
         media: utils.decode(data.media) || "",
         name: utils.decode(data.name) || "",
+        nsfw: data.nsfw || false,
         capacity: data.capacity || 5000,
         population: parseInt(data.population) || 0,
         private: data.private || false,
