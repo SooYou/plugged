@@ -110,6 +110,7 @@ var parseUser = function(data) {
         badge: data.badge || "",
         role: data.role || 0,
         sub: data.sub || 0,
+        guest: data.guest || false,
         id: data.id || -1
     };
 };
