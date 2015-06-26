@@ -522,12 +522,19 @@ Plugged.prototype._wsaprocessor = function(self, msg) {
                     self.state.chatcache.shift();
             }
 
-            if(chat.message.indexOf('@' + self.state.self.username) > -1)
-                self.emit(self.CHAT_MENTION, chat);
-            else if(chat.message.charAt(0) == '/')
-                self.emit(self.CHAT_COMMAND, chat);
-        
-            self.emit(self.CHAT, chat);
+            // guests who log in whilst in the room don't emit USER_JOIN
+            // messages, so they won't be in the user list yet. that means that
+            // plug.dj might send CHAT events from nonexistent users, so we
+            // first grab the user info, and then emit the chat event later
+            var user = self.getUserByID(chat.id);
+            if(!user || user.guest) {
+                self.getUser(chat.id, function(e, userData) {
+                    self._pushUser(userData);
+                    self._emitChat(chat);
+                });
+            }
+            else
+                self._emitChat(chat);
             break;
 
         case self.CHAT_DELETE:
@@ -683,13 +690,7 @@ Plugged.prototype._wsaprocessor = function(self, msg) {
 
         case self.USER_JOIN:
             var user = models.parseUser(data.p);
-            self.state.room.users.push(user);
-            self.state.room.meta.population++;
-
-            if(self.isFriend(user.id))
-                self.emit(self.FRIEND_JOIN, user);
-            else
-                self.emit(self.USER_JOIN, user);
+            self._pushUser(user);
             break;
 
         case self.USER_UPDATE:
@@ -784,6 +785,27 @@ Plugged.prototype.setMessageProcessor = function(func) {
     }
 
     return false;
+};
+
+Plugged.prototype._emitChat = function(chat) {
+    if(chat.message.indexOf('@' + this.state.self.username) > -1)
+        this.emit(this.CHAT_MENTION, chat);
+    else if(chat.message.charAt(0) == '/')
+        this.emit(this.CHAT_COMMAND, chat);
+
+    this.emit(this.CHAT, chat);
+};
+
+Plugged.prototype._pushUser = function(user) {
+    if (user.guest)
+        return;
+
+    this.state.room.users.push(user);
+    this.state.room.population = this.state.room.users.length;
+    if(this.isFriend(user.id))
+        this.emit(this.FRIEND_JOIN, user);
+    else
+        this.emit(this.USER_JOIN, user);
 };
 
 Plugged.prototype.sendChat = function(message, deleteTimeout) {
@@ -1692,7 +1714,7 @@ Plugged.prototype.getCSRF = function(callback) {
 
     this.query.query("GET", endpoints["CSRF"], function _gotCSRF(err, body) {
         if(!err) {
-            var idx = body.indexOf("_csrf") + 9;
+            var idx = body.indexOf("_csrf") + 7;
 
             body = body.substr(idx, body.indexOf('\"', idx) - idx);
 

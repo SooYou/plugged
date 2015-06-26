@@ -1,7 +1,16 @@
+var isTravis = process.env.TRAVIS || false;
+
+var testLogin = (isTravis ? {
+    "email": process.env.EMAIL,
+    "password": process.env.PASSWORD,
+    "room": process.env.ROOM,
+    "usernameToBuy": "",
+    "noParse": false
+} : require("./test.json"));
+
 var Plugged = require("../plugged");
 var Logger = require("../logger");
 var chai = require("chai");
-var testLogin = require("./test.json");
 var expect = chai.expect;
 var client = new Plugged({
     test: testLogin.noParse
@@ -19,6 +28,10 @@ var _store;
 var _media;
 var _user;
 var _room;
+
+function execTest() {
+    return isTravis ? describe.skip : describe;
+}
 
 function testUser(user) {
     expect(user).to.contain.all.keys([
@@ -397,7 +410,7 @@ describe("REST", function () {
         it("should retrieve the 152 character long authentication token", function (done) {
             client.getAuthToken(function (err, token) {
                 expect(err).to.be.a("null");
-                expect(token).to.be.a("string").and.to.have.length(152);
+                expect(token).to.be.a("string").and.to.have.length(172);
                 done();
             });
         });
@@ -424,7 +437,7 @@ describe("REST", function () {
         });
     });
 
-    describe("#findRooms", function () {
+    execTest()("#findRooms", function () {
         it("should retrieve an array of room objects filtered by a keyword", function (done) {
             client.findRooms("kpop", 0, 2, function (err, rooms) {
                 expect(err).to.be.a("null");
@@ -455,7 +468,7 @@ describe("REST", function () {
         });
     });
 
-    describe("#getStaff", function () {
+    execTest()("#getStaff", function () {
         it("should retrieve all users online or not with a role > 0", function (done) {
             client.getStaff(function (err, staff) {
                 expect(err).to.be.a("null");
@@ -470,7 +483,7 @@ describe("REST", function () {
         });
     });
 
-    describe("#getUser", function () {
+    execTest()("#getUser", function () {
         it("should retrieve the user object for a user", function (done) {
             var users = client.getUsers();
 
@@ -545,7 +558,7 @@ describe("REST", function () {
         });
     });
 
-    describe("#addToWaitlist", function () {
+    execTest()("#addToWaitlist", function () {
         it("should add a user by their ID to the waitlist", function (done) {
             client.addToWaitlist(_user.id, function (err) {
                 
@@ -559,13 +572,13 @@ describe("REST", function () {
         });
     });
 
-    describe("#meh", function () {
+    execTest()("#meh", function () {
         it("should meh a song", function (done) {
             client.meh(done);
         });
     });
 
-    describe("#woot", function () {
+    execTest()("#woot", function () {
         it("should woot a song", function (done) {
             client.woot(done);
         });
@@ -587,7 +600,7 @@ describe("REST", function () {
         });
     });
 
-    describe("#grab", function () {
+    execTest()("#grab", function () {
         it("should grab a song", function (done) {
             client.grab(_playlist, done);
         });
@@ -616,13 +629,13 @@ describe("REST", function () {
         });
     });
 
-    describe("#skipDJ", function () {
+    execTest()("#skipDJ", function () {
         it("should skip the current DJ", function (done) {
             client.skipDJ(testLogin.noParse ? client.getBooth().currentDJ : client.getCurrentDJ().id, done);
         });
     });
 
-    describe("#moveDJ", function () {
+    execTest()("#moveDJ", function () {
         it("should move a DJ to a new position in the waitlist", function (done) {
             var waitlist = client.getWaitlist();
             client.moveDJ(waitlist[waitlist.length - 1], 0, done);
@@ -668,7 +681,7 @@ describe("REST", function () {
         });
     });
 
-    describe("#muteUser", function () {
+    execTest()("#muteUser", function () {
         it("should mute a user", function (done) {
             client.muteUser(_user.id, client.MUTEDURATION.SHORT, client.BANREASON.VIOLATING_COMMUNITY_RULES, function (err) {
 
@@ -710,13 +723,13 @@ describe("REST", function () {
         });
     });
 
-    describe("#addStaff", function () {
+    execTest()("#addStaff", function () {
         it("should add a user as staff", function (done) {
             client.addStaff(_user.id, client.USERROLE.BOUNCER, done);
         });
     });
 
-    describe("#ignoreUser", function () {
+    execTest()("#ignoreUser", function () {
         it("should ignore a user", function (done) {
             client.ignoreUser(_user.id, done);
         });
@@ -744,7 +757,7 @@ describe("REST", function () {
         });
     });
 
-    describe("#removeIgnore", function () {
+    execTest()("#removeIgnore", function () {
         it("should remove the previously ignored user", function (done) {
             client.removeIgnore(_user.id, function (err, ignore) {
                 expect(err).to.be.a("null");
@@ -763,7 +776,7 @@ describe("REST", function () {
         });
     });
 
-    describe("#removeStaff", function () {
+    execTest()("#removeStaff", function () {
         it("should remove the previously added staff member", function (done) {
             client.removeStaff(_user.id, function (err) {
 
@@ -777,7 +790,7 @@ describe("REST", function () {
         });
     });
 
-    describe("#removeDJ", function () {
+    execTest()("#removeDJ", function () {
         it("should remove a DJ from the waitlist", function (done) {
             var user = client.getWaitlist()[0];
             client.removeDJ(user, function (err) {
@@ -798,13 +811,13 @@ describe("REST", function () {
         });
     });
 
-    describe("#unmuteUser", function () {
+    execTest()("#unmuteUser", function () {
         it("should unmute the previously muted user", function (done) {
             client.unmuteUser(_user.id, done);
         });
     });
 
-    describe("#banUser", function () {
+    execTest()("#banUser", function () {
         it("should ban a user", function (done) {
             client.banUser(_user.id, client.BANDURATION.SHORT, client.BANREASON.VIOLATING_COMMUNITY_RULES, function (err) {
 
@@ -818,7 +831,7 @@ describe("REST", function () {
         });
     });
 
-    describe("#unbanUser", function () {
+    execTest()("#unbanUser", function () {
         it("should unban the previously banned user", function (done) {
             client.unbanUser(_user.id, done);
         });
@@ -1130,7 +1143,7 @@ describe("REST", function () {
         });
     });
 
-    describe("#addFriend", function () {
+    execTest()("#addFriend", function () {
         it("should add a user as a friend", function (done) {
             client.addFriend(_user.id, done);
         });
@@ -1198,7 +1211,7 @@ describe("REST", function () {
         });
     });
 
-    describe("#removeFriend", function () {
+    execTest()("#removeFriend", function () {
         it("should remove a user as a friend", function (done) {
             client.removeFriend(_user.id, done);
         });
@@ -1350,7 +1363,7 @@ describe("Local", function () {
         });
     });
 
-    describe("#getChatByUser", function () {
+    execTest()("#getChatByUser", function () {
         it("should get the messages written by a user", function () {
             _user = client.getUsers()[0];
             var messages = client.getChatByUser(_user.username);
@@ -1382,7 +1395,7 @@ describe("Local", function () {
         });
     });
 
-    describe("#removeChatMessage", function () {
+    execTest()("#removeChatMessage", function () {
         it("should remove a chat message", function () {
             var chat = client.getChat();
             var length = chat.length;
@@ -1394,7 +1407,7 @@ describe("Local", function () {
         });
     });
 
-    describe("#removeChatMessagesByUser", function () {
+    execTest()("#removeChatMessagesByUser", function () {
         it("should delete all messages of a user", function () {
             client.removeChatMessagesByUser(_user.username, true);
             expect(client.getChatByUser(_user.username)).to.be.an("array").and.have.length(0);
@@ -1435,7 +1448,7 @@ describe("Local", function () {
         });
     });
 
-    describe("#clearUserFromLists", function () {
+    execTest()("#clearUserFromLists", function () {
         it("should clear the user from the vote and grab list", function () {
             client.clearUserFromLists(_user.id);
             var done = true;
@@ -1466,19 +1479,19 @@ describe("Local", function () {
         });
     });
 
-    describe("#getUserByName", function () {
+    execTest()("#getUserByName", function () {
         it("should get a user by name", function () {
             testUser(client.getUserByName(_user.username));
         });
     });
 
-    describe("#getUserByID", function () {
+    execTest()("#getUserByID", function () {
         it("should get a user by their ID", function () {
             testUser(client.getUserByID(_user.id));
         });
     });
 
-    describe("#getUserRole", function () {
+    execTest()("#getUserRole", function () {
         it("should get a user's role", function () {
             expect(client.getUserRole(_user.id)).to.equal(_user.role);
         });
@@ -1489,7 +1502,9 @@ describe("Local", function () {
             var users = client.getUsers();
 
             expect(users).to.be.an("array");
-            testUser(users[0]);
+
+            if(users.length > 0)
+                testUser(users[0]);
         });
     });
 
@@ -1516,13 +1531,13 @@ describe("Local", function () {
         });
     });
 
-    describe("#isFriend", function () {
+    execTest()("#isFriend", function () {
         it("should indicate whether a user is a friend or not", function () {
             expect(client.isFriend(_user.id)).to.be.a("boolean");
         });
     });
 
-    describe("#getCurrentDJ", function () {
+    execTest()("#getCurrentDJ", function () {
         it("should get the current DJ playing", function () {
             var dj = client.getCurrentDJ();
 
@@ -1531,7 +1546,7 @@ describe("Local", function () {
         });
     });
 
-    describe("#getCurrentMedia", function () {
+    execTest()("#getCurrentMedia", function () {
         it("should return the current media object", function () {
             testMedia(client.getCurrentMedia());
         });
@@ -1618,7 +1633,7 @@ describe("Local", function () {
         });
     });
 
-    describe("#checkGlobalRole", function () {
+    execTest()("#checkGlobalRole", function () {
         it("should give back the global role of a user", function () {
             expect(client.checkGlobalRole(_user.gRole)).to.be.a("number");
         });
@@ -1763,19 +1778,19 @@ describe("Local", function () {
         });
     });
 
-    describe("#cacheUser", function () {
+    execTest()("#cacheUser", function () {
         it("should cache a user", function () {
             expect(client.cacheUser(_user)).to.be.a("boolean").and.equal(true);
         });
     });
 
-    describe("#removeCachedUserByID", function () {
+    execTest()("#removeCachedUserByID", function () {
         it("should remove a cached user by their ID", function () {
             expect(client.removeCachedUserByID(_user.id)).to.be.a("boolean").and.equal(true);
         });
     });
 
-    describe("#removeCachedUserByName", function () {
+    execTest()("#removeCachedUserByName", function () {
         it("should remove a cached user by their Name", function () {
             client.cacheUser(_user);
             expect(client.removeCachedUserByName(_user.username)).to.be.a("boolean").and.equal(true);

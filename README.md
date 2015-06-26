@@ -1,3 +1,7 @@
+[![](https://nodei.co/npm/plugged.png?downloadRank=true)](https://npmjs.com/package/plugged)
+
+[![](https://travis-ci.org/SooYou/plugged.svg)](https://travis-ci.org/SooYou/plugged) [![](https://david-dm.org/SooYou/plugged.svg)](https://david-dm.org/SooYou/plugged)
+
 plugged
 ==========
 plugged is a (v|f)ast JavaScript API for the plug.dj service.
