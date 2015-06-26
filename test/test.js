@@ -133,6 +133,7 @@ function testExtendedRoom(room) {
         "image",
         "media",
         "name",
+        "nsfw",
         "population",
         "private",
         "slug"
