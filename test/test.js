@@ -33,11 +33,16 @@ function execTest() {
     return isTravis ? describe.skip : describe;
 }
 
+function isObjectTest() {
+    return testLogin.noParse ? describe.skip : describe;
+}
+
 function testUser(user) {
     expect(user).to.contain.all.keys([
         "username",
         "avatarID",
         "language",
+        "guest",
         "slug",
         "joined",
         "level",
@@ -134,6 +139,7 @@ function testExtendedRoom(room) {
         "media",
         "name",
         "nsfw",
+        "guests",
         "population",
         "private",
         "slug"
@@ -147,10 +153,12 @@ function testExtendedRoom(room) {
     if(!testLogin.noParse) {
         expect(room.capacity).to.be.a("number");
         expect(room.population).to.be.a("number");
+        expect(room.format).to.be.a("number");
+    } else {
+        expect(room.format).to.be.a("string");
     }
 
     expect(room.favorite).to.be.a("boolean");
-    expect(room.format).to.be.a("number");
     expect(room.host).to.be.a("string");
     expect(room.cid).to.be.a("string");
     expect(room.id).to.be.a("number");
@@ -854,7 +862,7 @@ describe("REST", function () {
                     "xp"
                     ]);
 
-                expect(Object.keys(self).length).to.equal(testLogin.noParse ? 18 : 19);
+                expect(Object.keys(self).length).to.equal(testLogin.noParse ? 19 : 20);
                 expect(self.notifications).to.be.an("array");
                 expect(self.ignores).to.be.an("array");
                 expect(self.friends).to.be.an("array");
@@ -1344,11 +1352,7 @@ describe("REST", function () {
     });
 });
 
-describe("Local", function () {
-    if(testLogin.noParse) {
-        console.log("Object test is running. Local state functions will be skipped.");
-        return;
-    }
+isObjectTest()("Local", function () {
 
     describe("#getJar", function () {
         it("should return the jar used for http requests", function() {
