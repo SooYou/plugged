@@ -37,7 +37,7 @@ var serializeMedia = function(data) {
 
     return {
         id: 0,
-        format: (!data.hasOwnProperty("artwork_url") ? 1 : 0),
+        format: (!data.hasOwnProperty("artwork_url") ? 2 : 1),
         cid: data.id || "",
         author: title[0] || "",
         title: title[1] || "",
@@ -84,6 +84,7 @@ var parseSelf = function(data) {
         ignores: data.ignores || [],
         friends: data.friends || [],
         pw: data.pw || false,
+        guest: data.guest || false,
         level: data.level || 0,
         gRole: data.gRole || 0,
         badge: data.badge || "",
@@ -325,7 +326,8 @@ var parseExtendedRoom = function(data) {
                 parseUser(data.dj) :
                 ""),
         favorite: data.favorite || false,
-        format: data.format || 1,
+        format: parseInt(data.format) || 1,
+        guests: data.guests || 0,
         host: utils.decode(data.host) || "",
         id: data.id || -1,
         image: data.image || "",
@@ -367,6 +369,7 @@ var parseMeta = function(data) {
         name: utils.decode(data.name) || "",
         population: data.population || 0,
         slug: data.slug || undefined,
+        guests: data.guests || 0,
         welcome: utils.decode(data.welcome) || ""
     };
 };
