@@ -208,6 +208,7 @@ Plugged.prototype.WAITLIST_UPDATE = "djListUpdate";
 Plugged.prototype.ROOM_NAME_UPDATE = "roomNameUpdate";
 Plugged.prototype.MAINTENANCE_MODE = "plugMaintenance";
 Plugged.prototype.ROOM_WELCOME_UPDATE = "roomWelcomeUpdate";
+Plugged.prototype.MAINTENANCE_MODE_ALERT = "plugMaintenanceAlert";
 Plugged.prototype.ROOM_DESCRIPTION_UPDATE = "roomDescriptionUpdate";
 
 Plugged.prototype._keepAlive = function() {
@@ -741,6 +742,10 @@ Plugged.prototype._wsaprocessor = function(self, msg) {
             self.emit(self.MAINTENANCE_MODE);
             break;
 
+        case self.MAINTENANCE_MODE_ALERT:
+            self.emit(self.MAINTENANCE_MODE_ALERT, data.p);
+            break;
+
         case self.BAN_IP:
             self.emit(self.BAN_IP);
             break;
@@ -802,6 +807,7 @@ Plugged.prototype._pushUser = function(user) {
 
     this.state.room.users.push(user);
     this.state.room.population = this.state.room.users.length;
+    
     if(this.isFriend(user.id))
         this.emit(this.FRIEND_JOIN, user);
     else
