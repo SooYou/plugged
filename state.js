@@ -112,7 +112,7 @@ var parseUser = function(data) {
         blurb: utils.decode(data.blurb) || "",
         slug: data.slug || "",
         level: data.level || 0,
-        gRole: data.gRole || 0,                 //global role
+        gRole: data.gRole || 0,     // global role
         badge: data.badge || "",
         role: data.role || 0,
         sub: data.sub || 0,
@@ -151,7 +151,7 @@ var parseMedia = function(data) {
         image: data.image || "",
         cid: data.cid || "",
         duration: data.duration || 0,
-        format: data.format || 1,         //most media played on plug originates from youtube.
+        format: data.format || 1,   //most media played on plug originates from youtube.
         id: data.id || -1
     }
 };
@@ -160,8 +160,8 @@ var parseMute = function(data, expireDate) {
     data = data || {};
 
     return {
-        username: utils.decode(data.username) || data.t || "",      //name of the user
-        id: data.id || data.i || -1,            //user ID
+        username: utils.decode(data.username) || data.t || "",
+        id: data.id || data.i || -1,
         moderator: utils.decode(data.moderator) || data.m || "",
         reason: data.reason || data.r || 1,
         expires: data.expires || expireDate || -1
