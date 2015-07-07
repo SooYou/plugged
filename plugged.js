@@ -552,8 +552,9 @@ Plugged.prototype._wsaprocessor = function(self, msg) {
             break;
 
         case self.GIFTED:
-            var user = self.getUserByName(data.p);
-            self.emit(self.GIFTED, user ? user : data.p);
+            var sender = self.getUserByName(data.p.s);
+            var recipient = self.getUserByName(data.p.r);
+            self.emit(self.GIFTED, sender || data.p.s, recipient || data.p.r);
             break;
 
         case self.PLAYLIST_CYCLE:
