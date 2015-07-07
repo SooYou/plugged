@@ -1053,8 +1053,6 @@ describe("REST", function () {
                 if(rooms.length > 0) {
                     expect(rooms[0]).to.be.an("object");
                     testExtendedRoom(rooms[0]);
-                    expect(rooms[0].dj).to.be.an("object");
-                    testUser(rooms[0].dj);
                 }
 
                 done();
@@ -1333,17 +1331,21 @@ describe("REST", function () {
     describe("#purchaseItem", function () {
         it("should buy an item from the store", function (done) {
             client.purchaseItem(_store.id, function (err, item) {
-                if(item) {
-                    expect(item).to.be.an("object");
-                    expect(item).to.have.all.keys([
-                        "count",
-                        "name",
-                        "pp"
-                    ]);
+                if(err) {
+                    expect(err.message).to.equal("owned");
+                } else {
+                    if(item) {
+                        expect(item).to.be.an("object");
+                        expect(item).to.have.all.keys([
+                            "count",
+                            "name",
+                            "pp"
+                        ]);
 
-                    expect(item.count).to.be.a("number");
-                    expect(item.name).to.be.a("string").and.equal(_store.name);
-                    expect(item.pp).to.be.a("number");
+                        expect(item.count).to.be.a("number");
+                        expect(item.name).to.be.a("string").and.equal(_store.name);
+                        expect(item.pp).to.be.a("number");
+                    }
                 }
 
                 done();
@@ -1609,6 +1611,7 @@ isObjectTest()("Local", function () {
             expect(meta).to.have.all.keys([
                 "description",
                 "favorite",
+                "guests",
                 "hostID",
                 "hostName",
                 "id",
