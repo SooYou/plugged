@@ -183,10 +183,12 @@ Plugged.prototype.MOD_STAFF = "modStaff";
 Plugged.prototype.USER_JOIN = "userJoin";
 Plugged.prototype.FLOOD_API = "floodAPI";
 Plugged.prototype.MOD_ADD_DJ = "modAddDJ";
+Plugged.prototype.GUEST_JOIN = "guestJoin";
 Plugged.prototype.PLUG_ERROR = "plugError";
 Plugged.prototype.USER_LEAVE = "userLeave";
 Plugged.prototype.FLOOD_CHAT = "floodChat";
 Plugged.prototype.MOD_MOVE_DJ = "modMoveDJ";
+Plugged.prototype.GUEST_LEAVE = "guestLeave";
 Plugged.prototype.JOINED_ROOM = "joinedRoom";
 Plugged.prototype.USER_UPDATE = "userUpdate";
 Plugged.prototype.CHAT_DELETE = "chatDelete";
@@ -516,7 +518,7 @@ Plugged.prototype._wsaprocessor = function(self, msg) {
         case self.CHAT:
             var chat = models.parseChat(data.p);
 
-            if(self.ccache || chat.username === self.state.self.username) {
+            if(self.ccache) {
                 self.state.chatcache.push(chat);
 
                 if(self.state.chatcache.length > self.chatcachesize)
@@ -527,15 +529,19 @@ Plugged.prototype._wsaprocessor = function(self, msg) {
             // messages, so they won't be in the user list yet. that means that
             // plug.dj might send CHAT events from nonexistent users, so we
             // first grab the user info, and then emit the chat event later
-            var user = self.getUserByID(chat.id);
+            // NOTE: this seems to be fixed with version 1.4.5.8843
+            // should it be that there is another glitch, this will
+            // be reverted.
+
+            /*var user = self.getUserByID(chat.id);
             if(!user || user.guest) {
                 self.getUser(chat.id, function(e, userData) {
                     self._pushUser(userData);
                     self._emitChat(chat);
                 });
             }
-            else
-                self._emitChat(chat);
+            else*/
+            self._emitChat(chat);
             break;
 
         case self.CHAT_DELETE:
@@ -673,6 +679,14 @@ Plugged.prototype._wsaprocessor = function(self, msg) {
 
         case self.USER_LEAVE:
             var user = undefined;
+
+            // it was just a guest leaving, nothing more to do here
+            if(data.p === 0) {
+                self.state.room.meta.guests--;
+                self.emit(self.GUEST_LEAVE, data.p);
+                break;
+            }
+
             self.state.room.meta.population--;
 
             for(var i = self.state.room.users.length - 1; i >= 0; i--) {
@@ -761,7 +775,8 @@ Plugged.prototype._wsaprocessor = function(self, msg) {
             break;
 
         default:
-            self.log("unknown action: " + data.a, 1, "yellow");
+            self.log("unknown action appeared!\nPlease report this to https://www.github.com/SooYou/plugged", 1, "yellow");
+            self.log(data, 1, "yellow")
             break;
     }
 };
@@ -803,16 +818,20 @@ Plugged.prototype._emitChat = function(chat) {
 };
 
 Plugged.prototype._pushUser = function(user) {
-    if (user.guest)
-        return;
+    if(user.guest) {
+        this.state.room.meta.guests++;
 
-    this.state.room.users.push(user);
-    this.state.room.population = this.state.room.users.length;
+        user.joined = new Date().toISOString();
+        this.emit(this.GUEST_JOIN, user);
+    } else {
+        this.state.room.users.push(user);
+        this.state.room.meta.population++;
     
-    if(this.isFriend(user.id))
-        this.emit(this.FRIEND_JOIN, user);
-    else
-        this.emit(this.USER_JOIN, user);
+        if(this.isFriend(user.id))
+            this.emit(this.FRIEND_JOIN, user);
+        else
+            this.emit(this.USER_JOIN, user);
+    }
 };
 
 Plugged.prototype.sendChat = function(message, deleteTimeout) {
@@ -1076,6 +1095,10 @@ Plugged.prototype.getHostID = function() {
 
 Plugged.prototype.getPopulation = function() {
     return this.state.room.meta.population;
+};
+
+Plugged.prototype.getGuests = function() {
+    return this.state.room.meta.guests;
 };
 
 Plugged.prototype.getMinChatLevel = function() {
