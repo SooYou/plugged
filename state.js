@@ -35,19 +35,24 @@ var serializeMedia = function(data) {
     if(typeof data.id !== "string")
         data.id = String(data.id);
 
-    return {
+    var media = {
         id: 0,
-        format: (!data.hasOwnProperty("artwork_url") ? 2 : 1),
         cid: data.id || "",
         author: title[0] || "",
         title: title[1] || "",
-        image: (!data.hasOwnProperty("artwork_url") ?
-            "https://i.ytimg.com/vi/" + data.id + "/default.jpg" :
-            data.artwork_url),
-        duration: (!data.hasOwnProperty("artwork_url") ?
-            0 :
-            Math.round((data.duration ? data.duration : 0) / 1000))
+        duration: 0
     };
+
+    if(!data.hasOwnProperty("artwork_url")) {
+        media.format = 1;
+        media.image = "https://i.ytimg.com/vi/" + data.id + "/default.jpg";
+    } else {
+        media.format = 2;
+        media.image = data.artwork_url || "";
+        media.duration = Math.round((data.duration || 0) / 1000);
+    }
+
+    return media;
 };
 
 var serializeMediaObjects = function(data) {
