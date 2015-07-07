@@ -1665,6 +1665,12 @@ isObjectTest()("Local", function () {
         });
     });
 
+    describe("#getGuests", function () {
+        it("should return the amount of guests in the room", function () {
+            expect(client.getGuests()).to.be.a("number");
+        });
+    });
+
     describe("#getMinChatLevel", function () {
         it("should return the minimum chat level needed to communicate", function () {
             expect(client.getMinChatLevel()).to.be.a("number");
