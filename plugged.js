@@ -532,16 +532,17 @@ Plugged.prototype._wsaprocessor = function(self, msg) {
             // NOTE: this seems to be fixed with version 1.4.5.8843
             // should it be that there is another glitch, this will
             // be reverted.
+            // broken in 8871..
 
-            /*var user = self.getUserByID(chat.id);
+            var user = self.getUserByID(chat.id);
             if(!user || user.guest) {
                 self.getUser(chat.id, function(e, userData) {
                     self._pushUser(userData);
                     self._emitChat(chat);
                 });
             }
-            else*/
-            self._emitChat(chat);
+            else
+                self._emitChat(chat);
             break;
 
         case self.CHAT_DELETE:
@@ -1789,7 +1790,7 @@ Plugged.prototype.setAvatar = function(avatarID, callback) {
     }.bind(this), true);
 };
 
-// PUT plug.dj/_/language
+// PUT plug.dj/_/users/language
 Plugged.prototype.setLanguage = function(language, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("PUT", endpoints["LANGUAGE"], { language: language }, callback);
