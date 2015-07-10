@@ -25,7 +25,7 @@ function processEntry(query, entry) {
                 // don't bother trying it again in case this entry got flushed through (tries === -1).
                 if((entry.tries >= 0 && entry.tries < 2) && (res ? res.statusCode : 0) >= 500) {
                     entry.tries++;
-                    setTimeout(pushAndProcess, 5*1000, query, entry)
+                    setTimeout(pushAndProcess, 5*1000, query, entry);
                 } else {
                     entry.options = {};
                     entry.callback({
