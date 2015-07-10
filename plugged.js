@@ -307,8 +307,9 @@ Plugged.prototype._checkForPreviousVote = function(vote) {
 
 Plugged.prototype._getAuthToken = function(data, callback) {
     this.getAuthToken(function(err, token) {
-        this.auth = token;
-        callback && callback(null, token);
+        if(!err)
+            this.auth = token;
+        callback && callback(err, token);
     });
 };
 
@@ -929,9 +930,42 @@ Plugged.prototype.login = function(credentials, authToken) {
     }
 };
 
+Plugged.prototype.guest = function(room) {
+    if(this.sock) {
+        this.log("you seem to be logged in already", 0, "white");
+        return;
+    }
+
+    this.log("Joining room \"" + room + "\" as a guest...", 1, "white");
+    this.query.query("GET", baseURL + '/' + room, function _guestRoom(err, data) {
+        // get auth token directly from the page
+        var idx = data.indexOf("_jm=\"") + 5;
+        var auth = data.substr(idx, data.indexOf('"', idx) - idx);
+
+        if(auth.length === 172) {
+            this.auth = auth;
+
+            this.state.self = models.parseSelf({
+                joined: new Date().toISOString(),
+                guest: true
+            });
+
+            this._connectSocket();
+            this.emit(this.JOINED_ROOM, null);
+        } else {
+            this.emit(this.PLUG_ERROR, utils.setErrorMessage(-1, "couldn't join room \"" + room + "\" as a guest"));
+        }
+    }.bind(this), false, true);
+};
+
 Plugged.prototype.connect = function(room) {
     if(!room)
         throw new Error("room has to be defined");
+
+    if(!this.auth || this.state.self.guest) {
+        this.log("joining plug in guest mode, functions are highly limited!", 1, "yellow");
+        this.guest(room);
+    }
 
     var self = this;
 
@@ -1391,6 +1425,12 @@ Plugged.prototype.setLogin = function(csrf, callback) {
     };
 };
 
+// POST plug.dj/_/users/bulk
+Plugged.prototype.requestUsers = function(ids, callback) {
+    callback = (typeof callback === "function" ? callback.bind(this) : undefined);
+    this.query.query("POST", endpoints["BULKUSERS"], { ids: ids }, callback);
+};
+
 // POST plug.dj/_/rooms/join
 Plugged.prototype.joinRoom = function(slug, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
@@ -1749,7 +1789,7 @@ Plugged.prototype.getCSRF = function(callback) {
 
             body = body.substr(idx, body.indexOf('\"', idx) - idx);
 
-            if(body.length == 60) {
+            if(body.length === 60) {
                 this.log("CSRF token: " + body, 2, "white");
                 callback && callback(null, body);
             } else {
