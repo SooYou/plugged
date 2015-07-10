@@ -444,18 +444,19 @@ var parseLock = function(data) {
 
 var parsePromotion = function(data) {
     data = data || {};
+    var promotions = [];
 
-    if(data.hasOwnProperty('u') && data.u.length === 1) {
-        return {
+    for(var i = (data.hasOwnProperty('u') ? data.u.length - 1 : 0); i >= 0; i--) {
+        promotions.push({
             moderator: utils.decode(data.m) || "",
             moderatorID: data.mi || -1,
             username: utils.decode(data.u[0].n) || "",
             id: data.u[0].i || -1,
             role: data.u[0].p || 0
-        };
+        });
     }
 
-    return {};
+    return promotions;
 };
 
 var parseXP = function(data) {
