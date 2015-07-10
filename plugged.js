@@ -965,6 +965,7 @@ Plugged.prototype.connect = function(room) {
     if(!this.auth || this.state.self.guest) {
         this.log("joining plug in guest mode, functions are highly limited!", 1, "yellow");
         this.guest(room);
+        return;
     }
 
     var self = this;
