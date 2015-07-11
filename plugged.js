@@ -681,7 +681,7 @@ Plugged.prototype._wsaprocessor = function(self, msg) {
             break;
 
         case self.ROOM_MIN_CHAT_LEVEL_UPDATE:
-            self.emit(self.ROOM_MIN_CHAT_LEVEL_UPDATE, data.p);
+            self.emit(self.ROOM_MIN_CHAT_LEVEL_UPDATE, models.parseChatLevelUpdate(data.p));
             break;
 
         case self.USER_LEAVE:
