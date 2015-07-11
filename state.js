@@ -529,6 +529,15 @@ var parseRoomWelcomeUpdate = function(data) {
     };
 };
 
+var parseChatLevelUpdate = function(data) {
+    data = data || {};
+
+    return {
+        chatLevel: data.m || 1,
+        moderatorID: data.u || -1
+    };
+};
+
 exports.parseXP = parseXP;
 exports.parseBan = parseBan;
 exports.pushVote = pushVote;
@@ -559,6 +568,7 @@ exports.parseExtendedRoom = parseExtendedRoom;
 exports.parseHistoryEntry = parseHistoryEntry;
 exports.parseFriendRequest = parseFriendRequest;
 exports.parseRoomNameUpdate = parseRoomNameUpdate;
+exports.parseChatLevelUpdate = parseChatLevelUpdate;
 exports.serializeMediaObjects = serializeMediaObjects;
 exports.convertPlugTimeToDate = convertPlugTimeToDate;
 exports.parseRoomWelcomeUpdate = parseRoomWelcomeUpdate;
