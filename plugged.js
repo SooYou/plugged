@@ -212,6 +212,7 @@ Plugged.prototype.MAINTENANCE_MODE = "plugMaintenance";
 Plugged.prototype.ROOM_WELCOME_UPDATE = "roomWelcomeUpdate";
 Plugged.prototype.MAINTENANCE_MODE_ALERT = "plugMaintenanceAlert";
 Plugged.prototype.ROOM_DESCRIPTION_UPDATE = "roomDescriptionUpdate";
+Plugged.prototype.ROOM_MIN_CHAT_LEVEL_UPDATE = "roomMinChatLevelUpdate";
 
 Plugged.prototype._keepAlive = function() {
     if(this.keepAliveTries >= 6) {
@@ -677,6 +678,10 @@ Plugged.prototype._wsaprocessor = function(self, msg) {
         case self.ROOM_WELCOME_UPDATE:
             self.state.room.meta.welcome = utils.decode(data.p.w);
             self.emit(self.ROOM_WELCOME_UPDATE, models.parseRoomWelcomeUpdate(data.p));
+            break;
+
+        case self.ROOM_MIN_CHAT_LEVEL_UPDATE:
+            self.emit(self.ROOM_MIN_CHAT_LEVEL_UPDATE, data.p);
             break;
 
         case self.USER_LEAVE:
