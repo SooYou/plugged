@@ -446,13 +446,13 @@ var parsePromotion = function(data) {
     data = data || {};
     var promotions = [];
 
-    for(var i = (data.hasOwnProperty('u') ? data.u.length - 1 : 0); i >= 0; i--) {
+    for(var i = (data.hasOwnProperty('u') ? data.u.length - 1 : -1); i >= 0; i--) {
         promotions.push({
             moderator: utils.decode(data.m) || "",
             moderatorID: data.mi || -1,
-            username: utils.decode(data.u[0].n) || "",
-            id: data.u[0].i || -1,
-            role: data.u[0].p || 0
+            username: utils.decode(data.u[i].n) || "",
+            id: data.u[i].i || -1,
+            role: data.u[i].p || 0
         });
     }
 
