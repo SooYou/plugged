@@ -137,6 +137,7 @@ var parseUserUpdate = function(data) {
     return {
         id: data.i || -1,
         level: data.level || undefined,
+        badge: data.badge || undefined,
         avatarID: data.avatarID || undefined,
         username: utils.decode(data.username) || undefined
     };
