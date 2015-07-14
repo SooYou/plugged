@@ -216,7 +216,7 @@ Plugged.prototype.ROOM_MIN_CHAT_LEVEL_UPDATE = "roomMinChatLevelUpdate";
 
 Plugged.prototype._keepAlive = function() {
     if(this.keepAliveTries >= 6) {
-        this.log("haven't received a keep alive message from host for more than 3 minutes, is it on fire?", 1, "red");
+        this._log("haven't received a keep alive message from host for more than 3 minutes, is it on fire?", 1, "red");
         this.emit(this.CONN_PART, this.getRoomMeta());
         this.logout();
         clearTimeout(this.keepAliveID);
@@ -239,6 +239,32 @@ Plugged.prototype._loggedIn = function() {
         else
             this.emit(this.LOGIN_ERROR, err);
     });
+};
+
+// TODO: remove with 3.0.0
+// just a temporary method to ensure compatibility with the old
+// logging.
+Plugged.prototype._log = function(msg, verbosity, type) {
+    if(typeof this.log === "object") {
+        switch(type) {
+            case "magenta":
+                type = "debug";
+                break;
+            case "red":
+                type = "error";
+                break;
+            case "yellow":
+                type = "warn";
+                break;
+            default:
+                type = "info";
+                break;
+        }
+
+        this.log[type] && this.log[type](msg);
+    } else if(typeof this.log === "function") {
+        this.log(msg, verbosity, type);
+    }
 };
 
 Plugged.prototype._cleanUserCache = function() {
@@ -326,7 +352,7 @@ Plugged.prototype._connectSocket = function() {
 
     /*================= SOCK OPENED =================*/
     this.sock.on("open", function _sockOpen() {
-        self.log("socket opened", 3, "magenta");
+        self._log("socket opened", 3, "magenta");
         self.emit(self.SOCK_OPEN, self);
         this.sendMessage("auth", self.auth);
         self._keepAliveCheck.call(self);
@@ -339,13 +365,13 @@ Plugged.prototype._connectSocket = function() {
             self._keepAlive();
         }
 
-        self.log("sock closed", 3, "magenta");
+        self._log("sock closed", 3, "magenta");
         self.emit(self.SOCK_CLOSED, self);
     });
 
     /*================= SOCK ERROR ==================*/
     this.sock.on("error", function _sockError(err) {
-        self.log("sock error!", 3, "red");
+        self._log("sock error!", 3, "magenta");
         self.emit(self.SOCK_ERROR, self, err);
     });
 
@@ -782,8 +808,8 @@ Plugged.prototype._wsaprocessor = function(self, msg) {
             break;
 
         default:
-            self.log("unknown action appeared!\nPlease report this to https://www.github.com/SooYou/plugged", 1, "yellow");
-            self.log(data, 1, "yellow")
+            self._log("unknown action appeared!\nPlease report this to https://www.github.com/SooYou/plugged", 1, "magenta");
+            self._log(data, 1, "magenta")
             break;
     }
 };
@@ -869,7 +895,8 @@ Plugged.prototype.sendChat = function(message, deleteTimeout) {
 };
 
 Plugged.prototype.invokeLogger = function(logfunc) {
-    if(typeof logfunc === "function") {
+    if(typeof logfunc === "function" || 
+        (!Array.isArray(logfunc) && typeof logfunc === "object")) {
         this.log = logfunc;
         return true;
     }
@@ -926,7 +953,7 @@ Plugged.prototype.login = function(credentials, authToken) {
         if(!this.getJar())
             this.setJar(null);
 
-        this.log("logging in with account: " + (credentials.email || credentials.userID), 2, "white");
+        this._log("logging in with account: " + (credentials.email || credentials.userID), 2, "white");
 
         utils.loginClient(this);
     } else {
@@ -937,11 +964,11 @@ Plugged.prototype.login = function(credentials, authToken) {
 
 Plugged.prototype.guest = function(room) {
     if(this.sock) {
-        this.log("you seem to be logged in already", 0, "white");
+        this._log("you seem to be logged in already", 0, "white");
         return;
     }
 
-    this.log("Joining room \"" + room + "\" as a guest...", 1, "white");
+    this._log("Joining room \"" + room + "\" as a guest...", 1, "white");
     this.query.query("GET", baseURL + '/' + room, function _guestRoom(err, data) {
         // get auth token directly from the page
         var idx = data.indexOf("_jm=\"") + 5;
@@ -968,7 +995,7 @@ Plugged.prototype.connect = function(room) {
         throw new Error("room has to be defined");
 
     if(!this.auth || this.state.self.guest) {
-        this.log("joining plug in guest mode, functions are highly limited!", 1, "yellow");
+        this._log("joining plug in guest mode, functions are highly limited!", 1, "yellow");
         this.guest(room);
         return;
     }
@@ -1662,7 +1689,7 @@ Plugged.prototype.logout = function() {
             this.sock.close();
             this.sock.removeAllListeners();
 
-            this.log("Logged out.", 1, "green");
+            this._log("Logged out.", 1, "magenta");
 
             this.sock = null;
             this.auth = null;
@@ -1796,7 +1823,7 @@ Plugged.prototype.getCSRF = function(callback) {
             body = body.substr(idx, body.indexOf('\"', idx) - idx);
 
             if(body.length === 60) {
-                this.log("CSRF token: " + body, 2, "white");
+                this._log("CSRF token: " + body, 2, "magenta");
                 callback && callback(null, body);
             } else {
                 callback && callback(utils.setErrorMessage(200, "CSRF token was not found"));
