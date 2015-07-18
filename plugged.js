@@ -1483,9 +1483,15 @@ Plugged.prototype.addToWaitlist = function(userID, callback) {
 };
 
 // POST plug.dj/_/playlists
-Plugged.prototype.addPlaylist = function(name, callback) {
+Plugged.prototype.addPlaylist = function(name, media, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-    this.query.query("POST", endpoints["PLAYLISTS"], { name: name, media: null }, callback, true);
+
+    if(typeof media === "function") {
+        callback = media.bind(this);
+        media = null;
+    }
+    
+    this.query.query("POST", endpoints["PLAYLISTS"], { name: name, media: media }, callback, true);
 };
 
 // POST plug.dj/_/grabs
