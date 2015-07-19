@@ -1490,8 +1490,10 @@ Plugged.prototype.addPlaylist = function(name, media, callback) {
         callback = media.bind(this);
         media = null;
     }
-    
-    this.query.query("POST", endpoints["PLAYLISTS"], { name: name, media: media }, callback, true);
+
+    this.query.query("POST", endpoints["PLAYLISTS"], 
+        { name: name, media: models.serializeMediaObjects(media) }, 
+        callback, true);
 };
 
 // POST plug.dj/_/grabs
@@ -1943,7 +1945,7 @@ Plugged.prototype.insertMedia = function(playlistID, media, append, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("POST",
         endpoints["PLAYLISTS"] + '/' + playlistID + "/media/insert",
-        { media: media, append: append },
+        { media: models.serializeMediaObjects(media), append: append },
         callback);
 };
 
