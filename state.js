@@ -30,7 +30,14 @@ var convertPlugTimeToDate = function(plugTime) {
 
 var serializeMedia = function(data) {
     data = data || {};
-    var title = utils.splitTitle(data.title);
+
+    var flag = 0;
+    flag |= data.hasOwnProperty("artwork_url") ? 1 << 0 : 0;
+    flag |= data.hasOwnProperty("thumbnails") ? 1 << 1 : 0;
+    flag |= data.hasOwnProperty("snippet") ? 1 << 2 : 0;
+
+    if(flag === 0)
+        return data;
 
     if(typeof data.id !== "string")
         data.id = String(data.id);
@@ -38,15 +45,30 @@ var serializeMedia = function(data) {
     var media = {
         id: 0,
         cid: data.id || "",
-        author: title[0] || "",
-        title: title[1] || "",
+        author: "",
+        title: "",
         duration: 0
     };
 
-    if(!data.hasOwnProperty("artwork_url")) {
+    if(flag > 1) {
+        var title;
+
+        if((flag & 0x04) === 0x04) {
+            data.id = data.id.videoId;
+            title = utils.splitTitle(data.snippet.title);
+        } else {
+            title = utils.splitTitle(data.title);
+        }
+        
+        media.author = title[0];
+        media.title = title[1];
         media.format = 1;
-        media.image = "https://i.ytimg.com/vi/" + data.id + "/default.jpg";
+        media.image = ["https://i.ytimg.com/vi/", data.id, "/default.jpg"].join('');
     } else {
+        var title = utils.splitTitle(data.title);
+
+        media.author = title[0];
+        media.title = title[1];
         media.format = 2;
         media.image = data.artwork_url || "";
         media.duration = Math.round((data.duration || 0) / 1000);
