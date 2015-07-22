@@ -802,9 +802,8 @@ Plugged.prototype._wsaprocessor = function(self, msg) {
             self.emit(self.BAN, models.parseBan(data.p));
             break;
 
-        // TODO: find out if the new username is returned only
         case self.NAME_CHANGED:
-            self.emit(self.NAME_CHANGED, data.p);
+            self.emit(self.NAME_CHANGED);
             break;
 
         default:
