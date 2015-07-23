@@ -28,10 +28,13 @@ function processEntry(query, entry) {
                     setTimeout(pushAndProcess, 5*1000, query, entry);
                 } else {
                     entry.options = {};
-                    entry.callback({
-                        code: (res ? res.statusCode : 0),
-                        message: (body ? (body.data.length > 0 ? body.data[0] : (body.status ? body.status : err)) : err)
-                    });
+                    if(!err) {
+                        err = new Error(body && (body.data ? body.data[0] : body.status) || 'Request returned ' + res.statusCode);
+                    }
+                    err.code = res.statusCode;
+                    err.status = body ? body.status : null;
+                    err.data = body ? body.data : null;
+                    entry.callback(err);
                 }
 
             }
