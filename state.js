@@ -406,10 +406,10 @@ var parseBooth = function(data) {
     data = data || {};
 
     return {
-        dj: data.currentDJ || -1,               //id of the active DJ
-        isLocked: data.isLocked || false,       //is waitlist locked?
-        shouldCycle: data.shouldCycle || true,  //should it cycle?
-        waitlist: data.waitingDJs || []         //array of IDs
+        dj: data.currentDJ || -1,                                     //id of the active DJ
+        isLocked: data.isLocked || false,                             //is waitlist locked?
+        shouldCycle: 'shouldCycle' in data ? data.shouldCycle : true, //should it cycle?
+        waitlist: data.waitingDJs || []                               //array of IDs
     };
 };
 
