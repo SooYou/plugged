@@ -18,20 +18,20 @@ To start with a simple bot, do this:
 
 ```javascript
 var Plugged = require("plugged");
-var plug = new Plugged();
+var plugged = new Plugged();
 
 // log into the service
-plug.login({ email: "examplemail@examplehost.com", password: "examplepassword" });
+plugged.login({ email: "examplemail@examplehost.com", password: "examplepassword" });
 
-plug.on(plug.LOGIN_SUCCESS, function _loginSuccess() {
-    plug.cacheChat(true);
-    plug.connect("exampleroom");
+plugged.on(plugged.LOGIN_SUCCESS, function _loginSuccess() {
+    plugged.cacheChat(true);
+    plugged.connect("exampleroom");
 });
 
-plug.on(plug.JOINED_ROOM, function _joinedRoom() {
-    plug.on(plug.ADVANCE, function() {
+plugged.on(plugged.JOINED_ROOM, function _joinedRoom() {
+    plugged.on(plugged.ADVANCE, function() {
         //WOOT!
-        plug.woot();
+        plugged.woot();
     });
 });
 ```
@@ -51,7 +51,7 @@ Some people might prefer taking the oauth route and use their fb login for plug.
 
 ```JavaScript
 ...
-plug.login({
+plugged.login({
     userID: "your ID here",
     accessToken: "your access token here"
 });
@@ -68,11 +68,11 @@ To save some time you can restart your application without going through the who
 getting the necessary data:
 
 ```JavaScript
-plug.getAuthToken(function (err, token) {
+plugged.getAuthToken(function (err, token) {
     // save the token
 });
 
-plug.getJar();
+plugged.getJar();
 ```
 
 putting it back in:
@@ -83,10 +83,10 @@ var jar = null;
 
 // read token and jar from DB, file, etc.
 
-plug.setJar(jar);
+plugged.setJar(jar);
 
 // the token has a higher priority
-plug.login({ ... }, token);
+plugged.login({ ... }, token);
 ```
 
 How you save it and what you want to do with it is up to you. There's a multitude of ways to save this and it's probably better that you do that since you know best how your application should behave and under which conditions like os, environment, etc.
