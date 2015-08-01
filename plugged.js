@@ -25,7 +25,6 @@ var endpoints = {
     ROOMSTATS: baseURL +    "/_/rooms/state",
     USERSTATS: baseURL +    "/_/users/",
     PLAYLISTS: baseURL +    "/_/playlists",
-    PURCHASES: baseURL +    "/_/users/me/purchase",
     USERHISTORY: baseURL +  "/_/users/me/history",
     TRANSACTIONS: baseURL + "/_/users/me/transactions",
     FAVORITEROOM: baseURL + "/_/rooms/favorites",
@@ -64,7 +63,7 @@ var endpoints = {
 };
 
 /*
-chat offset incrementation idea by 
+chat offset incrementation idea by
 https://github.com/welovekpop/SekshiBot/blob/master/src/Sekshi.js
 */
 var CHAT_TIMEOUT_INC = 70;
@@ -84,7 +83,7 @@ function Plugged(options) {
     Plugged.super_.call(this);
 
     options = options || {};
-    
+
     if(options.test)
         models = require("./test/raw.js");
 
@@ -285,7 +284,7 @@ Plugged.prototype._processChatQueue = function(lastMessage) {
             // timeouts can't get lower than 4ms but anything below 1000ms is ridiculous anyway
             if(msg.timeout >= 0) {
                 setTimeout(
-                    this._removeChatMessageByDelay.bind(this), 
+                    this._removeChatMessageByDelay.bind(this),
                     msg.timeout,
                     msg.message
                     );
@@ -294,7 +293,7 @@ Plugged.prototype._processChatQueue = function(lastMessage) {
             if(this.chatTimeout < CHAT_TIMEOUT_MAX)
                 this.chatTimeout += CHAT_TIMEOUT_INC;
         }
-        
+
         setTimeout(this._processChatQueue.bind(this), this.chatTimeout, Date.now());
     } else {
         this.chatTimeout = 0;
@@ -505,7 +504,7 @@ Plugged.prototype.setJar = function(jar, storage) {
 // WebSocket action processor
 Plugged.prototype._wsaprocessor = function(self, msg) {
     var data = JSON.parse(msg)[0];
-    
+
     switch(data.a) {
         case self.ACK:
             self.emit((data.p === "1" ? self.CONN_SUCCESS : self.CONN_ERROR), data.p);
@@ -654,12 +653,12 @@ Plugged.prototype._wsaprocessor = function(self, msg) {
             if(!data)
                 break;
 
-            var time = (data.p.d === self.MUTEDURATION.SHORT ? 
-                15*60 : data.p.d === self.MUTEDURATION.MEDIUM ? 
-                30*60 : data.p.d === self.MUTEDURATION.LONG ? 
+            var time = (data.p.d === self.MUTEDURATION.SHORT ?
+                15*60 : data.p.d === self.MUTEDURATION.MEDIUM ?
+                30*60 : data.p.d === self.MUTEDURATION.LONG ?
                 45*60 : 15*60);
             var mute = models.parseMute(data.p, time);
-        
+
             self.emit(self.MOD_MUTE, mute, (data.p.d ? data.p.d : self.MUTEDURATION.NONE));
             break;
 
@@ -858,7 +857,7 @@ Plugged.prototype._pushUser = function(user) {
     } else {
         this.state.room.users.push(user);
         this.state.room.meta.population++;
-    
+
         if(this.isFriend(user.id))
             this.emit(this.FRIEND_JOIN, user);
         else
@@ -894,7 +893,7 @@ Plugged.prototype.sendChat = function(message, deleteTimeout) {
 };
 
 Plugged.prototype.invokeLogger = function(logfunc) {
-    if(typeof logfunc === "function" || 
+    if(typeof logfunc === "function" ||
         (!Array.isArray(logfunc) && typeof logfunc === "object")) {
         this.log = logfunc;
         return true;
@@ -1055,7 +1054,7 @@ Plugged.prototype.getUserByName = function(username, checkCache) {
 
     if(this.state.self.username.toLowerCase() === username)
         return this.state.self;
-    
+
     for(var i = 0, l = this.state.room.users.length; i < l; i++) {
         if(this.state.room.users[i].username.toLowerCase() === username)
             return this.state.room.users[i];
@@ -1336,8 +1335,8 @@ Plugged.prototype.getRoomStats = function(callback) {
 
 // GET plug.dj/_/rooms?q=<query>&page=<page=0>&limit=<limit=50>
 Plugged.prototype.findRooms = function(query, page, limit, callback) {
-    callback = (typeof callback === "function" ? callback.bind(this) : 
-        typeof limit === "function" ? limit : 
+    callback = (typeof callback === "function" ? callback.bind(this) :
+        typeof limit === "function" ? limit :
         typeof page === "function" ? page : undefined);
     query = query || "";
 
@@ -1349,9 +1348,9 @@ Plugged.prototype.findRooms = function(query, page, limit, callback) {
 
     this.query.query("GET", [endpoints["ROOMS"], "?q=", query, "&page=", page, "&limit=", limit].join(''), function _sanitizeFoundRooms(err, rooms) {
 
-        callback && callback(err, rooms.map(function(room) {
+        callback && callback(err, (!err && rooms ? rooms.map(function(room) {
             return models.parseExtendedRoom(room);
-        }));
+        }) : []));
     });
 };
 
@@ -1359,9 +1358,9 @@ Plugged.prototype.findRooms = function(query, page, limit, callback) {
 Plugged.prototype.getRooms = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", endpoints["ROOMS"] + "?q=&page=0&limit=50", function _sanitizeRooms(err, rooms) {
-        callback && callback(err, rooms.map(function(room) {
+        callback && callback(err, (!err && rooms ? rooms.map(function(room) {
             return models.parseExtendedRoom(room);
-        }));
+        }) : []));
     });
 };
 
@@ -1370,16 +1369,16 @@ Plugged.prototype.getStaff = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", endpoints["STAFF"], function _sanitizeStaff(err, staff) {
 
-        callback && callback(err, staff.map(function(staffEntry) {
+        callback && callback(err, (!err && staff ? staff.map(function(staffEntry) {
             return models.parseUser(staffEntry);
-        }));
+        }) : []));
     });
 };
 
 // GET plug.dj/_/users/<id>
 Plugged.prototype.getUser = function(id, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-    this.query.query("GET", endpoints["USERSTATS"] + '/' + id, function _sanitizeUser(err, user) {
+    this.query.query("GET", endpoints["USERSTATS"] + id, function _sanitizeUser(err, user) {
         callback && callback(err, models.parseUser(user));
     }, true);
 };
@@ -1388,10 +1387,9 @@ Plugged.prototype.getUser = function(id, callback) {
 Plugged.prototype.getRoomHistory = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", endpoints["HISTORY"], function _sanitizeHistory(err, history) {
-
-        callback && callback(err, history.map(function(historyEntry) {
+        callback && callback(err, (!err && history ? history.map(function(historyEntry) {
             return models.parseHistoryEntry(historyEntry);
-        }));
+        }) : []));
     });
 };
 
@@ -1411,9 +1409,20 @@ Plugged.prototype.validateUsername = function(name, callback) {
 Plugged.prototype.getMutes = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", endpoints["MUTES"], function _sanitizeMutes(err, mutes) {
-        callback && callback(err, mutes.map(function (mute) {
+        callback && callback(err, (!err && mutes ? mutes.map(function (mute) {
             return models.parseMute(mute);
-        }));
+        }) : []));
+    });
+};
+
+// GET plug.dj/_/bans
+Plugged.prototype.getBans = function(callback) {
+    callback = (typeof callback === "function" ? callback.bind(this) : undefined);
+    this.query.query("GET", endpoints["BANS"], function _sanitizeBans(err, bans) {
+        callback && callback(err, (!err && bans ? bans.map(function (ban) {
+            ban.timestamp = models.convertPlugTimeToDate(ban.timestamp);
+            return ban;
+        }) : []));
     });
 };
 
@@ -1426,9 +1435,9 @@ Plugged.prototype.saveSettings = function(callback) {
 // PUT plug.dj/_/booth/lock
 Plugged.prototype.setLock = function(lock, removeAllDJs, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-    this.query.query("PUT", endpoints["LOCK"], { 
-        isLocked: lock, 
-        removeAllDJs: removeAllDJs 
+    this.query.query("PUT", endpoints["LOCK"], {
+        isLocked: lock,
+        removeAllDJs: removeAllDJs
     }, callback);
 };
 
@@ -1457,6 +1466,12 @@ Plugged.prototype.setLogin = function(csrf, callback) {
     };
 };
 
+// POST plug.dj/_/auth/reset/me
+Plugged.prototype.resetPassword = function(callback) {
+    callback = (typeof callback === "function" ? callback.bind(this) : undefined);
+    this.query.query("POST", endpoints["RESET"], callback);
+};
+
 // POST plug.dj/_/users/bulk
 Plugged.prototype.requestUsers = function(ids, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
@@ -1469,7 +1484,7 @@ Plugged.prototype.joinRoom = function(slug, callback) {
     this.query.query("POST", endpoints["JOINROOM"], { slug: slug }, callback);
 };
 
-// POST plug.dj/_/booth/join
+// POST plug.dj/_/booth
 Plugged.prototype.joinWaitlist = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("POST", endpoints["JOINBOOTH"], callback);
@@ -1490,8 +1505,8 @@ Plugged.prototype.addPlaylist = function(name, media, callback) {
         media = null;
     }
 
-    this.query.query("POST", endpoints["PLAYLISTS"], 
-        { name: name, media: models.serializeMediaObjects(media) }, 
+    this.query.query("POST", endpoints["PLAYLISTS"],
+        { name: name, media: models.serializeMediaObjects(media) },
         callback, true);
 };
 
@@ -1501,7 +1516,7 @@ Plugged.prototype.grab = function(playlistID, callback) {
 
     for(var i = 0, l = this.state.room.grabs.length; i < l; i++) {
         if(this.state.room.grabs[i] == this.state.self.id)
-            return -1;
+            return 0;
     }
 
     this.query.query("POST", endpoints["GRABS"], {
@@ -1509,7 +1524,7 @@ Plugged.prototype.grab = function(playlistID, callback) {
         historyID: this.state.room.playback.historyID
     }, callback, true);
 
-    return 0;
+    return 1;
 };
 
 // POST plug.dj/_/booth/skip
@@ -1548,19 +1563,19 @@ Plugged.prototype.moveDJ = function(userID, position, callback) {
 // POST plug.dj/_/rooms
 Plugged.prototype.createRoom = function(name, private, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-    this.query.query("POST", endpoints["CREATEROOM"], { 
-        name: name, 
-        private: private 
+    this.query.query("POST", endpoints["CREATEROOM"], {
+        name: name,
+        private: private
     }, callback, true);
 };
 
 // POST plug.dj/_/rooms/update
 Plugged.prototype.updateRoomInfo = function(name, description, welcome, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-    this.query.query("POST", endpoints["UPDATEROOM"], { 
-        name: name, 
-        description: description, 
-        welcome: welcome 
+    this.query.query("POST", endpoints["UPDATEROOM"], {
+        name: name,
+        description: description,
+        welcome: welcome
     }, callback);
 };
 
@@ -1572,9 +1587,9 @@ Plugged.prototype.banUser = function(userID, time, reason, callback) {
     }
 
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-    this.query.query("POST", endpoints["BANS"] + "/add", { 
-        userID: userID, 
-        reason: 1,
+    this.query.query("POST", endpoints["BANS"] + "/add", {
+        userID: userID,
+        reason: reason,
         duration: time
     }, callback);
 };
@@ -1587,9 +1602,9 @@ Plugged.prototype.muteUser = function(userID, time, reason, callback) {
     }
 
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-    this.query.query("POST", endpoints["MUTES"], { 
-        userID: userID, 
-        reason: reason || 1,
+    this.query.query("POST", endpoints["MUTES"], {
+        userID: userID,
+        reason: reason,
         duration: time
     }, callback);
 };
@@ -1597,9 +1612,9 @@ Plugged.prototype.muteUser = function(userID, time, reason, callback) {
 // POST plug.dj/_/staff/update
 Plugged.prototype.addStaff = function(userID, role, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-    this.query.query("POST", endpoints["STAFF"] + "/update", { 
-        userID: userID, 
-        roleID: role 
+    this.query.query("POST", endpoints["STAFF"] + "/update", {
+        userID: userID,
+        roleID: role
     }, callback, true);
 };
 
@@ -1653,7 +1668,7 @@ Plugged.prototype.removeStaff = function(userID, callback) {
 // DELETE plug.dj/_/booth/remove/<userID>
 Plugged.prototype.removeDJ = function(userID, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-    this.query.query("DELETE", endpoints["REMOVEBOOTH"] + '/' + userID, callback, true);
+    this.query.query("DELETE", endpoints["REMOVEBOOTH"] + userID, callback, true);
 };
 
 // DELETE plug.dj/_/booth
@@ -1744,9 +1759,9 @@ Plugged.prototype.getMyHistory = function(callback) {
 Plugged.prototype.getFriends = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", endpoints["FRIENDS"], function _sanitizeFriends(err, friends) {
-        callback && callback(err, friends.map(function(friend) {
+        callback && callback(err, (!err && friends ? friends.map(function(friend) {
             return models.parseUser(friend);
-        }));
+        }) : []));
     });
 };
 
@@ -1754,10 +1769,29 @@ Plugged.prototype.getFriends = function(callback) {
 Plugged.prototype.getFriendRequests = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", endpoints["INVITES"], function _sanitizeFriendRequests(err, requests) {
-        callback && callback(err, requests.map(function(request) {
+        callback && callback(err, (!err && requests ? requests.map(function(request) {
             return models.parseFriendRequest(request);
-        }));
+        }) : []));
     });
+};
+
+Plugged.prototype.findPlaylist = function(query, callback) {
+    callback = (typeof callback === "function" ? callback.bind(this) : undefined);
+    this.query.query("GET", endpoints["PLAYLISTS"], function _findPlaylist(err, playlists) {
+        var regex = new RegExp('(' + query + ')', 'i');
+        var result = [];
+
+        for(var i = (!err ? playlists.length - 1 : 0); i >= 0; i--) {
+            if(playlists[i].name && playlists[i].name.match(regex))
+                result.push(playlists[i]);
+        }
+
+        callback && callback(err, result);
+    })
+};
+
+Plugged.prototype.findMedia = function(playlistID, query, callback) {
+    this.searchMediaPlaylist(playlistID, query, callback);
 };
 
 // GET plug.dj/_/playlists/<id>/media
@@ -1771,7 +1805,7 @@ Plugged.prototype.searchMediaPlaylist = function(playlistID, query, callback) {
                 query = query.replace(/%20/, '|');
                 var regex = new RegExp('(' + query + ')', 'i');
 
-                for(var i = 0, l = data.length; i < l; i++) {
+                for(var i = (!err ? data.length - 1 : 0); i >= 0; i--) {
                     if(data[i].title && data[i].title.match(regex) || data[i].author && data[i].author.match(regex))
                         result.push(data[i]);
                 }
@@ -1809,9 +1843,9 @@ Plugged.prototype.getFavoriteRooms = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", endpoints["FAVORITEROOM"], function(err, rooms) {
         if(!err) {
-            callback && callback(err, rooms.map(function(room) {
+            callback && callback(err, (!err && rooms ? rooms.map(function(room) {
                 return models.parseExtendedRoom(room);
-            }));
+            }) : []));
         } else {
             callback && callback(err);
         }
@@ -1870,6 +1904,17 @@ Plugged.prototype.setAvatar = function(avatarID, callback) {
     }.bind(this), true);
 };
 
+// PUT plug.dj/_/users/badge
+Plugged.prototype.setBadge = function(badgeID, callback) {
+    callback = (typeof callback === "function" ? callback.bind(this) : undefined);
+    this.query.query("PUT", endpoints["BADGE"], { id: badgeID }, function(err) {
+        if(!err)
+            this.state.self.badge = badgeID;
+
+        callback && callback(err);
+    }.bind(this), true);
+};
+
 // PUT plug.dj/_/users/language
 Plugged.prototype.setLanguage = function(language, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
@@ -1891,8 +1936,8 @@ Plugged.prototype.activatePlaylist = function(playlistID, callback) {
 // PUT plug.dj/_/playlists/<id>/media/move
 Plugged.prototype.moveMedia = function(playlistID, mediaArray, beforeID, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-    this.query.query("PUT", 
-        endpoints["PLAYLISTS"] + '/' + playlistID + "/media/move", 
+    this.query.query("PUT",
+        endpoints["PLAYLISTS"] + '/' + playlistID + "/media/move",
         { ids: mediaArray, beforeID: beforeID }, callback);
 };
 
@@ -1951,16 +1996,16 @@ Plugged.prototype.insertMedia = function(playlistID, media, append, callback) {
 // POST plug.dj/_/votes
 Plugged.prototype.woot = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-    this.query.query("POST", endpoints["VOTES"], { 
-        direction: 1, 
-        historyID: this.state.room.playback.historyID 
+    this.query.query("POST", endpoints["VOTES"], {
+        direction: 1,
+        historyID: this.state.room.playback.historyID
     }, callback);
 };
 
 // POST plug.dj/_/votes
 Plugged.prototype.meh = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-    this.query.query("POST", endpoints["VOTES"], { 
+    this.query.query("POST", endpoints["VOTES"], {
         direction: -1,
         historyID: this.state.room.playback.historyID
     }, callback);
