@@ -144,7 +144,7 @@ function testExtendedRoom(room) {
         "private",
         "slug"
     ]);
-    
+
     if(typeof room.dj !== "string") {
         expect(room.dj).to.be.an("object");
         testUser(room.dj);
@@ -306,7 +306,7 @@ describe("Joining a room", function () {
             client.on(client.JOINED_ROOM, function (room) {
                 expect(room).to.be.an("object");
 
-                
+
                 done();
             });
         });
@@ -316,7 +316,7 @@ describe("Joining a room", function () {
 describe("Chat", function () {
     describe("#sendChat", function () {
         it("should send a message with the text 'test'", function (done) {
-            
+
             var func = function (msg) {
                 expect(msg).to.be.an("object");
 
@@ -521,7 +521,7 @@ describe("REST", function () {
 
                 if(history.length > 0)
                     testHistoryObject(history[0]);
-                
+
                 done();
             });
         });
@@ -570,7 +570,7 @@ describe("REST", function () {
     execTest()("#addToWaitlist", function () {
         it("should add a user by their ID to the waitlist", function (done) {
             client.addToWaitlist(_user.id, function (err) {
-                
+
                 if(err) {
                     if(err.code === 403)
                         expect(err.message).to.equal("This request was understood but is forbidden.");
@@ -998,6 +998,31 @@ describe("REST", function () {
         });
     });
 
+    describe("#findPlaylist", function () {
+        it("should search for playlists by their name", function (done) {
+            client.findPlaylist("a", function (err, playlists) {
+                expect(err).to.be.a("null");
+                expect(playlists).to.be.an("array");
+
+                if(playlists.length > 0) {
+                    expect(playlists[0]).to.contain.all.keys([
+                        "id",
+                        "name",
+                        "count",
+                        "active"
+                    ]);
+
+                    expect(playlists[0].id).to.be.a("number");
+                    expect(playlists[0].name).to.be.a("string");
+                    expect(playlists[0].count).to.be.a("number");
+                    expect(playlists[0].active).to.be.a("boolean");
+                }
+
+                done();
+            });
+        });
+    });
+
     describe("#searchMediaPlaylist", function () {
         it("should search for media in a playlist filtered by a keyword", function (done) {
             client.searchMediaPlaylist(_playlist, "a", function (err, media) {
@@ -1075,6 +1100,12 @@ describe("REST", function () {
     describe("#setAvatar", function () {
         it("should set the avatar of itself to base01", function (done) {
             client.setAvatar("base01", done);
+        });
+    });
+
+    describe("#setBadge", function () {
+        it("should set the badge of itself to bt-g", function (done) {
+            client.setBadge("bt-g", done);
         });
     });
 
@@ -1185,7 +1216,7 @@ describe("REST", function () {
             client.deleteMedia(_playlist, [_media.id], function (err, media) {
                 expect(err).to.be.a("null");
                 expect(media).to.be.an("array");
-                
+
                 if(media.length > 0)
                     testMedia(media[0]);
 
