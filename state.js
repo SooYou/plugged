@@ -59,7 +59,7 @@ var serializeMedia = function(data) {
         } else {
             title = utils.splitTitle(data.title);
         }
-        
+
         media.author = title[0];
         media.title = title[1];
         media.format = 1;
@@ -406,10 +406,10 @@ var parseBooth = function(data) {
     data = data || {};
 
     return {
-        dj: data.currentDJ || -1,               //id of the active DJ
-        isLocked: data.isLocked || false,       //is waitlist locked?
-        shouldCycle: data.shouldCycle || true,  //should it cycle?
-        waitlist: data.waitingDJs || []         //array of IDs
+        dj: data.currentDJ || -1,                                       // id of the active DJ
+        isLocked: data.isLocked || false,                               // is waitlist locked?
+        shouldCycle: "shouldCycle" in data ? data.shouldCycle : true,   // should it cycle?
+        waitlist: data.waitingDJs || []                                 // array of IDs
     };
 };
 
@@ -420,7 +420,7 @@ var parseModBan = function(data) {
         moderator: utils.decode(data.m) || "",
         moderatorID: data.mi || -1,
         username: utils.decode(data.t) || "",
-        duration: data.d || 'h'
+        duration: data.d || ''
     };
 };
 
@@ -439,8 +439,8 @@ var parseBan = function(data) {
     data = data || {};
 
     return {
-        reason: data.r || undefined,
-        duration: data.l || undefined
+        reason: data.r || 1,
+        duration: data.l || ''
     };
 };
 
