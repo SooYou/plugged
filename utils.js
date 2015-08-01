@@ -55,12 +55,12 @@ var loginClient = function(client, tries) {
     ], function _loginCredentialCheck(err) {
         if(err) {
             if(tries < 2 && err.code !== 401) {
-                client.log("an error occured while trying to log in", 0, "red");
-                client.log(err, 2, "red");
-                client.log("retrying...", 0);
+                client._log("an error occured while trying to log in", 0, "red");
+                client._log(err, 2, "red");
+                client._log("retrying...", 0);
                 loginClient(client, ++tries);
             } else {
-                client.log("couldn't log in.", 0, "red");
+                client._log("couldn't log in.", 0, "red");
                 client.emit(client.LOGIN_ERROR, err);
             }
         } else {
