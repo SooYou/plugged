@@ -261,18 +261,6 @@ describe("Login", function () {
         });
     });
 
-    describe("#error", function () {
-        it("should emit LOGIN_ERROR with error code 401", function (done) {
-            client.login({email: "test@test.moe", password: "test"});
-
-            client.on(client.LOGIN_ERROR, function (err) {
-                expect(err).to.be.an("object");
-                expect(err.code).to.equal(401);
-                done();
-            });
-        });
-    });
-
     describe("#success", function () {
         it("should emit LOGIN_SUCCESS without errors", function (done) {
             client.login({email: testLogin.email, password: testLogin.password});
@@ -285,30 +273,14 @@ describe("Login", function () {
 });
 
 describe("Joining a room", function () {
-    describe("#error", function () {
-        it("should try to join a room and fail with code 404", function (done) {
-            client.connect("-1");
-            var func = function (err) {
-                expect(err).to.be.an("object");
-                expect(err.code).to.equal(404);
-                client.removeListener(client.PLUG_ERROR, func);
-                done();
-            };
+    it("should return a room object with the current stats", function (done) {
+        client.connect(testLogin.room);
 
-            client.on(client.PLUG_ERROR, func);
-        });
-    });
-
-    describe("#success", function () {
-        it("should return a room object with the current stats", function (done) {
-            client.connect(testLogin.room);
-
-            client.on(client.JOINED_ROOM, function (room) {
-                expect(room).to.be.an("object");
+        client.on(client.JOINED_ROOM, function (room) {
+            expect(room).to.be.an("object");
 
 
-                done();
-            });
+            done();
         });
     });
 });
@@ -1103,9 +1075,9 @@ describe("REST", function () {
         });
     });
 
-    describe("#setBadge", function () {
+    execTest("#setBadge", function () {
         it("should set the badge of itself to bt-g", function (done) {
-            client.setBadge("bt-g", done);
+            client.setBadge(testLogin.badge, done);
         });
     });
 
