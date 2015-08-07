@@ -902,7 +902,12 @@ Plugged.prototype.invokeLogger = function(logfunc) {
     return false;
 };
 
-Plugged.prototype.login = function(credentials, authToken) {
+Plugged.prototype.login = function(credentials, authToken, cb) {
+    if(typeof authToken === "function") {
+        cb = authToken;
+        authToken = null;
+    }
+
     if(!authToken) {
         if(typeof credentials !== "object")
             throw new Error("credentials has to be of type object");
@@ -958,6 +963,21 @@ Plugged.prototype.login = function(credentials, authToken) {
         this.auth = authToken;
         this._loggedIn();
     }
+
+    if(cb) {
+        var self = this;
+        var onSuccess = function() {
+            self.removeListener(self.LOGIN_ERROR, onError);
+            cb(null);
+        };
+        var onError = function(e) {
+            self.removeListener(self.LOGIN_SUCCESS, onSuccess);
+            cb(e);
+        };
+
+        this.once(this.LOGIN_SUCCESS, onSuccess);
+        this.once(this.LOGIN_ERROR, onError);
+    }
 };
 
 Plugged.prototype.guest = function(room) {
@@ -988,7 +1008,7 @@ Plugged.prototype.guest = function(room) {
     }.bind(this), false, true);
 };
 
-Plugged.prototype.connect = function(room) {
+Plugged.prototype.connect = function(room, cb) {
     if(!room)
         throw new Error("room has to be defined");
 
@@ -1021,6 +1041,20 @@ Plugged.prototype.connect = function(room) {
             self.emit(self.PLUG_ERROR, err);
         }
     });
+
+    if(cb) {
+        var onSuccess = function(state) {
+            self.removeListener(self.PLUG_ERROR, onError);
+            cb(null, state);
+        };
+        var onError = function(e) {
+            self.removeListener(self.JOINED_ROOM, onSuccess);
+            cb(e);
+        };
+
+        this.once(this.JOINED_ROOM, onSuccess);
+        this.once(this.PLUG_ERROR, onError);
+    }
 };
 
 /*================ ROOM CALLS ================*/

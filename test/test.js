@@ -262,10 +262,20 @@ describe("Login", function () {
     });
 
     describe("#success", function () {
+        beforeEach(function () {
+            client.setJar(null);
+        });
         it("should emit LOGIN_SUCCESS without errors", function (done) {
             client.login({email: testLogin.email, password: testLogin.password});
 
-            client.on(client.LOGIN_SUCCESS, function () {
+            client.once(client.LOGIN_SUCCESS, function () {
+                done();
+            });
+        });
+        it("should work with node-style callbacks", function (done) {
+            client.login({email: testLogin.email, password: testLogin.password}, function (e) {
+                if(e)
+                    throw e;
                 done();
             });
         });
@@ -276,10 +286,17 @@ describe("Joining a room", function () {
     it("should return a room object with the current stats", function (done) {
         client.connect(testLogin.room);
 
-        client.on(client.JOINED_ROOM, function (room) {
+        client.once(client.JOINED_ROOM, function (room) {
             expect(room).to.be.an("object");
-
-
+            done();
+        });
+    });
+    it("should work with node-style callbacks", function (done) {
+        // trying to join the same room twice is fine by plug
+        client.connect(testLogin.room, function (e, room) {
+            if(e)
+                throw e;
+            expect(room).to.be.an("object");
             done();
         });
     });
