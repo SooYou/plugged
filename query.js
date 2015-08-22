@@ -1,5 +1,19 @@
 var request = require("request");
+var util = require("util");
+
 var verbs = ["GET", "POST", "PUT", "DELETE"];
+
+var RequestError = function(data, status, code, fileName, lineNumber) {
+    RequestError.super_.call(
+        data && (Array.isArray(data) ? data[0] : "Request returned " + (status || null)),
+        fileName, lineNumber
+    );
+
+    this.status = status || null;
+    this.code = code || null;
+};
+
+util.inherits(RequestError, Error);
 
 var watcher = function(query) {
     if(query.queue.length === 0)
@@ -26,13 +40,16 @@ var processEntry = function(query, entry) {
                     var length = body.length;
 
                     if(length > 1) {
-                        err = [
-                            "received data from endpoint [",
-                            entry.verb,
-                            "] ",
-                            entry.url,
-                            " included more than one object. Enforced first object assignment anyway"
-                        ].join('');
+                        err = new RequestError([
+                                "received data from endpoint [",
+                                entry.verb,
+                                "] ",
+                                entry.url,
+                                " included more than one object. Enforced first object assignment anyway"
+                            ].join(''),
+                            "ok",
+                            res ? res.statusCode : null
+                        );
                     }
 
                     // enforce single object
@@ -53,12 +70,12 @@ var processEntry = function(query, entry) {
                     query._process();
                 } else {
                     if(!err) {
-                        err = new Error(body && (body.data ? body.data[0] : body.status) || 'Request returned ' + (res ? res.statusCode : null));
+                        err = new RequestError(
+                            body ? body.data : null,
+                            body ? body.status : null,
+                            res ? res.code : null
+                        );
                     }
-
-                    err.code = res ? res.statusCode : null;
-                    err.status = body ? body.status : null;
-                    err.data = body ? body.data : null;
 
                     entry.options = null;
                     entry.callback(err);
