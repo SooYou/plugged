@@ -5,44 +5,46 @@ var setErrorMessage = function(statusCode, msg) {
     };
 };
 
-var createIterator = function(arr) {
-    currentIndex = 0;
+function Iterator(array) {
+    if(!Array.isArray(array))
+        throw new Error("Parameter is not an array");
 
-    return {
-        next: function() {
-            return (currentIndex < arr.length ? {
-                value: arr[currentIndex++],
-                done: false
-            } : { done: true });
-        }
-    };
+    this.array = array;
+    this.index = 0;
+}
+
+Iterator.prototype.next = function() {
+    return this.index < this.array.length ?
+        { value: this.array[this.index++], done: false } :
+        { done: true };
 };
 
-var waterfall = function(funcs, callback) {
+var waterfall = function(funcs, callback, context) {
     callback = callback || function() {};
-
-    if(!Array.isArray(funcs))
-        throw new Error("funcs are not of type array");
-    else if(funcs.length <= 0)
-        throw new Error("array is empty!");
-
-    var iterator = createIterator(funcs);
+    var iterator = new Iterator(funcs);
 
     (function _obj() {
-        var nxt = iterator.next();
-        var err = arguments[0];
         var args = [];
+        var step = iterator.next();
 
-        //not so nice looking copy to keep vm optimizations
-        for(var i = (nxt.done ? 0 : 1), l = arguments.length; i < l; i++)
+        // not so nice looking copy to keep vm optimizations
+        for(var i = 0, l = arguments.length; i < l; i++)
             args.push(arguments[i]);
-        args.push(_obj);
 
-        if(!nxt.done && !err)
-            nxt.value.apply(nxt.value, args);
-        else
-            callback.apply(callback, (!err ? args : [err]));
-    })();
+        if(!step.done && !args[0]) {
+            // shift out error placeholder
+            args.shift();
+            args.push(_obj);
+
+            setImmediate(function(val, args) {
+                val.apply(context, args);
+            }, step.value, args);
+        } else {
+            setImmediate(function(callback, args) {
+                callback.apply(context, args);
+            }, callback, args);
+        }
+    }());
 };
 
 var loginClient = function(client, tries) {
@@ -97,8 +99,8 @@ var decode = function(str) {
 };
 
 exports.setErrorMessage = setErrorMessage;
-exports.createIterator = createIterator;
 exports.loginClient = loginClient;
 exports.splitTitle = splitTitle;
 exports.waterfall = waterfall;
+exports.Iterator = Iterator;
 exports.decode = decode;
