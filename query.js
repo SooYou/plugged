@@ -3,12 +3,11 @@ var util = require("util");
 
 var verbs = ["GET", "POST", "PUT", "DELETE"];
 
-var RequestError = function(data, status, code, fileName, lineNumber) {
-    RequestError.super_.call(
-        data && (Array.isArray(data) ? data[0] : "Request returned " + (status || null)),
-        fileName, lineNumber
-    );
+var RequestError = function(data, status, code) {
+    Error.captureStackTrace(this);
 
+    this.name = "RequestError";
+    this.message = (data && Array.isArray(data) && data.length > 0) ? data[0] : "Request returned " + (status || null);
     this.status = status || null;
     this.code = code || null;
 };
