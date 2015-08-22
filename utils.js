@@ -1,11 +1,4 @@
-var setErrorMessage = function(statusCode, msg) {
-    return {
-        code: statusCode,
-        message: msg
-    };
-};
-
-function Iterator(array) {
+var Iterator = function(array) {
     if(!Array.isArray(array))
         throw new Error("Parameter is not an array");
 
@@ -74,7 +67,6 @@ var decode = function(str) {
     .replace(/&gt;/g, '>');
 };
 
-exports.setErrorMessage = setErrorMessage;
 exports.splitTitle = splitTitle;
 exports.waterfall = waterfall;
 exports.Iterator = Iterator;
