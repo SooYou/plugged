@@ -1,34 +1,57 @@
 var request = require("request");
 var verbs = ["GET", "POST", "PUT", "DELETE"];
 
-function processEntry(query, entry) {
+var watcher = function(query) {
+    if(query.queue.length === 0)
+        query._stopWatcher();
+
+    // the length of the query changes with every call to _process
+    for(var i = 0; i < Math.min(5, query.queue.length); i++)
+        query._process();
+};
+
+var processEntry = function(query, entry) {
     request(entry.options, function requestCB(err, res, body) {
         query.active--;
 
         if(typeof entry.callback !== "undefined") {
              if(!err && res.statusCode == 200) {
 
-                // remove unnecessary information.
+                // remove unnecessary information like status and time.
                 if(body && body.hasOwnProperty("data"))
                     body = body.data;
 
-                // extract unnecessary array
-                if(entry.extractArray && body.length === 1)
-                    body = body[0];
-                else if(entry.extractArray && body.length === 0)
-                    body = null;
+                // received data is expected to be just one object
+                if(entry.extractArray) {
+                    var length = body.length;
 
-                entry.options = {};
-                entry.callback(null, body);
+                    if(length > 1) {
+                        err = [
+                            "received data from endpoint [",
+                            entry.verb,
+                            "] ",
+                            entry.url,
+                            " included more than one object. Enforced first object assignment anyway"
+                        ].join('');
+                    }
+
+                    // enforce single object
+                    if(length >= 1)
+                        body = body[0];
+                    else
+                        body = null;
+                }
+
+                entry.options = null;
+                entry.callback(err, body);
 
             } else {
                 // don't bother trying it again in case this entry got flushed through (tries === -1).
                 if((entry.tries >= 0 && entry.tries < 2) && (res ? res.statusCode : 0) >= 500) {
                     entry.tries++;
-                    setTimeout(pushAndProcess, 5*1000, query, entry);
+                    query.queue.push(entry);
+                    query._process();
                 } else {
-                    entry.options = {};
-
                     if(!err) {
                         err = new Error(body && (body.data ? body.data[0] : body.status) || 'Request returned ' + (res ? res.statusCode : null));
                     }
@@ -36,6 +59,8 @@ function processEntry(query, entry) {
                     err.code = res ? res.statusCode : null;
                     err.status = body ? body.status : null;
                     err.data = body ? body.data : null;
+
+                    entry.options = null;
                     entry.callback(err);
                 }
 
@@ -48,26 +73,38 @@ function processEntry(query, entry) {
     });
 }
 
-function pushAndProcess(query, entry) {
-    query.queue.push(entry);
-    query.process();
-}
-
-function watcher(query) {
-    if(query.queue.length === 0)
-        query.stopWatcher();
-
-    for(var i = 0; i < Math.min(5, query.queue.length); i++)
-        query.process();
-}
-
 function Query() {
     this.jar = null;
     this.queue = [];
     this.active = 0;
     this.watcherID = 0;
-    this.startWatcher();
 }
+
+Query.prototype._process = function() {
+    if(this.queue.length > 0) {
+
+        if(this.active <= 5) {
+            this.active++;
+            processEntry(this, this.queue.shift());
+        } else if(this.watcherID === 0) {
+            this._startWatcher();
+        }
+
+    }
+};
+
+Query.prototype._startWatcher = function() {
+    if(this.watcherID > 0)
+        this._stopWatcher();
+
+    //otherwise plug flips its shit and tells us to stop flooding its API
+    this.watcherID = setInterval(watcher, 5*1000, this);
+};
+
+Query.prototype._stopWatcher = function() {
+    clearInterval(this.watcherID);
+    this.watcherID = 0;
+};
 
 Query.prototype.setJar = function(jar, storage) {
     this.jar = jar || request.jar(storage);
@@ -81,7 +118,7 @@ Query.prototype.query = function(verb, url, data, callback, extractArray, flush)
     extractArray = extractArray || false;
     flush = flush || false;
 
-    //reorganize arguments since parameter data is optional
+    // reorganize arguments since parameter data is optional
     if(typeof data === "function") {
         if(typeof callback === "boolean") {
             flush = extractArray;
@@ -97,7 +134,7 @@ Query.prototype.query = function(verb, url, data, callback, extractArray, flush)
         throw new Error("url was not defined or not of type string");
 
     var entry = {
-        tries: (flush ? -1 : 0),
+        tries: 0,
         extractArray: extractArray,
         callback: callback,
         options: {
@@ -108,7 +145,7 @@ Query.prototype.query = function(verb, url, data, callback, extractArray, flush)
             body: data,
             json: true,
             headers: {
-                "User-Agent": "PlugClient/1.0 (NODE)",
+                "User-Agent": "PlugClient/1.1 (NODE)",
                 "Accept": "application/json, text/javascript; q=0.1, */*; q=0.5",
                 "Content-Type": "application/json"
             }
@@ -117,7 +154,7 @@ Query.prototype.query = function(verb, url, data, callback, extractArray, flush)
 
     if(!flush) {
         this.queue.push(entry);
-        this.process();
+        this._process();
     } else {
         this.active++;
         processEntry(this, entry);
@@ -126,34 +163,7 @@ Query.prototype.query = function(verb, url, data, callback, extractArray, flush)
 
 Query.prototype.flushQueue = function() {
     this.queue = [];
-};
-
-Query.prototype.process = function() {
-    if(this.queue.length > 0) {
-
-        if(this.active <= 5) {
-            clearTimeout(this.timeoutID);
-            this.timeoutID = 0;
-            this.active++;
-            processEntry(this, this.queue.shift());
-        } else if(this.watcherID === 0) {
-            this.startWatcher();
-        }
-
-    }
-};
-
-Query.prototype.startWatcher = function() {
-    if(this.watcherID > 0)
-        this.stopWatcher();
-
-    //otherwise plug flips its shit and tells us to stop flooding its API
-    this.watcherID = setInterval(watcher, 5*1000, this);
-};
-
-Query.prototype.stopWatcher = function() {
-    clearInterval(this.watcherID);
-    this.watcherID = 0;
+    this._stopWatcher();
 };
 
 module.exports = Query;
