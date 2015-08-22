@@ -273,9 +273,9 @@ describe("Login", function () {
             });
         });
         it("should work with node-style callbacks", function (done) {
-            client.login({email: testLogin.email, password: testLogin.password}, function (e) {
-                if(e)
-                    throw e;
+            client.login({email: testLogin.email, password: testLogin.password}, function (err) {
+                if(err)
+                    throw err;
                 done();
             });
         });
@@ -293,9 +293,9 @@ describe("Joining a room", function () {
     });
     it("should work with node-style callbacks", function (done) {
         // trying to join the same room twice is fine by plug
-        client.connect(testLogin.room, function (e, room) {
-            if(e)
-                throw e;
+        client.connect(testLogin.room, function (err, room) {
+            if(err)
+                throw err;
             expect(room).to.be.an("object");
             done();
         });

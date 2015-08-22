@@ -936,9 +936,9 @@ Plugged.prototype.invokeLogger = function(logfunc) {
     return false;
 };
 
-Plugged.prototype.login = function(credentials, authToken, cb) {
+Plugged.prototype.login = function(credentials, authToken, callback) {
     if(typeof authToken === "function") {
-        cb = authToken;
+        callback = authToken;
         authToken = null;
     }
 
@@ -998,15 +998,15 @@ Plugged.prototype.login = function(credentials, authToken, cb) {
         this._loggedIn();
     }
 
-    if(cb) {
+    if(callback) {
         var self = this;
         var onSuccess = function() {
             self.removeListener(self.LOGIN_ERROR, onError);
-            cb(null);
+            callback(null);
         };
-        var onError = function(e) {
+        var onError = function(err) {
             self.removeListener(self.LOGIN_SUCCESS, onSuccess);
-            cb(e);
+            callback(err);
         };
 
         this.once(this.LOGIN_SUCCESS, onSuccess);
@@ -1042,7 +1042,7 @@ Plugged.prototype.guest = function(room) {
     }.bind(this), false, true);
 };
 
-Plugged.prototype.connect = function(room, cb) {
+Plugged.prototype.connect = function(room, callback) {
     if(!room)
         throw new Error("room has to be defined");
 
@@ -1076,14 +1076,14 @@ Plugged.prototype.connect = function(room, cb) {
         }
     });
 
-    if(cb) {
+    if(callback) {
         var onSuccess = function(state) {
             self.removeListener(self.PLUG_ERROR, onError);
-            cb(null, state);
+            callback(null, state);
         };
-        var onError = function(e) {
+        var onError = function(err) {
             self.removeListener(self.JOINED_ROOM, onSuccess);
-            cb(e);
+            callback(err);
         };
 
         this.once(this.JOINED_ROOM, onSuccess);
