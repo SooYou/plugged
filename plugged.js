@@ -1037,7 +1037,7 @@ Plugged.prototype.guest = function(room) {
             this._connectSocket();
             this.emit(this.JOINED_ROOM, null);
         } else {
-            this.emit(this.PLUG_ERROR, utils.setErrorMessage(-1, "couldn't join room \"" + room + "\" as a guest"));
+            this.emit(this.PLUG_ERROR, new Error("couldn't join room \"" + room + "\" as a guest"));
         }
     }.bind(this), false, true);
 };
@@ -1935,7 +1935,7 @@ Plugged.prototype.getCSRF = function(callback) {
                 this._log("CSRF token: " + body, 2, "magenta");
                 callback && callback(null, body);
             } else {
-                callback && callback(utils.setErrorMessage(200, "CSRF token was not found"));
+                callback && callback(new Error("CSRF token was not found"));
             }
 
         } else {
