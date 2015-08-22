@@ -47,30 +47,6 @@ var waterfall = function(funcs, callback, context) {
     }());
 };
 
-var loginClient = function(client, tries) {
-    tries = tries || 0;
-
-    waterfall([
-        client.getCSRF.bind(client),
-        client.setLogin.bind(client),
-        client._getAuthToken.bind(client)
-    ], function _loginCredentialCheck(err) {
-        if(err) {
-            if(tries < 2 && err.code !== 401) {
-                client._log("an error occured while trying to log in", 0, "red");
-                client._log(err, 2, "red");
-                client._log("retrying...", 0);
-                loginClient(client, ++tries);
-            } else {
-                client._log("couldn't log in.", 0, "red");
-                client.emit(client.LOGIN_ERROR, err);
-            }
-        } else {
-            client._loggedIn.call(client);
-        }
-    });
-};
-
 var splitTitle = function(title) {
     title = title || "";
 
@@ -99,7 +75,6 @@ var decode = function(str) {
 };
 
 exports.setErrorMessage = setErrorMessage;
-exports.loginClient = loginClient;
 exports.splitTitle = splitTitle;
 exports.waterfall = waterfall;
 exports.Iterator = Iterator;
