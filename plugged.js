@@ -89,6 +89,8 @@ function Plugged(options) {
 
     this.log = options.log || function() {};
     this.messageProc = options.messageProc || this.defaultMessageProc;
+    this.retryLogin = options.retryLogin || true;
+
     this._keepAlive = this._keepAlive.bind(this);
     this.state = models.createState(options.state);
     this.query = new Query();
@@ -337,6 +339,38 @@ Plugged.prototype._getAuthToken = function(data, callback) {
             this.auth = token;
         callback && callback(err, token);
     });
+};
+
+Plugged.prototype._login = function(tries) {
+    tries = tries || 0;
+
+    utils.waterfall([
+        this.getCSRF,
+        this.setLogin,
+        this._getAuthToken
+    ], function _callback(err) {
+        if(!err) {
+            this._loggedIn();
+        } else {
+            this._log(
+                err && err.hasOwnProperty("message") ?
+                err.message :
+                "An error occured while trying to log in",
+                0, "red"
+            );
+
+            if(this.retryLogin && tries > 2) {
+                this._log("retrying now...", 0, "white");
+                this._login(tries++);
+            } else {
+                this._log([
+                    "failed to log in with '",
+                    (this.credentials.email || this.credentials.accessToken),
+                    "'"
+                ].join(''));
+            }
+        }
+    }, this);
 };
 
 /*================== WebSocket ==================*/
@@ -958,7 +992,7 @@ Plugged.prototype.login = function(credentials, authToken, cb) {
 
         this._log("logging in with account: " + (credentials.email || credentials.userID), 2, "white");
 
-        utils.loginClient(this);
+        this._login();
     } else {
         this.auth = authToken;
         this._loggedIn();
