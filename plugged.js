@@ -136,6 +136,12 @@ Plugged.prototype.GLOBALROLE = {
     ADMIN:              5
 };
 
+Plugged.prototype.CACHE = {
+    NO:     0,
+    YES:    1,
+    ONLY:   2
+};
+
 /*===== GENERAL EVENTS =====*/
 /* LOGIN BASED EVENTS */
 Plugged.prototype.LOGIN_ERROR = "loginError";
@@ -1085,7 +1091,10 @@ Plugged.prototype.login = function(credentials, authToken, callback) {
 
 Plugged.prototype.guest = function(room, callback) {
     if(this.sock) {
-        this._log("you seem to be logged in already", 0, "white");
+        if(this.sock.readyState === WebSocket.OPEN)
+            this._log("you seem to be logged in already", 0, "yellow");
+        else
+            this._log("the socket is already instantiated", 0, "red");
         return;
     }
 
@@ -1146,13 +1155,15 @@ Plugged.prototype.connect = function(room, callback) {
                     this.state.self.role = stats.role;
                     this.emit(this.JOINED_ROOM, this.state.room);
                 } else {
-                    this.state.room = room;
+                    this.state.room = models.parseRoom();
                     this.state.self.role = 0;
                     this.emit(this.PLUG_ERROR, err);
                 }
             });
 
         } else {
+            this.state.room = models.parseRoom();
+            this.state.self.role = 0;
             this.emit(this.PLUG_ERROR, err);
         }
     });
@@ -1179,17 +1190,20 @@ Plugged.prototype.getCurrentRoomStats = function() {
 };
 
 Plugged.prototype.getUserByID = function(id, checkCache) {
-    checkCache = checkCache || false;
+    checkCache = checkCache || this.CACHE.NO;
+
+    if(checkCache === true)
+        checkCache = this.CACHE.YES;
 
     if(id == this.state.self.id)
         return this.state.self;
 
-    for(var i = 0, l = this.state.room.users.length; i < l; i++) {
+    for(var i = 0, l = this.state.room.users.length, m = (checkCache !== this.CACHE.ONLY); m && i < l; i++) {
         if(this.state.room.users[i].id == id)
             return this.state.room.users[i];
     }
 
-    for(var i = 0, l = this.state.usercache.length; checkCache && i < l; i++) {
+    for(var i = 0, l = this.state.usercache.length, m = (checkCache !== this.CACHE.NO); m && i < l; i++) {
         if(this.state.usercache[i].id == id)
             return this.state.usercache[i];
     }
@@ -1198,18 +1212,21 @@ Plugged.prototype.getUserByID = function(id, checkCache) {
 };
 
 Plugged.prototype.getUserByName = function(username, checkCache) {
-    checkCache = checkCache || false;
+    checkCache = checkCache || this.CACHE.NO;
     username = username.toLowerCase();
+
+    if(checkCache === true)
+        checkCache = this.CACHE.YES;
 
     if(this.state.self.username.toLowerCase() === username)
         return this.state.self;
 
-    for(var i = 0, l = this.state.room.users.length; i < l; i++) {
+    for(var i = 0, l = this.state.room.users.length, m = (checkCache !== this.CACHE.ONLY); m && i < l; i++) {
         if(this.state.room.users[i].username.toLowerCase() === username)
             return this.state.room.users[i];
     }
 
-    for(var i = 0, l = this.state.usercache.length; checkCache && i < l; i++) {
+    for(var i = 0, l = this.state.usercache.length, m = (checkCache !== this.CACHE.NO); m && i < l; i++) {
         if(this.state.usercache[i].username.toLowerCase() === username)
             return this.state.usercache[i];
     }
@@ -1393,7 +1410,7 @@ Plugged.prototype.getGrabs = function(withUserObject) {
 };
 
 Plugged.prototype.cacheUser = function(user) {
-    if(typeof user === "object") {
+    if(typeof user === "object" && typeof this.getUserByID(user.id, this.CACHE.ONLY) === "undefined") {
         this.state.usercache.push({ user: user, timestamp: Date.now() });
         return true;
     }
