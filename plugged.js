@@ -1212,6 +1212,10 @@ Plugged.prototype.getSetting = function(setting) {
     return null;
 };
 
+Plugged.prototype.getSettings = function() {
+    return this.state.self.settings;
+};
+
 Plugged.prototype.isFriend = function(userID) {
     for(var i = 0, l = this.state.self.friends.length; i < l; i++) {
         if(this.state.self.friends[i] == userID)
@@ -1251,12 +1255,12 @@ Plugged.prototype.getFX = function() {
 
 Plugged.prototype.checkGlobalRole = function(gRole) {
     return (gRole === 5 ?
-                        this.GLOBALROLE.ADMIN :
-                        (gRole > 0 && gRole < 5 ?
-                                     this.GLOBALROLE.BRAND_AMBASSADOR :
-                                     this.GLOBALROLE.NONE
-                        )
-            );
+                this.GLOBALROLE.ADMIN :
+                (gRole > 0 && gRole < 5 ?
+                        this.GLOBALROLE.BRAND_AMBASSADOR :
+                        this.GLOBALROLE.NONE
+                )
+    );
 };
 
 Plugged.prototype.getHostName = function() {
