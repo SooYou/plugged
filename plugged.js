@@ -69,16 +69,6 @@ https://github.com/welovekpop/SekshiBot/blob/master/src/Sekshi.js
 var CHAT_TIMEOUT_INC = 70;
 var CHAT_TIMEOUT_MAX = 700;
 
-WebSocket.prototype.sendMessage = function(type, data) {
-    if(typeof type === "string" && (typeof data === "string" || typeof data === "number")) {
-        this.send(JSON.stringify({
-            a: type,
-            p: data,
-            t: Date.now()
-        }));
-    }
-};
-
 function Plugged(options) {
     Plugged.super_.call(this);
 
@@ -215,6 +205,38 @@ Plugged.prototype.MAINTENANCE_MODE_ALERT = "plugMaintenanceAlert";
 Plugged.prototype.ROOM_DESCRIPTION_UPDATE = "roomDescriptionUpdate";
 Plugged.prototype.ROOM_MIN_CHAT_LEVEL_UPDATE = "roomMinChatLevelUpdate";
 
+Plugged.prototype._sendMessage = function(type, data) {
+    if(!this.sock || this.sock.readyState !== WebSocket.OPEN) {
+        this._log("socket is not opened!", 1, "red");
+    } else {
+        if(typeof type === "string" && (typeof data === "string" || typeof data === "number")) {
+            this.sock.send(JSON.stringify({
+                a: type,
+                p: data,
+                t: Date.now()
+            }));
+
+            return true;
+        } else {
+            var err = [];
+
+            if(typeof type === "undefined")
+                err.push("message type definition is undefined");
+            else if(typeof type !== "string")
+                err.push("message type definition is not of type string");
+
+            if(typeof data === "undefined")
+                err.push("no data was defined");
+            else if(!(typeof data === "string") || !(typeof data === "string"))
+                err.push("data was not of type string or number");
+
+            this._log("couldn't send message. " + err.join(err.length > 1 ? ", " : ''));
+        }
+    }
+
+    return false;
+};
+
 Plugged.prototype._keepAlive = function() {
     if(this.keepAliveTries >= 6) {
         this._log("haven't received a keep alive message from host for more than 3 minutes, is it on fire?", 1, "red");
@@ -304,19 +326,24 @@ Plugged.prototype._processChatQueue = function(lastMessage) {
     if(this.chatQueue.length > 0) {
         if(lastMessage + this.chatTimeout <= Date.now()) {
             var msg = this.chatQueue.shift();
-            this.sock.sendMessage("chat", msg.message);
+            if(!this._sendMessage("chat", msg.message)) {
+                this.chatQueue.unshift(msg);
+                this._log("message was put back into the queue", 1, "info");
 
-            // timeouts can't get lower than 4ms but anything below 1000ms is ridiculous anyway
-            if(msg.timeout >= 0) {
-                setTimeout(
-                    this._removeChatMessageByDelay.bind(this),
-                    msg.timeout,
-                    msg.message
-                );
+                return;
+            } else {
+                // timeouts can't get lower than 4ms but anything below 1000ms is ridiculous anyway
+                if(msg.timeout >= 0) {
+                    setTimeout(
+                        this._removeChatMessageByDelay.bind(this),
+                        msg.timeout,
+                        msg.message
+                    );
+                }
+
+                if(this.chatTimeout < CHAT_TIMEOUT_MAX)
+                    this.chatTimeout += CHAT_TIMEOUT_INC;
             }
-
-            if(this.chatTimeout < CHAT_TIMEOUT_MAX)
-                this.chatTimeout += CHAT_TIMEOUT_INC;
         }
 
         setTimeout(this._processChatQueue.bind(this), this.chatTimeout, Date.now());
@@ -393,7 +420,7 @@ Plugged.prototype._login = function(tries) {
                 0, "red"
             );
 
-            if(this.retryLogin && tries > 2) {
+            if(this.retryLogin && tries <= 2) {
                 this._log("retrying now...", 0, "white");
                 this._login(tries++);
             } else {
@@ -410,8 +437,14 @@ Plugged.prototype._login = function(tries) {
 
 /*================== WebSocket ==================*/
 Plugged.prototype._connectSocket = function() {
-    if(this.sock)
-        return "sock is already open!";
+    if(this.sock) {
+        if(this.sock.readyState !== WebSocket.OPEN)
+            this._log("sock is already instantiated but not open", 1, "red");
+        else
+            this._log("sock is already instantiated and open", 1, "yellow");
+
+        return;
+    }
 
     var self = this;
     this.sock = new WebSocket("wss://godj.plug.dj:443/socket", {
@@ -422,7 +455,7 @@ Plugged.prototype._connectSocket = function() {
     this.sock.on("open", function _sockOpen() {
         self._log("socket opened", 3, "magenta");
         self.emit(self.SOCK_OPEN, self);
-        this.sendMessage("auth", self.auth);
+        self._sendMessage("auth", self.auth);
         self._keepAliveCheck.call(self);
     });
 
@@ -903,9 +936,6 @@ Plugged.prototype.setMessageProcessor = function(func) {
 
 Plugged.prototype.sendChat = function(message, deleteTimeout) {
     deleteTimeout = deleteTimeout || -1;
-
-    if(this.sock == null)
-        throw new Error("Not connected to service!");
 
     if(!message || message.length <= 0)
         return;
