@@ -409,6 +409,7 @@ Plugged.prototype._clearState = function() {
 };
 
 Plugged.prototype._getAuthToken = function(data, callback) {
+    this._log("getting auth token...", 1, "white");
     this.getAuthToken(function(err, token) {
         if(!err)
             this.auth = token;
@@ -420,9 +421,9 @@ Plugged.prototype._getAuthToken = function(data, callback) {
 Plugged.prototype._loggedIn = function() {
     this._connectSocket();
     this._log("logged in", 1, "green");
-    this.requestSelf(function _requestSelfLogin(err) {
+    this.requestSelf(function _requestSelfLogin(err, self) {
         if(!err)
-            this.emit(this.LOGIN_SUCCESS);
+            this.emit(this.LOGIN_SUCCESS, self);
         else
             this.emit(this.LOGIN_ERROR, err);
     });
@@ -1057,7 +1058,7 @@ Plugged.prototype.login = function(credentials, authToken, callback) {
         if(!this.getJar())
             this.setJar(null);
 
-        this._log("logging in with account: " + (credentials.email || credentials.userID), 2, "white");
+        this._log("logging in with account: " + (credentials.email || credentials.userID) + "...", 2, "white");
 
         this._login();
     } else {
@@ -1067,9 +1068,9 @@ Plugged.prototype.login = function(credentials, authToken, callback) {
     }
 
     if(callback) {
-        var onSuccess = function() {
+        var onSuccess = function(self) {
             this.removeListener(this.LOGIN_ERROR, onError);
-            callback(null);
+            callback(null, self);
         };
 
         var onError = function(err) {
@@ -1597,6 +1598,8 @@ Plugged.prototype.setCycle = function(shouldCycle, callback) {
 Plugged.prototype.setLogin = function(csrf, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
 
+    this._log("setting login data...", 1, "white");
+
     if(this.credentials.hasOwnProperty("email")) {
         this.query.query("POST", endpoints["LOGIN"], {
             "csrf": csrf,
@@ -1924,7 +1927,6 @@ Plugged.prototype.findPlaylist = function(query, callback) {
 };
 
 Plugged.prototype.findMedia = function(query, callback) {
-    // TODO: series and then push the results
     this.searchMediaPlaylist(playlistID, query, callback);
 };
 
@@ -2005,7 +2007,7 @@ Plugged.prototype.getCSRF = function(callback) {
                 this._log("CSRF token: " + body, 2, "magenta");
                 callback && callback(null, body);
             } else {
-                callback && callback(new Error("CSRF token was not found"));
+                callback && callback(new Error("Couldn't find CSRF token in body, are you logged in already?"));
             }
 
         } else {
