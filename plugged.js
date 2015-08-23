@@ -232,14 +232,37 @@ Plugged.prototype._keepAlive = function() {
     }
 };
 
-Plugged.prototype._loggedIn = function() {
-    this._connectSocket();
-    this.requestSelf(function _requestSelfLogin(err) {
-        if(!err)
-            this.emit(this.LOGIN_SUCCESS);
+Plugged.prototype._keepAliveCheck = function() {
+    // the hiccup counter gets set back to zero
+    this.keepAliveTries = 0;
+    clearTimeout(this.keepAliveID);
+    this.keepAliveID = setTimeout(this._keepAlive, 30*1000);
+};
+
+Plugged.prototype._emitChat = function(chat) {
+    if(chat.message.indexOf('@' + this.state.self.username) > -1)
+        this.emit(this.CHAT_MENTION, chat);
+    else if(chat.message.charAt(0) == '/')
+        this.emit(this.CHAT_COMMAND, chat);
+
+    this.emit(this.CHAT, chat);
+};
+
+Plugged.prototype._pushUser = function(user) {
+    if(user.guest) {
+        this.state.room.meta.guests++;
+
+        user.joined = new Date().toISOString();
+        this.emit(this.GUEST_JOIN, user);
+    } else {
+        this.state.room.users.push(user);
+        this.state.room.meta.population++;
+
+        if(this.isFriend(user.id))
+            this.emit(this.FRIEND_JOIN, user);
         else
-            this.emit(this.LOGIN_ERROR, err);
-    });
+            this.emit(this.USER_JOIN, user);
+    }
 };
 
 // TODO: remove with 3.0.0
@@ -289,7 +312,7 @@ Plugged.prototype._processChatQueue = function(lastMessage) {
                     this._removeChatMessageByDelay.bind(this),
                     msg.timeout,
                     msg.message
-                    );
+                );
             }
 
             if(this.chatTimeout < CHAT_TIMEOUT_MAX)
@@ -337,7 +360,18 @@ Plugged.prototype._getAuthToken = function(data, callback) {
     this.getAuthToken(function(err, token) {
         if(!err)
             this.auth = token;
+
         callback && callback(err, token);
+    });
+};
+
+Plugged.prototype._loggedIn = function() {
+    this._connectSocket();
+    this.requestSelf(function _requestSelfLogin(err) {
+        if(!err)
+            this.emit(this.LOGIN_SUCCESS);
+        else
+            this.emit(this.LOGIN_ERROR, err);
     });
 };
 
@@ -355,7 +389,7 @@ Plugged.prototype._login = function(tries) {
             this._log(
                 err && err.hasOwnProperty("message") ?
                 err.message :
-                "An error occured while trying to log in",
+                "An unrecorded error occured while trying to log in",
                 0, "red"
             );
 
@@ -364,10 +398,11 @@ Plugged.prototype._login = function(tries) {
                 this._login(tries++);
             } else {
                 this._log([
-                    "failed to log in with '",
+                    "failed to log in with \"",
                     (this.credentials.email || this.credentials.accessToken),
-                    "'"
+                    "\""
                 ].join(''));
+                this.emit(this.LOGIN_ERROR, err);
             }
         }
     }, this);
@@ -418,121 +453,6 @@ Plugged.prototype._connectSocket = function() {
         else
             self._wsaprocessor(self, msg);
     });
-};
-
-Plugged.prototype.clearUserCache = function() {
-    this.state.usercache = [];
-};
-
-Plugged.prototype.getChatByUser = function(username) {
-    var messages = [];
-    username = username.toLowerCase();
-
-    for(var i = this.state.chatcache.length - 1; i >= 0; i--) {
-        if(this.state.chatcache[i].username.toLowerCase() === username)
-            messages.push(this.state.chatcache[i]);
-    }
-
-    return messages;
-};
-
-Plugged.prototype.getChat = function() {
-    return this.state.chatcache;
-};
-
-Plugged.prototype.removeChatMessagesByUser = function(username, cacheOnly) {
-    cacheOnly = cacheOnly || false;
-    username = username.toLowerCase();
-
-    for(var i = this.state.chatcache.length - 1; i >= 0; i--) {
-        if(this.state.chatcache[i].username.toLowerCase() === username) {
-            if(!cacheOnly)
-                this.deleteMessage(this.state.chatcache[i].cid);
-
-            this.state.chatcache.splice(i, 1);
-        }
-    }
-};
-
-Plugged.prototype.removeChatMessage = function(cid, cacheOnly) {
-    cacheOnly = cacheOnly || false;
-
-    for(var i = this.state.chatcache.length - 1; i >= 0; i--) {
-        if(this.state.chatcache[i].cid === cid) {
-            if(!cacheOnly)
-                this.deleteMessage(this.state.chatcache[i].cid);
-
-            this.state.chatcache.splice(i, 1);
-            break;
-        }
-    }
-};
-
-Plugged.prototype.clearChatCache = function() {
-    this.state.chatcache = [];
-};
-
-// keeps the usercache clean by deleting invalidate objects
-// objects invalidate by staying in cache for more than 5 minutes
-Plugged.prototype.watchUserCache = function(enabled) {
-    clearInterval(this.cleanCacheInterval);
-
-    if(enabled) {
-        this.cleanCacheInterval = setInterval(this._cleanUserCache.bind(this), 5*60*1000);
-    } else {
-        this.cacheUserOnLeave(false);
-        this.cleanCacheInterval = -1;
-        this.clearUserCache();
-    }
-};
-
-Plugged.prototype.cacheChat = function(enabled) {
-    this.ccache = enabled;
-};
-
-Plugged.prototype.isChatCached = function() {
-    return this.ccache;
-};
-
-Plugged.prototype.setChatCacheSize = function(size) {
-    if(typeof size === "number" && size >= 0)
-        return this.chatcachesize = size;
-    else
-        return this.chatcachesize;
-};
-
-Plugged.prototype.cacheUserOnLeave = function(enabled) {
-    if(this.cleanCacheInterval !== -1)
-        this.sleave = enabled;
-    return this.sleave;
-};
-
-Plugged.prototype.isUserCachedOnLeave = function() {
-    return this.sleave;
-};
-
-Plugged.prototype.clearUserFromLists = function(id) {
-    for(var i = 0, l = this.state.room.votes; i < l; i++) {
-        if(this.state.room.votes[i].id == id) {
-            this.state.room.votes.splice(i, 1);
-            break;
-        }
-    }
-
-    for(var i = 0, l = this.state.room.grabs; i < l; i++) {
-        if(this.state.room.grabs[i] == id) {
-            this.state.room.grabs.splice(i, 1);
-            break;
-        }
-    }
-};
-
-Plugged.prototype.getJar = function() {
-    return this.query.getJar();
-};
-
-Plugged.prototype.setJar = function(jar, storage) {
-    this.query.setJar(jar, storage);
 };
 
 // WebSocket action processor
@@ -846,11 +766,119 @@ Plugged.prototype._wsaprocessor = function(self, msg) {
     }
 };
 
-Plugged.prototype._keepAliveCheck = function() {
-    // the hiccup counter gets set back to zero
-    this.keepAliveTries = 0;
-    clearTimeout(this.keepAliveID);
-    this.keepAliveID = setTimeout(this._keepAlive, 30*1000);
+Plugged.prototype.clearUserCache = function() {
+    this.state.usercache = [];
+};
+
+Plugged.prototype.getChatByUser = function(username) {
+    var messages = [];
+    username = username.toLowerCase();
+
+    for(var i = this.state.chatcache.length - 1; i >= 0; i--) {
+        if(this.state.chatcache[i].username.toLowerCase() === username)
+            messages.push(this.state.chatcache[i]);
+    }
+
+    return messages;
+};
+
+Plugged.prototype.getChat = function() {
+    return this.state.chatcache;
+};
+
+Plugged.prototype.removeChatMessagesByUser = function(username, cacheOnly) {
+    cacheOnly = cacheOnly || false;
+    username = username.toLowerCase();
+
+    for(var i = this.state.chatcache.length - 1; i >= 0; i--) {
+        if(this.state.chatcache[i].username.toLowerCase() === username) {
+            if(!cacheOnly)
+                this.deleteMessage(this.state.chatcache[i].cid);
+
+            this.state.chatcache.splice(i, 1);
+        }
+    }
+};
+
+Plugged.prototype.removeChatMessage = function(cid, cacheOnly) {
+    cacheOnly = cacheOnly || false;
+
+    for(var i = this.state.chatcache.length - 1; i >= 0; i--) {
+        if(this.state.chatcache[i].cid === cid) {
+            if(!cacheOnly)
+                this.deleteMessage(this.state.chatcache[i].cid);
+
+            this.state.chatcache.splice(i, 1);
+            break;
+        }
+    }
+};
+
+Plugged.prototype.clearChatCache = function() {
+    this.state.chatcache = [];
+};
+
+// keeps the usercache clean by deleting invalidate objects
+// objects invalidate by staying in cache for more than 5 minutes
+Plugged.prototype.watchUserCache = function(enabled) {
+    clearInterval(this.cleanCacheInterval);
+
+    if(enabled) {
+        this.cleanCacheInterval = setInterval(this._cleanUserCache.bind(this), 5*60*1000);
+    } else {
+        this.cacheUserOnLeave(false);
+        this.cleanCacheInterval = -1;
+        this.clearUserCache();
+    }
+};
+
+Plugged.prototype.cacheChat = function(enabled) {
+    this.ccache = enabled;
+};
+
+Plugged.prototype.isChatCached = function() {
+    return this.ccache;
+};
+
+Plugged.prototype.setChatCacheSize = function(size) {
+    if(typeof size === "number" && size >= 0)
+        return this.chatcachesize = size;
+    else
+        return this.chatcachesize;
+};
+
+Plugged.prototype.cacheUserOnLeave = function(enabled) {
+    if(this.cleanCacheInterval !== -1)
+        this.sleave = enabled;
+    return this.sleave;
+};
+
+Plugged.prototype.isUserCachedOnLeave = function() {
+    return this.sleave;
+};
+
+Plugged.prototype.clearUserFromLists = function(id) {
+    for(var i = 0, l = this.state.room.votes; i < l; i++) {
+        if(this.state.room.votes[i].id == id) {
+            this.state.room.votes.splice(i, 1);
+            break;
+        }
+    }
+
+    for(var i = 0, l = this.state.room.grabs; i < l; i++) {
+        if(this.state.room.grabs[i] == id) {
+            this.state.room.grabs.splice(i, 1);
+            break;
+        }
+    }
+};
+
+Plugged.prototype.getJar = function() {
+    return this.query.getJar();
+};
+
+Plugged.prototype.setJar = function(jar, storage) {
+    this.query.setJar(jar, storage);
 };
 
 Plugged.prototype.defaultMessageProc = function(message) {
@@ -871,32 +899,6 @@ Plugged.prototype.setMessageProcessor = function(func) {
     }
 
     return false;
-};
-
-Plugged.prototype._emitChat = function(chat) {
-    if(chat.message.indexOf('@' + this.state.self.username) > -1)
-        this.emit(this.CHAT_MENTION, chat);
-    else if(chat.message.charAt(0) == '/')
-        this.emit(this.CHAT_COMMAND, chat);
-
-    this.emit(this.CHAT, chat);
-};
-
-Plugged.prototype._pushUser = function(user) {
-    if(user.guest) {
-        this.state.room.meta.guests++;
-
-        user.joined = new Date().toISOString();
-        this.emit(this.GUEST_JOIN, user);
-    } else {
-        this.state.room.users.push(user);
-        this.state.room.meta.population++;
-
-        if(this.isFriend(user.id))
-            this.emit(this.FRIEND_JOIN, user);
-        else
-            this.emit(this.USER_JOIN, user);
-    }
 };
 
 Plugged.prototype.sendChat = function(message, deleteTimeout) {
@@ -999,13 +1001,13 @@ Plugged.prototype.login = function(credentials, authToken, callback) {
     }
 
     if(callback) {
-        var self = this;
         var onSuccess = function() {
-            self.removeListener(self.LOGIN_ERROR, onError);
+            this.removeListener(this.LOGIN_ERROR, onError);
             callback(null);
         };
+
         var onError = function(err) {
-            self.removeListener(self.LOGIN_SUCCESS, onSuccess);
+            this.removeListener(this.LOGIN_SUCCESS, onSuccess);
             callback(err);
         };
 
@@ -1014,7 +1016,7 @@ Plugged.prototype.login = function(credentials, authToken, callback) {
     }
 };
 
-Plugged.prototype.guest = function(room) {
+Plugged.prototype.guest = function(room, callback) {
     if(this.sock) {
         this._log("you seem to be logged in already", 0, "white");
         return;
@@ -1035,9 +1037,19 @@ Plugged.prototype.guest = function(room) {
             });
 
             this._connectSocket();
-            this.emit(this.JOINED_ROOM, null);
+            this.getRoomStats(function(err, stats) {
+                if(!err) {
+                    this.emit(this.JOINED_ROOM, stats);
+                    callback && callback(null, stats);
+                } else {
+                    this.emit(this.PLUG_ERROR, err);
+                    callback && callback(err);
+                }
+            });
         } else {
-            this.emit(this.PLUG_ERROR, new Error("couldn't join room \"" + room + "\" as a guest"));
+            var err = new Error("couldn't join room \"" + room + "\" as a guest")
+            this.emit(this.PLUG_ERROR, err);
+            callback && callback(err);
         }
     }.bind(this), false, true);
 };
@@ -1052,37 +1064,35 @@ Plugged.prototype.connect = function(room, callback) {
         return;
     }
 
-    var self = this;
-
     this.joinRoom(room, function _joinedRoom(err) {
         if(!err) {
-            self.watchUserCache(true);
-            self.clearUserCache();
-            self.clearChatCache();
+            this.watchUserCache(true);
+            this.clearUserCache();
+            this.clearChatCache();
 
-            self.getRoomStats(function(err, stats) {
+            this.getRoomStats(function(err, stats) {
 
                 if(!err) {
-                    self.state.room = stats;
-                    self.state.self.role = stats.role;
-                    self.emit(self.JOINED_ROOM, self.state.room);
+                    this.state.room = stats;
+                    this.state.self.role = stats.role;
+                    this.emit(this.JOINED_ROOM, this.state.room);
                 } else {
-                    self.emit(self.PLUG_ERROR, err);
+                    this.emit(this.PLUG_ERROR, err);
                 }
             });
 
         } else {
-            self.emit(self.PLUG_ERROR, err);
+            this.emit(this.PLUG_ERROR, err);
         }
     });
 
     if(callback) {
         var onSuccess = function(state) {
-            self.removeListener(self.PLUG_ERROR, onError);
+            this.removeListener(this.PLUG_ERROR, onError);
             callback(null, state);
         };
         var onError = function(err) {
-            self.removeListener(self.JOINED_ROOM, onSuccess);
+            this.removeListener(this.JOINED_ROOM, onSuccess);
             callback(err);
         };
 
@@ -1360,11 +1370,6 @@ Plugged.prototype.getStaffOnlineByRole = function(role) {
 };
 
 Plugged.prototype.getStaffByRole = function(role, callback) {
-    if(typeof callback !== "function")
-        return;
-
-    var self = this;
-
     this.getStaff(function(err, staff) {
         if(!err) {
             var filteredStaff = [];
@@ -1374,9 +1379,9 @@ Plugged.prototype.getStaffByRole = function(role, callback) {
                     filteredStaff.push(models.parseUser(staff[i]));
             }
 
-            callback.call(self, null, filteredStaff);
+            callback && callback(null, filteredStaff);
         } else {
-            callback.call(self, err);
+            callback && callback(err);
         }
     });
 };
@@ -1436,7 +1441,6 @@ Plugged.prototype.getRooms = function(callback) {
 Plugged.prototype.getStaff = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", endpoints["STAFF"], function _sanitizeStaff(err, staff) {
-
         callback && callback(err, (!err && staff ? staff.map(function(staffEntry) {
             return models.parseUser(staffEntry);
         }) : []));
@@ -1799,6 +1803,7 @@ Plugged.prototype.logout = function() {
 Plugged.prototype.requestSelf = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     var self = this;
+
     this.query.query("GET", endpoints["USERSTATS"] + "me", function _requestedSelf(err, data) {
         if(!err && data) {
             self.state.self = models.parseSelf(data);
