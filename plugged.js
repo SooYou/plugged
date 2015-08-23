@@ -81,6 +81,7 @@ function Plugged(options) {
     this.messageProc = options.messageProc || this.defaultMessageProc;
     this.retryLogin = options.retryLogin || true;
 
+    this._wsaprocessor = this._wsaprocessor.bind(this);
     this._keepAlive = this._keepAlive.bind(this);
     this.state = models.createState(options.state);
     this.query = new Query();
@@ -240,10 +241,10 @@ Plugged.prototype._sendMessage = function(type, data) {
 Plugged.prototype._keepAlive = function() {
     if(this.keepAliveTries >= 6) {
         this._log("haven't received a keep alive message from host for more than 3 minutes, is it on fire?", 1, "red");
-        this.emit(this.CONN_PART, this.getRoomMeta());
-        this.logout();
-        clearTimeout(this.keepAliveID);
-        this.keepAliveID = -1;
+        // save meta information of the room since clearState erases all data
+        var meta = this.getRoomMeta();
+        this._clearState();
+        this.emit(this.CONN_PART, meta);
     } else {
         this.keepAliveTries++;
         clearTimeout(this.keepAliveID);
@@ -328,7 +329,7 @@ Plugged.prototype._processChatQueue = function(lastMessage) {
             var msg = this.chatQueue.shift();
             if(!this._sendMessage("chat", msg.message)) {
                 this.chatQueue.unshift(msg);
-                this._log("message was put back into the queue", 1, "info");
+                this._log("message was put back into the queue", 1, "white");
 
                 return;
             } else {
@@ -353,8 +354,11 @@ Plugged.prototype._processChatQueue = function(lastMessage) {
 };
 
 Plugged.prototype._removeChatMessageByDelay = function(message) {
-    if(typeof message !== "string")
+    if(typeof message !== "string") {
+        this._log("message \"" + message + "\" is not of type string", 2, "red");
+
         return;
+    }
 
     for(var i = this.state.chatcache.length - 1; i >= 0; i--) {
         if(this.state.chatcache[i].username !== this.state.self.username)
@@ -368,19 +372,40 @@ Plugged.prototype._removeChatMessageByDelay = function(message) {
 };
 
 Plugged.prototype._checkForPreviousVote = function(vote) {
-    for(var i = 0, l = this.state.room.votes.length; i < l; i++) {
+    for(var i = this.state.room.votes.length - 1; i >= 0; i--) {
         if(this.state.room.votes[i].id == vote.id) {
             // only return true if vote direction hasn't changed
             if(this.state.room.votes[i].direction !== vote.direction) {
                 this.state.room.votes[i].direction = vote.direction;
+
                 return false;
             } else {
                 return true;
             }
         }
     }
+
     this.state.room.votes.push(vote);
     return false;
+};
+
+Plugged.prototype._clearState = function() {
+    this.watchUserCache(false);
+    this.clearUserCache();
+    this.clearChatQueue();
+    this.clearChatCache();
+    this.query.flushQueue();
+    this.state = models.createState();
+
+    clearTimeout(this.keepAliveID);
+    this.keepAliveID = -1;
+
+    this.sock.close();
+    this.sock.removeAllListeners();
+
+    this.sock = null;
+    this.auth = null;
+    this.keepAliveTries = 0;
 };
 
 Plugged.prototype._getAuthToken = function(data, callback) {
@@ -394,6 +419,7 @@ Plugged.prototype._getAuthToken = function(data, callback) {
 
 Plugged.prototype._loggedIn = function() {
     this._connectSocket();
+    this._log("logged in", 1, "green");
     this.requestSelf(function _requestSelfLogin(err) {
         if(!err)
             this.emit(this.LOGIN_SUCCESS);
@@ -472,71 +498,74 @@ Plugged.prototype._connectSocket = function() {
 
     /*================= SOCK ERROR ==================*/
     this.sock.on("error", function _sockError(err) {
-        self._log("sock error!", 3, "magenta");
+        self._log("sock error", 3, "magenta");
         self.emit(self.SOCK_ERROR, self, err);
     });
 
     /*================= SOCK MESSAGE =================*/
-    this.sock.on("message", function _receivedMessage(msg) {
-        if(typeof msg !== "string")
-            return;
-
-        if(msg.charAt(0) === 'h')
-            self._keepAliveCheck.call(self);
-        else
-            self._wsaprocessor(self, msg);
-    });
+    this.sock.on("message", self._wsaprocessor);
 };
 
 // WebSocket action processor
-Plugged.prototype._wsaprocessor = function(self, msg) {
+Plugged.prototype._wsaprocessor = function(msg) {
+    if(typeof msg !== "string") {
+        this._log("socket received message that isn't a string", 3, "yellow");
+        return;
+    }
+
+    // can only occur when it's really a ping message
+    if(msg.charAt(0) === 'h') {
+        this._keepAliveCheck();
+        return;
+    }
+
     var data = JSON.parse(msg)[0];
 
     switch(data.a) {
-        case self.ACK:
-            self.emit((data.p === "1" ? self.CONN_SUCCESS : self.CONN_ERROR), data.p);
+        case this.ACK:
+            this.emit((data.p === "1" ? this.CONN_SUCCESS : this.CONN_ERROR), data.p);
             break;
 
-        case self.ADVANCE:
+        case this.ADVANCE:
             var previous = {
-                historyID: self.state.room.playback.historyID,
-                media: self.state.room.playback.media,
-                dj: this.getUserByID(self.state.room.booth.dj),
+                historyID: this.state.room.playback.historyID,
+                media: this.state.room.playback.media,
+                dj: this.getUserByID(this.state.room.booth.dj),
                 score: {
                     positive: 0,
                     negative: 0,
-                    grabs: self.state.room.grabs.length
+                    grabs: this.state.room.grabs.length
                 }
             };
 
-            for(var i = self.state.room.votes.length - 1; i >= 0; i--) {
-                if(self.state.room.votes[i].direction > 0)
+            for(var i = this.state.room.votes.length - 1; i >= 0; i--) {
+                if(this.state.room.votes[i].direction > 0)
                     previous.score.positive++;
                 else
                     previous.score.negative++;
             }
 
-            self.state.room.booth.dj = data.p.c;
-            self.state.room.booth.waitlist = data.p.d;
-            self.state.room.grabs = [];
-            self.state.room.votes = [];
+            this.state.room.booth.dj = data.p.c;
+            this.state.room.booth.waitlist = data.p.d;
+            this.state.room.grabs = [];
+            this.state.room.votes = [];
 
-            self.state.room.playback.media = models.parseMedia(data.p.m);
-            self.state.room.playback.historyID = data.p.h;
-            self.state.room.playback.playlistID = data.p.p;
-            self.state.room.playback.startTime = data.p.t;
+            this.state.room.playback.media = models.parseMedia(data.p.m);
+            this.state.room.playback.historyID = data.p.h;
+            this.state.room.playback.playlistID = data.p.p;
+            this.state.room.playback.startTime = data.p.t;
 
-            self.emit(self.ADVANCE, self.state.room.booth, self.state.room.playback, previous);
+            this.emit(this.ADVANCE, this.state.room.booth, this.state.room.playback, previous);
             break;
 
-        case self.CHAT:
+        case this.CHAT:
             var chat = models.parseChat(data.p);
 
-            if(self.ccache) {
-                self.state.chatcache.push(chat);
+            if(this.ccache) {
+                this.state.chatcache.push(chat);
 
-                if(self.state.chatcache.length > self.chatcachesize)
-                    self.state.chatcache.shift();
+                if(this.state.chatcache.length > this.chatcachesize)
+                    this.state.chatcache.shift();
             }
 
             // guests who log in whilst in the room don't emit USER_JOIN
@@ -548,253 +577,253 @@ Plugged.prototype._wsaprocessor = function(self, msg) {
             // be reverted.
             // broken in 8871..
 
-            var user = self.getUserByID(chat.id);
+            var user = this.getUserByID(chat.id);
             if(!user || user.guest) {
-                self.getUser(chat.id, function(e, userData) {
-                    self._pushUser(userData);
-                    self._emitChat(chat);
+                this.getUser(chat.id, function(e, userData) {
+                    this._pushUser(userData);
+                    this._emitChat(chat);
                 });
             }
             else
-                self._emitChat(chat);
+                this._emitChat(chat);
             break;
 
-        case self.CHAT_DELETE:
+        case this.CHAT_DELETE:
             var chat = models.parseChatDelete(data.p);
 
-            if(self.ccache)
-                self.removeChatMessage(chat.cid, true);
+            if(this.ccache)
+                this.removeChatMessage(chat.cid, true);
 
-            self.emit(self.CHAT_DELETE, chat);
+            this.emit(this.CHAT_DELETE, chat);
             break;
 
-        case self.NOTIFY:
-            self.emit(self.NOTIFY, data.p);
+        case this.NOTIFY:
+            this.emit(this.NOTIFY, data.p);
             break;
 
-        case self.GIFTED:
-            var sender = self.getUserByName(data.p.s);
-            var recipient = self.getUserByName(data.p.r);
-            self.emit(self.GIFTED, sender || data.p.s, recipient || data.p.r);
+        case this.GIFTED:
+            var sender = this.getUserByName(data.p.s);
+            var recipient = this.getUserByName(data.p.r);
+            this.emit(this.GIFTED, sender || data.p.s, recipient || data.p.r);
             break;
 
-        case self.PLAYLIST_CYCLE:
-            self.emit(self.PLAYLIST_CYCLE, data.p);
+        case this.PLAYLIST_CYCLE:
+            this.emit(this.PLAYLIST_CYCLE, data.p);
             break;
 
-        case self.DJ_LIST_CYCLE:
-            self.state.room.booth.shouldCycle = data.p.f;
-            self.emit(self.DJ_LIST_CYCLE, models.parseCycle(data.p));
+        case this.DJ_LIST_CYCLE:
+            this.state.room.booth.shouldCycle = data.p.f;
+            this.emit(this.DJ_LIST_CYCLE, models.parseCycle(data.p));
             break;
 
-        case self.DJ_LIST_LOCKED:
-            self.state.room.booth.isLocked = data.p.f;
-            self.emit(self.DJ_LIST_LOCKED, models.parseLock(data.p));
+        case this.DJ_LIST_LOCKED:
+            this.state.room.booth.isLocked = data.p.f;
+            this.emit(this.DJ_LIST_LOCKED, models.parseLock(data.p));
             break;
 
-        case self.WAITLIST_UPDATE:
-            self.emit(self.WAITLIST_UPDATE, self.state.room.booth.waitlist, data.p);
-            self.state.room.booth.waitlist = data.p;
+        case this.WAITLIST_UPDATE:
+            this.emit(this.WAITLIST_UPDATE, this.state.room.booth.waitlist, data.p);
+            this.state.room.booth.waitlist = data.p;
             break;
 
-        case self.EARN:
-            self.state.self.xp = data.p.xp;
-            self.emit(self.EARN, models.parseXP(data.p));
+        case this.EARN:
+            this.state.self.xp = data.p.xp;
+            this.emit(this.EARN, models.parseXP(data.p));
             break;
 
-        case self.LEVEL_UP:
-            self.state.self.level++;
-            self.emit(self.LEVEL_UP, data.p);
+        case this.LEVEL_UP:
+            this.state.self.level++;
+            this.emit(this.LEVEL_UP, data.p);
             break;
 
-        case self.GRAB:
+        case this.GRAB:
 
-            for(var i = 0, l = self.state.room.grabs.length; i < l; i++) {
-                if(self.state.room.grabs[i] == data.p)
+            for(var i = 0, l = this.state.room.grabs.length; i < l; i++) {
+                if(this.state.room.grabs[i] == data.p)
                     return;
             }
 
-            self.state.room.grabs.push(data.p);
-            self.emit(self.GRAB_UPDATE, data.p);
+            this.state.room.grabs.push(data.p);
+            this.emit(this.GRAB_UPDATE, data.p);
             break;
 
-        case self.MOD_BAN:
-            self.clearUserFromLists(data.p.i);
-            self.state.room.meta.population--;
-            self.emit(self.MOD_BAN, models.parseModBan(data.p));
+        case this.MOD_BAN:
+            this.clearUserFromLists(data.p.i);
+            this.state.room.meta.population--;
+            this.emit(this.MOD_BAN, models.parseModBan(data.p));
             break;
 
-        case self.MOD_MOVE_DJ:
-            self.emit(self.MOD_MOVE_DJ, models.parseModMove(data.p));
+        case this.MOD_MOVE_DJ:
+            this.emit(this.MOD_MOVE_DJ, models.parseModMove(data.p));
             break;
 
-        case self.MOD_REMOVE_DJ:
-            self.emit(self.MOD_REMOVE_DJ, models.parseModRemove(data.p));
+        case this.MOD_REMOVE_DJ:
+            this.emit(this.MOD_REMOVE_DJ, models.parseModRemove(data.p));
             break;
 
-        case self.MOD_ADD_DJ:
-            self.emit(self.MOD_ADD_DJ, models.parseModAddDJ(data.p));
+        case this.MOD_ADD_DJ:
+            this.emit(this.MOD_ADD_DJ, models.parseModAddDJ(data.p));
             break;
 
-        case self.MOD_MUTE:
+        case this.MOD_MUTE:
             if(!data)
                 break;
 
-            var time = (data.p.d === self.MUTEDURATION.SHORT ?
-                15*60 : data.p.d === self.MUTEDURATION.MEDIUM ?
-                30*60 : data.p.d === self.MUTEDURATION.LONG ?
+            var time = (data.p.d === this.MUTEDURATION.SHORT ?
+                15*60 : data.p.d === this.MUTEDURATION.MEDIUM ?
+                30*60 : data.p.d === this.MUTEDURATION.LONG ?
                 45*60 : 15*60);
             var mute = models.parseMute(data.p, time);
 
-            self.emit(self.MOD_MUTE, mute, (data.p.d ? data.p.d : self.MUTEDURATION.NONE));
+            this.emit(this.MOD_MUTE, mute, (data.p.d ? data.p.d : this.MUTEDURATION.NONE));
             break;
 
-        case self.MOD_STAFF:
+        case this.MOD_STAFF:
             var promotion = models.parsePromotion(data.p);
 
-            if(self.state.self.id == promotion.id)
-                self.state.self.role = promotion.role;
+            if(this.state.self.id == promotion.id)
+                this.state.self.role = promotion.role;
 
-            for(var i = self.state.room.users.length - 1; i >= 0; i--) {
-                if(self.state.room.users[i].id == promotion.id) {
-                    self.state.room.users[i].role = promotion.role;
+            for(var i = this.state.room.users.length - 1; i >= 0; i--) {
+                if(this.state.room.users[i].id == promotion.id) {
+                    this.state.room.users[i].role = promotion.role;
 
-                    if(self.removeCachedUserByID(self.state.room.users[i].id))
-                        self.cacheUser(self.state.room.users[i]);
+                    if(this.removeCachedUserByID(this.state.room.users[i].id))
+                        this.cacheUser(this.state.room.users[i]);
 
                     break;
                 }
             }
 
-            self.emit(self.MOD_STAFF, promotion);
+            this.emit(this.MOD_STAFF, promotion);
             break;
 
-        case self.MOD_SKIP:
-            self.emit(self.MOD_SKIP, data.p);
+        case this.MOD_SKIP:
+            this.emit(this.MOD_SKIP, data.p);
             break;
 
-        case self.SKIP:
-            self.emit(self.SKIP, data.p);
+        case this.SKIP:
+            this.emit(this.SKIP, data.p);
             break;
 
-        case self.ROOM_NAME_UPDATE:
-            self.state.room.meta.name = utils.decode(data.p.n);
-            self.emit(self.ROOM_NAME_UPDATE, models.parseRoomNameUpdate(data.p));
+        case this.ROOM_NAME_UPDATE:
+            this.state.room.meta.name = utils.decode(data.p.n);
+            this.emit(this.ROOM_NAME_UPDATE, models.parseRoomNameUpdate(data.p));
             break;
 
-        case self.ROOM_DESCRIPTION_UPDATE:
-            self.state.room.meta.description = utils.decode(data.p.d);
-            self.emit(self.ROOM_DESCRIPTION_UPDATE, models.parseRoomDescriptionUpdate(data.p));
+        case this.ROOM_DESCRIPTION_UPDATE:
+            this.state.room.meta.description = utils.decode(data.p.d);
+            this.emit(this.ROOM_DESCRIPTION_UPDATE, models.parseRoomDescriptionUpdate(data.p));
             break;
 
-        case self.ROOM_WELCOME_UPDATE:
-            self.state.room.meta.welcome = utils.decode(data.p.w);
-            self.emit(self.ROOM_WELCOME_UPDATE, models.parseRoomWelcomeUpdate(data.p));
+        case this.ROOM_WELCOME_UPDATE:
+            this.state.room.meta.welcome = utils.decode(data.p.w);
+            this.emit(this.ROOM_WELCOME_UPDATE, models.parseRoomWelcomeUpdate(data.p));
             break;
 
-        case self.ROOM_MIN_CHAT_LEVEL_UPDATE:
-            self.emit(self.ROOM_MIN_CHAT_LEVEL_UPDATE, models.parseChatLevelUpdate(data.p));
+        case this.ROOM_MIN_CHAT_LEVEL_UPDATE:
+            this.emit(this.ROOM_MIN_CHAT_LEVEL_UPDATE, models.parseChatLevelUpdate(data.p));
             break;
 
-        case self.USER_LEAVE:
+        case this.USER_LEAVE:
             var user = undefined;
 
             // it was just a guest leaving, nothing more to do here
             if(data.p === 0) {
-                self.state.room.meta.guests--;
-                self.emit(self.GUEST_LEAVE, data.p);
+                this.state.room.meta.guests--;
+                this.emit(this.GUEST_LEAVE, data.p);
                 break;
             }
 
-            self.state.room.meta.population--;
+            this.state.room.meta.population--;
 
-            for(var i = self.state.room.users.length - 1; i >= 0; i--) {
-                if(self.state.room.users[i].id == data.p) {
-                    self.clearUserFromLists(data.p);
-                    user = self.state.room.users.splice(i, 1)[0];
+            for(var i = this.state.room.users.length - 1; i >= 0; i--) {
+                if(this.state.room.users[i].id == data.p) {
+                    this.clearUserFromLists(data.p);
+                    user = this.state.room.users.splice(i, 1)[0];
 
-                    if(self.sleave)
-                        self.cacheUser(user);
+                    if(this.sleave)
+                        this.cacheUser(user);
 
                     break;
                 }
             }
 
-            self.emit(self.USER_LEAVE, user);
+            this.emit(this.USER_LEAVE, user);
             break;
 
-        case self.USER_JOIN:
+        case this.USER_JOIN:
             var user = models.parseUser(data.p);
-            self._pushUser(user);
+            this._pushUser(user);
             break;
 
-        case self.USER_UPDATE:
-            self.emit(self.USER_UPDATE, models.parseUserUpdate(data.p));
+        case this.USER_UPDATE:
+            this.emit(this.USER_UPDATE, models.parseUserUpdate(data.p));
             break;
 
-        case self.FRIEND_REQUEST:
-            var user = self.getUserByName(data.p);
-            self.emit(self.FRIEND_REQUEST, user ? user : utils.decode(data.p));
+        case this.FRIEND_REQUEST:
+            var user = this.getUserByName(data.p);
+            this.emit(this.FRIEND_REQUEST, user ? user : utils.decode(data.p));
             break;
 
-        case self.FRIEND_ACCEPT:
-            var user = self.getUserByName(data.p);
-            self.emit(self.FRIEND_ACCEPT, user ? user : utils.decode(data.p));
+        case this.FRIEND_ACCEPT:
+            var user = this.getUserByName(data.p);
+            this.emit(this.FRIEND_ACCEPT, user ? user : utils.decode(data.p));
             break;
 
-        case self.VOTE:
+        case this.VOTE:
             var vote = models.pushVote(data.p);
-            if(!self._checkForPreviousVote(vote))
-                self.emit(self.VOTE, vote);
+            if(!this._checkForPreviousVote(vote))
+                this.emit(this.VOTE, vote);
             break;
 
-        case self.CHAT_RATE_LIMIT:
-            self.emit(self.CHAT_RATE_LIMIT);
+        case this.CHAT_RATE_LIMIT:
+            this.emit(this.CHAT_RATE_LIMIT);
             break;
 
-        case self.FLOOD_API:
-            self.emit(self.FLOOD_API);
+        case this.FLOOD_API:
+            this.emit(this.FLOOD_API);
             break;
 
-        case self.FLOOD_CHAT:
-            self.emit(self.FLOOD_CHAT);
+        case this.FLOOD_CHAT:
+            this.emit(this.FLOOD_CHAT);
             break;
 
-        case self.KILL_SESSION:
-            self.emit(self.KILL_SESSION, data.p);
+        case this.KILL_SESSION:
+            this.emit(this.KILL_SESSION, data.p);
             break;
 
-        case self.PLUG_UPDATE:
-            self.emit(self.PLUG_UPDATE);
+        case this.PLUG_UPDATE:
+            this.emit(this.PLUG_UPDATE);
             break;
 
-        case self.PLUG_MESSAGE:
-            self.emit(self.PLUG_MESSAGE, utils.decode(data.p));
+        case this.PLUG_MESSAGE:
+            this.emit(this.PLUG_MESSAGE, utils.decode(data.p));
             break;
 
-        case self.MAINTENANCE_MODE:
-            self.emit(self.MAINTENANCE_MODE);
+        case this.MAINTENANCE_MODE:
+            this.emit(this.MAINTENANCE_MODE);
             break;
 
-        case self.MAINTENANCE_MODE_ALERT:
-            self.emit(self.MAINTENANCE_MODE_ALERT, data.p);
+        case this.MAINTENANCE_MODE_ALERT:
+            this.emit(this.MAINTENANCE_MODE_ALERT, data.p);
             break;
 
-        case self.BAN_IP:
-            self.emit(self.BAN_IP);
+        case this.BAN_IP:
+            this.emit(this.BAN_IP);
             break;
 
-        case self.BAN:
-            self.emit(self.BAN, models.parseBan(data.p));
+        case this.BAN:
+            this.emit(this.BAN, models.parseBan(data.p));
             break;
 
-        case self.NAME_CHANGED:
-            self.emit(self.NAME_CHANGED);
+        case this.NAME_CHANGED:
+            this.emit(this.NAME_CHANGED);
             break;
 
         default:
-            self._log("unknown action appeared!\nPlease report this to https://www.github.com/SooYou/plugged", 1, "magenta");
-            self._log(data, 1, "magenta")
+            this._log("unknown action appeared!\nPlease report this to https://www.github.com/SooYou/plugged", 1, "magenta");
+            this._log(data, 1, "magenta")
             break;
     }
 };
@@ -849,6 +878,10 @@ Plugged.prototype.removeChatMessage = function(cid, cacheOnly) {
 
 Plugged.prototype.clearChatCache = function() {
     this.state.chatcache = [];
+};
+
+Plugged.prototype.clearChatQueue = function() {
+    this.chatQueue = [];
 };
 
 // keeps the usercache clean by deleting invalidate objects
@@ -937,8 +970,10 @@ Plugged.prototype.setMessageProcessor = function(func) {
 Plugged.prototype.sendChat = function(message, deleteTimeout) {
     deleteTimeout = deleteTimeout || -1;
 
-    if(!message || message.length <= 0)
+    if(!message || message.length <= 0) {
+        this._log("no message given", 1, "yellow");
         return;
+    }
 
     message = this.messageProc(message);
 
@@ -1026,6 +1061,7 @@ Plugged.prototype.login = function(credentials, authToken, callback) {
 
         this._login();
     } else {
+        this._log("trying to resume session...", 2, "white");
         this.auth = authToken;
         this._loggedIn();
     }
@@ -1085,8 +1121,10 @@ Plugged.prototype.guest = function(room, callback) {
 };
 
 Plugged.prototype.connect = function(room, callback) {
-    if(!room)
-        throw new Error("room has to be defined");
+    if(!room) {
+        this._log("room has to be defined", 1, "red");
+        return;
+    }
 
     if(!this.auth || this.state.self.guest) {
         this._log("joining plug in guest mode, functions are highly limited!", 1, "yellow");
@@ -1107,6 +1145,8 @@ Plugged.prototype.connect = function(room, callback) {
                     this.state.self.role = stats.role;
                     this.emit(this.JOINED_ROOM, this.state.room);
                 } else {
+                    this.state.room = room;
+                    this.state.self.role = 0;
                     this.emit(this.PLUG_ERROR, err);
                 }
             });
@@ -1802,31 +1842,17 @@ Plugged.prototype.deleteMessage = function(chatID, callback) {
 };
 
 // DELETE plug.dj/_/auth/session
-Plugged.prototype.logout = function() {
+Plugged.prototype.logout = function(callback) {
     this.query.query("DELETE", endpoints["SESSION"], function _loggedOut(err, body) {
         if(!err) {
-            this.watchUserCache(false);
-            this.clearUserCache();
-            this.clearChatCache();
-            this.query.flushQueue();
-            this.state = models.createState();
-
-            clearTimeout(this.keepAliveID);
-            this.keepAliveID = -1;
-
-            this.sock.close();
-            this.sock.removeAllListeners();
-
+            this._clearState();
             this._log("Logged out.", 1, "magenta");
 
-            this.sock = null;
-            this.auth = null;
-            this.chatQueue = [];
-            this.keepAliveTries = 0;
-
             this.emit(this.LOGOUT_SUCCESS);
+            callback && callback(null);
         } else {
             this.emit(this.LOGOUT_ERROR, err);
+            callback && callback(err);
         }
     }.bind(this));
 };
@@ -1897,7 +1923,12 @@ Plugged.prototype.findPlaylist = function(query, callback) {
     })
 };
 
-Plugged.prototype.findMedia = function(playlistID, query, callback) {
+Plugged.prototype.findMedia = function(query, callback) {
+    // TODO: series and then push the results
+    this.searchMediaPlaylist(playlistID, query, callback);
+};
+
+Plugged.prototype.findMediaPlaylist = function(playlistID, query, callback) {
     this.searchMediaPlaylist(playlistID, query, callback);
 };
 
