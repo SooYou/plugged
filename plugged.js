@@ -538,7 +538,7 @@ Plugged.prototype._wsaprocessor = function(msg, flags) {
                 historyID: this.state.room.playback.historyID,
                 playlistID: this.state.room.playback.playlistID,
                 media: this.state.room.playback.media,
-                dj: this.getUserByID(this.state.room.booth.dj),
+                dj: this.getUserByID(this.state.room.booth.dj, this.CACHE.ENABLED),
                 score: {
                     positive: 0,
                     negative: 0,
@@ -830,7 +830,11 @@ Plugged.prototype._wsaprocessor = function(msg, flags) {
             break;
 
         default:
-            this._log("unknown action appeared!\nPlease report this to https://www.github.com/SooYou/plugged", 1, "magenta");
+            this._log(
+                "An unknown action appeared!\nPlease report this to https://www.github.com/SooYou/plugged\nit's super effective!",
+                1,
+                "magenta"
+            );
             this._log(data, 1, "magenta")
             break;
     }
@@ -1724,6 +1728,11 @@ Plugged.prototype.grab = function(playlistID, callback) {
 // POST plug.dj/_/booth/skip
 Plugged.prototype.skipDJ = function(userID, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
+
+    if(typeof userID === "function") {
+        callback = userID;
+        userID = this.state.room.booth.dj;
+    }
 
     // fallback in case that plug failed at assigning a valid history ID
     if(!this.state.room.playback.historyID) {
