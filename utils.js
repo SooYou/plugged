@@ -1,3 +1,5 @@
+var util = require("util");
+
 var Iterator = function(array) {
     if(!Array.isArray(array))
         throw new Error("Parameter is not an array");
@@ -66,6 +68,34 @@ var decode = function(str) {
     .replace(/&gt;/g, '>');
 };
 
+var convertPlugTimeToDate = function(plugTime) {
+    var res = /(\d+)-(\d+)-(\d+)\s+(\d+):(\d+):(\d+).(\d+)/g.exec(plugTime);
+    var time = "Invalid Date";
+
+    if(res === null)
+        return time;
+
+    for(var i = res.length - 1; i >= 0; i--) {
+        // clean array from unnecessary info
+        if(isNaN(res[i]) && !isFinite(res[i]))
+            res.splice(i, 1);
+    }
+
+    if(res.length === 3) {
+        res.unshift("%s-%s-%s");
+        time = util.format.apply(util, res);
+    } else if(res.length === 6) {
+        res.unshift("%s-%s-%sT%s:%s:%sZ");
+        time = util.format.apply(util, res);
+    } else if(res.length === 7) {
+        res.unshift("%s-%s-%sT%s:%s:%s.%sZ");
+        time = util.format.apply(util, res);
+    }
+
+    return time;
+};
+
+exports.convertPlugTimeToDate = convertPlugTimeToDate;
 exports.splitTitle = splitTitle;
 exports.waterfall = waterfall;
 exports.Iterator = Iterator;
