@@ -13,7 +13,6 @@ Iterator.prototype.next = function() {
 };
 
 var waterfall = function(funcs, callback, context) {
-    callback = callback || function() {};
     var iterator = new Iterator(funcs);
 
     (function _obj() {
@@ -29,13 +28,13 @@ var waterfall = function(funcs, callback, context) {
             args.shift();
             args.push(_obj);
 
-            setImmediate(function(val, args) {
+            setImmediate(function(context, val, args) {
                 val.apply(context, args);
-            }, step.value, args);
+            }, context, step.value, args);
         } else {
-            setImmediate(function(callback, args) {
-                callback.apply(context, args);
-            }, callback, args);
+            setImmediate(function(context, callback, args) {
+                callback && callback.apply(context, args);
+            }, context, callback, args);
         }
     }());
 };
