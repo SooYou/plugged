@@ -435,12 +435,25 @@ var parseModRemove = function(data) {
     };
 };
 
-var parseBan = function(data) {
+var parseOwnBan = function(data) {
     data = data || {};
 
     return {
         reason: data.r || 1,
         duration: data.l || ''
+    };
+};
+
+var parseBan = function(data) {
+    data = data || {};
+
+    return {
+        id: data.id || -1,
+        reason: data.reason || -1,
+        duration: data.duration || '',
+        username: utils.decode(data.username) || "",
+        moderator: utils.decode(data.moderator) || "",
+        timestamp: convertPlugTimeToDate(data.timestamp);
     };
 };
 
@@ -575,6 +588,7 @@ exports.parseGrabs = parseGrabs;
 exports.parseMedia = parseMedia;
 exports.parseVotes = parseVotes;
 exports.parseBooth = parseBooth;
+exports.parseOwnBan = parseOwnBan;
 exports.parseModBan = parseModBan;
 exports.createState = createState;
 exports.parseModMove = parseModMove;
