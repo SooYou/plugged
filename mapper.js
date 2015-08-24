@@ -1,32 +1,4 @@
 var utils = require("./utils");
-var util = require("util");
-
-var convertPlugTimeToDate = function(plugTime) {
-    var res = /(\d+)-(\d+)-(\d+)\s+(\d+):(\d+):(\d+).(\d+)/g.exec(plugTime);
-    var time = "Invalid Date";
-
-    if(res === null)
-        return time;
-
-    for(var i = res.length - 1; i >= 0; i--) {
-        // clean array from unnecessary info
-        if(isNaN(res[i]) && !isFinite(res[i]))
-            res.splice(i, 1);
-    }
-
-    if(res.length === 3) {
-        res.unshift("%s-%s-%s");
-        time = util.format.apply(util, res);
-    } else if(res.length === 6) {
-        res.unshift("%s-%s-%sT%s:%s:%sZ");
-        time = util.format.apply(util, res);
-    } else if(res.length === 7) {
-        res.unshift("%s-%s-%sT%s:%s:%s.%sZ");
-        time = util.format.apply(util, res);
-    }
-
-    return time;
-};
 
 var serializeMedia = function(data) {
     data = data || {};
@@ -87,11 +59,11 @@ var serializeMediaObjects = function(data) {
     return arr;
 };
 
-var parseSelf = function(data) {
+var mapSelf = function(data) {
     data = data || {};
 
     return {
-        joined: convertPlugTimeToDate(data.joined),
+        joined: utils.convertPlugTimeToDate(data.joined),
         username: utils.decode(data.username) || "",
         avatarID: data.avatarID || "base01",
         language: data.language || "en",
@@ -123,11 +95,11 @@ var parseSelf = function(data) {
     };
 };
 
-var parseUser = function(data) {
+var mapUser = function(data) {
     data = data || {};
 
     return {
-        joined: convertPlugTimeToDate(data.joined),
+        joined: utils.convertPlugTimeToDate(data.joined),
         username: utils.decode(data.username) || "",
         avatarID: data.avatarID || "base01",
         language: data.language || "en",
@@ -143,17 +115,17 @@ var parseUser = function(data) {
     };
 };
 
-var parseUsers = function(data) {
+var mapUsers = function(data) {
     data = data || {};
     var arr = [];
 
     for(var i = data.length-1; i >= 0; i--)
-        arr.push(parseUser(data[i]));
+        arr.push(mapUser(data[i]));
 
     return arr;
 };
 
-var parseUserUpdate = function(data) {
+var mapUserUpdate = function(data) {
     data = data || {};
 
     return {
@@ -165,7 +137,7 @@ var parseUserUpdate = function(data) {
     };
 };
 
-var parseMedia = function(data) {
+var mapMedia = function(data) {
     data = data || {};
 
     return {
@@ -179,7 +151,7 @@ var parseMedia = function(data) {
     }
 };
 
-var parseMute = function(data, expireDate) {
+var mapMute = function(data, expireDate) {
     data = data || {};
 
     return {
@@ -191,7 +163,7 @@ var parseMute = function(data, expireDate) {
     };
 };
 
-var parseGrabs = function(data) {
+var mapGrabs = function(data) {
     data = data || {};
     var arr = [];
 
@@ -201,7 +173,7 @@ var parseGrabs = function(data) {
     return arr;
 };
 
-var parseModAddDJ = function(data) {
+var mapModAddDJ = function(data) {
     data = data || {};
 
     return {
@@ -211,7 +183,7 @@ var parseModAddDJ = function(data) {
     };
 };
 
-var parseModMove = function(data) {
+var mapModMove = function(data) {
     data = data || {};
 
     return {
@@ -223,18 +195,18 @@ var parseModMove = function(data) {
     };
 };
 
-var parsePlayback = function(data) {
+var mapPlayback = function(data) {
     data = data || {};
 
     return {
-        media: parseMedia(data.media),
+        media: mapMedia(data.media),
         historyID: data.historyID || "",
         playlistID: data.playlistID || -1,
-        startTime: convertPlugTimeToDate(data.startTime)
+        startTime: utils.convertPlugTimeToDate(data.startTime)
     };
 };
 
-var parseHistoryEntry = function (data) {
+var mapHistoryEntry = function (data) {
     data = data || {};
 
     return {
@@ -276,7 +248,7 @@ var parseHistoryEntry = function (data) {
             positive: 0,
             skipped: 0
         }),
-        timestamp: convertPlugTimeToDate(data.timestamp),
+        timestamp: utils.convertPlugTimeToDate(data.timestamp),
         user: (data.user ? {
             id: data.user.id || -1,
             username: utils.decode(data.user.username) || ""
@@ -287,14 +259,14 @@ var parseHistoryEntry = function (data) {
     };
 };
 
-var parseFriendRequest = function(data) {
+var mapFriendRequest = function(data) {
     data = data || {};
 
     return {
         username: utils.decode(data.username) || "",
         avatarID: data.avatarID || "",
-        timestamp: convertPlugTimeToDate(data.timestamp) || "",
-        joined: convertPlugTimeToDate(data.joined) || "",
+        timestamp: utils.convertPlugTimeToDate(data.timestamp) || "",
+        joined: utils.convertPlugTimeToDate(data.joined) || "",
         status: data.status || 0,
         gRole: data.gRole || 0,
         level: data.level || 0,
@@ -302,7 +274,7 @@ var parseFriendRequest = function(data) {
     };
 };
 
-var parseVotes = function(data) {
+var mapVotes = function(data) {
     data = data || {};
     var arr = [];
 
@@ -323,7 +295,7 @@ var pushVote = function(vote) {
     };
 };
 
-var parseSettings = function(data) {
+var mapSettings = function(data) {
     data = data || {};
 
     return {
@@ -343,16 +315,17 @@ var parseSettings = function(data) {
     };
 };
 
-var parseExtendedRoom = function(data) {
+var mapExtendedRoom = function(data) {
     data = data || {};
 
     return {
         cid: data.cid || "",
         dj: (typeof data.dj === "string" ?
                 utils.decode(data.dj) :
-                typeof data.dj === "object" ?
-                parseUser(data.dj) :
-                ""),
+                    typeof data.dj === "object" ?
+                    mapUser(data.dj) :
+                    ""
+            ),
         favorite: data.favorite || false,
         format: parseInt(data.format) || 1,
         guests: data.guests || 0,
@@ -369,22 +342,22 @@ var parseExtendedRoom = function(data) {
     };
 };
 
-var parseRoom = function(data) {
+var mapRoom = function(data) {
     data = data || {};
 
     return {
-        booth: parseBooth(data.booth),
+        booth: mapBooth(data.booth),
         fx: data.fx || [],
-        grabs: parseGrabs(data.grabs),
-        meta: parseMeta(data.meta),
-        playback: parsePlayback(data.playback),
+        grabs: mapGrabs(data.grabs),
+        meta: mapMeta(data.meta),
+        playback: mapPlayback(data.playback),
         role: data.role || 0,
-        users: parseUsers(data.users),
-        votes: parseVotes(data.votes)
+        users: mapUsers(data.users),
+        votes: mapVotes(data.votes)
     };
 };
 
-var parseMeta = function(data) {
+var mapMeta = function(data) {
     data = data || {};
 
     return {
@@ -402,7 +375,7 @@ var parseMeta = function(data) {
     };
 };
 
-var parseBooth = function(data) {
+var mapBooth = function(data) {
     data = data || {};
 
     return {
@@ -413,7 +386,7 @@ var parseBooth = function(data) {
     };
 };
 
-var parseModBan = function(data) {
+var mapModBan = function(data) {
     data = data || {};
 
     return {
@@ -424,7 +397,7 @@ var parseModBan = function(data) {
     };
 };
 
-var parseModRemove = function(data) {
+var mapModRemove = function(data) {
     data = data || {};
 
     return {
@@ -435,7 +408,7 @@ var parseModRemove = function(data) {
     };
 };
 
-var parseOwnBan = function(data) {
+var mapOwnBan = function(data) {
     data = data || {};
 
     return {
@@ -444,7 +417,7 @@ var parseOwnBan = function(data) {
     };
 };
 
-var parseBan = function(data) {
+var mapBan = function(data) {
     data = data || {};
 
     return {
@@ -453,11 +426,11 @@ var parseBan = function(data) {
         duration: data.duration || '',
         username: utils.decode(data.username) || "",
         moderator: utils.decode(data.moderator) || "",
-        timestamp: convertPlugTimeToDate(data.timestamp);
+        timestamp: utils.convertPlugTimeToDate(data.timestamp)
     };
 };
 
-var parseCycle = function(data) {
+var mapCycle = function(data) {
     data = data || {};
 
     return {
@@ -467,7 +440,7 @@ var parseCycle = function(data) {
     };
 };
 
-var parseLock = function(data) {
+var mapLock = function(data) {
     data = data || {};
 
     return {
@@ -478,7 +451,7 @@ var parseLock = function(data) {
     };
 };
 
-var parsePromotion = function(data) {
+var mapPromotion = function(data) {
     data = data || {};
     var promotions = [];
 
@@ -495,7 +468,7 @@ var parsePromotion = function(data) {
     return promotions;
 };
 
-var parseXP = function(data) {
+var mapXP = function(data) {
     data = data || {};
 
     return {
@@ -504,7 +477,7 @@ var parseXP = function(data) {
     };
 };
 
-var parseChat = function(data) {
+var mapChat = function(data) {
     data = data || {};
 
     return {
@@ -516,7 +489,7 @@ var parseChat = function(data) {
     };
 };
 
-var parseChatDelete = function(data) {
+var mapChatDelete = function(data) {
     data = data || {};
 
     return {
@@ -530,14 +503,14 @@ var createState = function(data) {
 
     return {
         credentials: data.credentials || {},
-        self: parseSelf(data.self),
-        room: parseRoom(data.room),
+        self: mapSelf(data.self),
+        room: mapRoom(data.room),
         usercache: data.usercache || [],
         chatcache: data.chatcache || []
     };
 };
 
-var parseRoomNameUpdate = function(data) {
+var mapRoomNameUpdate = function(data) {
     data = data || {};
 
     return {
@@ -546,7 +519,7 @@ var parseRoomNameUpdate = function(data) {
     };
 };
 
-var parseRoomDescriptionUpdate = function(data) {
+var mapRoomDescriptionUpdate = function(data) {
     data = data || {};
 
     return {
@@ -555,7 +528,7 @@ var parseRoomDescriptionUpdate = function(data) {
     };
 };
 
-var parseRoomWelcomeUpdate = function(data) {
+var mapRoomWelcomeUpdate = function(data) {
     data = data || {};
 
     return {
@@ -564,7 +537,7 @@ var parseRoomWelcomeUpdate = function(data) {
     };
 };
 
-var parseChatLevelUpdate = function(data) {
+var mapChatLevelUpdate = function(data) {
     data = data || {};
 
     return {
@@ -573,39 +546,38 @@ var parseChatLevelUpdate = function(data) {
     };
 };
 
-exports.parseXP = parseXP;
-exports.parseBan = parseBan;
+exports.mapXP = mapXP;
+exports.mapBan = mapBan;
 exports.pushVote = pushVote;
-exports.parseChat = parseChat;
-exports.parseSelf = parseSelf;
-exports.parseUser = parseUser;
-exports.parseRoom = parseRoom;
-exports.parseMeta = parseMeta;
-exports.parseLock = parseLock;
-exports.parseMute = parseMute;
-exports.parseCycle = parseCycle;
-exports.parseGrabs = parseGrabs;
-exports.parseMedia = parseMedia;
-exports.parseVotes = parseVotes;
-exports.parseBooth = parseBooth;
-exports.parseOwnBan = parseOwnBan;
-exports.parseModBan = parseModBan;
+exports.mapChat = mapChat;
+exports.mapSelf = mapSelf;
+exports.mapUser = mapUser;
+exports.mapRoom = mapRoom;
+exports.mapMeta = mapMeta;
+exports.mapLock = mapLock;
+exports.mapMute = mapMute;
+exports.mapCycle = mapCycle;
+exports.mapGrabs = mapGrabs;
+exports.mapMedia = mapMedia;
+exports.mapVotes = mapVotes;
+exports.mapBooth = mapBooth;
+exports.mapOwnBan = mapOwnBan;
+exports.mapModBan = mapModBan;
 exports.createState = createState;
-exports.parseModMove = parseModMove;
-exports.parseSettings = parseSettings;
-exports.parseModAddDJ = parseModAddDJ;
-exports.parsePlayback = parsePlayback;
+exports.mapModMove = mapModMove;
+exports.mapSettings = mapSettings;
+exports.mapModAddDJ = mapModAddDJ;
+exports.mapPlayback = mapPlayback;
 exports.serializeMedia = serializeMedia;
-exports.parsePromotion = parsePromotion;
-exports.parseModRemove = parseModRemove;
-exports.parseUserUpdate = parseUserUpdate;
-exports.parseChatDelete = parseChatDelete;
-exports.parseExtendedRoom = parseExtendedRoom;
-exports.parseHistoryEntry = parseHistoryEntry;
-exports.parseFriendRequest = parseFriendRequest;
-exports.parseRoomNameUpdate = parseRoomNameUpdate;
-exports.parseChatLevelUpdate = parseChatLevelUpdate;
+exports.mapPromotion = mapPromotion;
+exports.mapModRemove = mapModRemove;
+exports.mapUserUpdate = mapUserUpdate;
+exports.mapChatDelete = mapChatDelete;
+exports.mapExtendedRoom = mapExtendedRoom;
+exports.mapHistoryEntry = mapHistoryEntry;
+exports.mapFriendRequest = mapFriendRequest;
+exports.mapRoomNameUpdate = mapRoomNameUpdate;
+exports.mapChatLevelUpdate = mapChatLevelUpdate;
 exports.serializeMediaObjects = serializeMediaObjects;
-exports.convertPlugTimeToDate = convertPlugTimeToDate;
-exports.parseRoomWelcomeUpdate = parseRoomWelcomeUpdate;
-exports.parseRoomDescriptionUpdate = parseRoomDescriptionUpdate;
+exports.mapRoomWelcomeUpdate = mapRoomWelcomeUpdate;
+exports.mapRoomDescriptionUpdate = mapRoomDescriptionUpdate;
