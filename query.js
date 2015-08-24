@@ -18,9 +18,7 @@ var watcher = function(query) {
     if(query.queue.length === 0)
         query._stopWatcher();
 
-    // the length of the query changes with every call to _process
-    for(var i = 0; i < Math.min(5, query.queue.length); i++)
-        query._process();
+    while(query._process());
 };
 
 var processEntry = function(query, entry) {
@@ -47,7 +45,7 @@ var processEntry = function(query, entry) {
                                 " included more than one object. Enforced first object assignment anyway"
                             ].join(''),
                             "ok",
-                            res ? res.statusCode : null
+                            res.statusCode
                         );
                     }
 
@@ -93,33 +91,36 @@ function Query() {
     this.jar = null;
     this.queue = [];
     this.active = 0;
-    this.watcherID = 0;
+    this.watcherID = -1;
 }
 
 Query.prototype._process = function() {
     if(this.queue.length > 0) {
-
         if(this.active <= 5) {
             this.active++;
+            console.log(this.active);
             processEntry(this, this.queue.shift());
-        } else if(this.watcherID === 0) {
+
+            return true;
+        } else if(this.watcherID === -1) {
             this._startWatcher();
         }
-
     }
+
+    return false;
 };
 
 Query.prototype._startWatcher = function() {
-    if(this.watcherID > 0)
+    if(this.watcherID >= 0)
         this._stopWatcher();
 
     //otherwise plug flips its shit and tells us to stop flooding its API
-    this.watcherID = setInterval(watcher, 5*1000, this);
+    this.watcherID = setTimeout(watcher, 5*1000, this);
 };
 
 Query.prototype._stopWatcher = function() {
-    clearInterval(this.watcherID);
-    this.watcherID = 0;
+    clearTimeout(this.watcherID);
+    this.watcherID = -1;
 };
 
 Query.prototype.setJar = function(jar, storage) {
