@@ -98,7 +98,6 @@ Query.prototype._process = function() {
     if(this.queue.length > 0) {
         if(this.active <= 5) {
             this.active++;
-            console.log(this.active);
             processEntry(this, this.queue.shift());
 
             return true;
