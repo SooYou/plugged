@@ -629,7 +629,7 @@ describe("REST", function () {
 
     execTest()("#skipDJ", function () {
         it("should skip the current DJ", function (done) {
-            client.skipDJ(testLogin.noParse ? client.getBooth().currentDJ : client.getCurrentDJ().id, done);
+            client.skipDJ(testLogin.noParse ? client.getBooth().currentDJ : client.getDJ().id, done);
         });
     });
 
@@ -670,7 +670,7 @@ describe("REST", function () {
     describe("#updateRoomInfo", function () {
         it("should update the room description and welcome message", function (done) {
             client.updateRoomInfo("testName", "testDesc", "testWelcome", function (err) {
-                var meta = client.getCurrentRoomStats().meta;
+                var meta = client.getRoomMeta();
 
                 expect(meta.description).to.be.equal("testDesc");
                 expect(meta.welcome).to.be.equal("testWelcome");
@@ -1012,9 +1012,9 @@ describe("REST", function () {
         });
     });
 
-    describe("#searchMediaPlaylist", function () {
+    describe("#findMediaPlaylist", function () {
         it("should search for media in a playlist filtered by a keyword", function (done) {
-            client.searchMediaPlaylist(_playlist, "a", function (err, media) {
+            client.findMediaPlaylist(_playlist, "a", function (err, media) {
                 expect(err).to.be.a("null");
                 expect(media).to.be.an("array");
 
@@ -1498,9 +1498,9 @@ isObjectTest()("Local", function () {
         });
     });
 
-    describe("#getCurrentRoomStats", function () {
-        it("should get the current room stats", function () {
-            var room = client.getCurrentRoomStats();
+    describe("#getRoom", function () {
+        it("should get the current room's stats", function () {
+            var room = client.getRoom();
 
             testRoom(room);
         });
@@ -1564,18 +1564,18 @@ isObjectTest()("Local", function () {
         });
     });
 
-    execTest()("#getCurrentDJ", function () {
+    execTest()("#getDJ", function () {
         it("should get the current DJ playing", function () {
-            var dj = client.getCurrentDJ();
+            var dj = client.getDJ();
 
             if(dj)
                 testUser(dj);
         });
     });
 
-    execTest()("#getCurrentMedia", function () {
+    execTest()("#getMedia", function () {
         it("should return the current media object", function () {
-            testMedia(client.getCurrentMedia());
+            testMedia(client.getMedia());
         });
     });
 
