@@ -1,5 +1,5 @@
 var EventEmitter = require("events").EventEmitter;
-var models = require("./state.js");
+var mapper = require("./mapper");
 var Query = require("./query");
 var utils = require("./utils");
 var WebSocket = require("ws");
@@ -75,7 +75,7 @@ function Plugged(options) {
     options = options || {};
 
     if(options.test)
-        models = require("./test/raw.js");
+        mapper = require("./test/raw.js");
 
     this.log = options.log || function() {};
     this.messageProc = options.messageProc || this.defaultMessageProc;
@@ -83,7 +83,7 @@ function Plugged(options) {
 
     this._wsaprocessor = this._wsaprocessor.bind(this);
     this._keepAlive = this._keepAlive.bind(this);
-    this.state = models.createState(options.state);
+    this.state = mapper.createState(options.state);
     this.query = new Query();
     this.chatQueue = [];
     this.chatTimeout = 0;
@@ -401,7 +401,7 @@ Plugged.prototype._clearState = function() {
     this.clearChatQueue();
     this.clearChatCache();
     this.query.flushQueue();
-    this.state = models.createState();
+    this.state = mapper.createState();
 
     clearTimeout(this.keepAliveID);
     this.keepAliveID = -1;
@@ -558,7 +558,7 @@ Plugged.prototype._wsaprocessor = function(msg, flags) {
             this.state.room.grabs = [];
             this.state.room.votes = [];
 
-            this.state.room.playback.media = models.parseMedia(data.p.m);
+            this.state.room.playback.media = mapper.mapMedia(data.p.m);
             this.state.room.playback.historyID = data.p.h;
             this.state.room.playback.playlistID = data.p.p;
             this.state.room.playback.startTime = data.p.t;
@@ -567,7 +567,7 @@ Plugged.prototype._wsaprocessor = function(msg, flags) {
             break;
 
         case this.CHAT:
-            var chat = models.parseChat(data.p);
+            var chat = mapper.mapChat(data.p);
 
             if(this.ccache) {
                 this.state.chatcache.push(chat);
@@ -597,7 +597,7 @@ Plugged.prototype._wsaprocessor = function(msg, flags) {
             break;
 
         case this.CHAT_DELETE:
-            var chat = models.parseChatDelete(data.p);
+            var chat = mapper.mapChatDelete(data.p);
 
             if(this.ccache)
                 this.removeChatMessage(chat.cid, true);
@@ -621,12 +621,12 @@ Plugged.prototype._wsaprocessor = function(msg, flags) {
 
         case this.DJ_LIST_CYCLE:
             this.state.room.booth.shouldCycle = data.p.f;
-            this.emit(this.DJ_LIST_CYCLE, models.parseCycle(data.p));
+            this.emit(this.DJ_LIST_CYCLE, mapper.mapCycle(data.p));
             break;
 
         case this.DJ_LIST_LOCKED:
             this.state.room.booth.isLocked = data.p.f;
-            this.emit(this.DJ_LIST_LOCKED, models.parseLock(data.p));
+            this.emit(this.DJ_LIST_LOCKED, mapper.mapLock(data.p));
             break;
 
         case this.WAITLIST_UPDATE:
@@ -636,7 +636,7 @@ Plugged.prototype._wsaprocessor = function(msg, flags) {
 
         case this.EARN:
             this.state.self.xp = data.p.xp;
-            this.emit(this.EARN, models.parseXP(data.p));
+            this.emit(this.EARN, mapper.mapXP(data.p));
             break;
 
         case this.LEVEL_UP:
@@ -658,19 +658,19 @@ Plugged.prototype._wsaprocessor = function(msg, flags) {
         case this.MOD_BAN:
             this.clearUserFromLists(data.p.i);
             this.state.room.meta.population--;
-            this.emit(this.MOD_BAN, models.parseModBan(data.p));
+            this.emit(this.MOD_BAN, mapper.mapModBan(data.p));
             break;
 
         case this.MOD_MOVE_DJ:
-            this.emit(this.MOD_MOVE_DJ, models.parseModMove(data.p));
+            this.emit(this.MOD_MOVE_DJ, mapper.mapModMove(data.p));
             break;
 
         case this.MOD_REMOVE_DJ:
-            this.emit(this.MOD_REMOVE_DJ, models.parseModRemove(data.p));
+            this.emit(this.MOD_REMOVE_DJ, mapper.mapModRemove(data.p));
             break;
 
         case this.MOD_ADD_DJ:
-            this.emit(this.MOD_ADD_DJ, models.parseModAddDJ(data.p));
+            this.emit(this.MOD_ADD_DJ, mapper.mapModAddDJ(data.p));
             break;
 
         case this.MOD_MUTE:
@@ -681,13 +681,13 @@ Plugged.prototype._wsaprocessor = function(msg, flags) {
                 15*60 : data.p.d === this.MUTEDURATION.MEDIUM ?
                 30*60 : data.p.d === this.MUTEDURATION.LONG ?
                 45*60 : 15*60);
-            var mute = models.parseMute(data.p, time);
+            var mute = mapper.mapMute(data.p, time);
 
             this.emit(this.MOD_MUTE, mute, (data.p.d ? data.p.d : this.MUTEDURATION.NONE));
             break;
 
         case this.MOD_STAFF:
-            var promotion = models.parsePromotion(data.p);
+            var promotion = mapper.mapPromotion(data.p);
 
             if(this.state.self.id == promotion.id)
                 this.state.self.role = promotion.role;
@@ -716,21 +716,21 @@ Plugged.prototype._wsaprocessor = function(msg, flags) {
 
         case this.ROOM_NAME_UPDATE:
             this.state.room.meta.name = utils.decode(data.p.n);
-            this.emit(this.ROOM_NAME_UPDATE, models.parseRoomNameUpdate(data.p));
+            this.emit(this.ROOM_NAME_UPDATE, mapper.mapRoomNameUpdate(data.p));
             break;
 
         case this.ROOM_DESCRIPTION_UPDATE:
             this.state.room.meta.description = utils.decode(data.p.d);
-            this.emit(this.ROOM_DESCRIPTION_UPDATE, models.parseRoomDescriptionUpdate(data.p));
+            this.emit(this.ROOM_DESCRIPTION_UPDATE, mapper.mapRoomDescriptionUpdate(data.p));
             break;
 
         case this.ROOM_WELCOME_UPDATE:
             this.state.room.meta.welcome = utils.decode(data.p.w);
-            this.emit(this.ROOM_WELCOME_UPDATE, models.parseRoomWelcomeUpdate(data.p));
+            this.emit(this.ROOM_WELCOME_UPDATE, mapper.mapRoomWelcomeUpdate(data.p));
             break;
 
         case this.ROOM_MIN_CHAT_LEVEL_UPDATE:
-            this.emit(this.ROOM_MIN_CHAT_LEVEL_UPDATE, models.parseChatLevelUpdate(data.p));
+            this.emit(this.ROOM_MIN_CHAT_LEVEL_UPDATE, mapper.mapChatLevelUpdate(data.p));
             break;
 
         case this.USER_LEAVE:
@@ -761,12 +761,12 @@ Plugged.prototype._wsaprocessor = function(msg, flags) {
             break;
 
         case this.USER_JOIN:
-            var user = models.parseUser(data.p);
+            var user = mapper.mapUser(data.p);
             this._pushUser(user);
             break;
 
         case this.USER_UPDATE:
-            this.emit(this.USER_UPDATE, models.parseUserUpdate(data.p));
+            this.emit(this.USER_UPDATE, mapper.mapUserUpdate(data.p));
             break;
 
         case this.FRIEND_REQUEST:
@@ -780,7 +780,7 @@ Plugged.prototype._wsaprocessor = function(msg, flags) {
             break;
 
         case this.VOTE:
-            var vote = models.pushVote(data.p);
+            var vote = mapper.pushVote(data.p);
             if(!this._checkForPreviousVote(vote))
                 this.emit(this.VOTE, vote);
             break;
@@ -822,7 +822,7 @@ Plugged.prototype._wsaprocessor = function(msg, flags) {
             break;
 
         case this.BAN:
-            this.emit(this.BAN, models.parseOwnBan(data.p));
+            this.emit(this.BAN, mapper.mapOwnBan(data.p));
             break;
 
         case this.NAME_CHANGED:
@@ -1108,7 +1108,7 @@ Plugged.prototype.guest = function(room, callback) {
         if(auth.length === 172) {
             this.auth = auth;
 
-            this.state.self = models.parseSelf({
+            this.state.self = mapper.mapSelf({
                 joined: new Date().toISOString(),
                 guest: true
             });
@@ -1156,14 +1156,14 @@ Plugged.prototype.connect = function(room, callback) {
                     this.state.self.role = stats.role;
                     this.emit(this.JOINED_ROOM, this.state.room);
                 } else {
-                    this.state.room = models.parseRoom();
+                    this.state.room = mapper.mapRoom();
                     this.state.self.role = 0;
                     this.emit(this.PLUG_ERROR, err);
                 }
             });
 
         } else {
-            this.state.room = models.parseRoom();
+            this.state.room = mapper.mapRoom();
             this.state.self.role = 0;
             this.emit(this.PLUG_ERROR, err);
         }
@@ -1482,7 +1482,7 @@ Plugged.prototype.getStaffByRole = function(role, callback) {
 
             for(var i = 0, l = staff.length; i < l; i++) {
                 if(staff[i].role == role)
-                    filteredStaff.push(models.parseUser(staff[i]));
+                    filteredStaff.push(mapper.mapUser(staff[i]));
             }
 
             callback && callback(null, filteredStaff);
@@ -1508,7 +1508,7 @@ Plugged.prototype.getAuthToken = function(callback) {
 Plugged.prototype.getRoomStats = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", endpoints["ROOMSTATS"], function _sanitizeRoomStats(err, stats) {
-        callback && callback(err, models.parseRoom(stats));
+        callback && callback(err, mapper.mapRoom(stats));
     }, true);
 };
 
@@ -1528,7 +1528,7 @@ Plugged.prototype.findRooms = function(query, page, limit, callback) {
     this.query.query("GET", [endpoints["ROOMS"], "?q=", query, "&page=", page, "&limit=", limit].join(''), function _sanitizeFoundRooms(err, rooms) {
 
         callback && callback(err, (!err && rooms ? rooms.map(function(room) {
-            return models.parseExtendedRoom(room);
+            return mapper.mapExtendedRoom(room);
         }) : []));
     });
 };
@@ -1546,7 +1546,7 @@ Plugged.prototype.getRoomList = function(page, limit, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", endpoints["ROOMS"] + "?q=&page=0&limit=50", function _sanitizeRooms(err, rooms) {
         callback && callback(err, (!err && rooms ? rooms.map(function(room) {
-            return models.parseExtendedRoom(room);
+            return mapper.mapExtendedRoom(room);
         }) : []));
     });
 };
@@ -1563,7 +1563,7 @@ Plugged.prototype.getStaff = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", endpoints["STAFF"], function _sanitizeStaff(err, staff) {
         callback && callback(err, (!err && staff ? staff.map(function(staffEntry) {
-            return models.parseUser(staffEntry);
+            return mapper.mapUser(staffEntry);
         }) : []));
     });
 };
@@ -1572,7 +1572,7 @@ Plugged.prototype.getStaff = function(callback) {
 Plugged.prototype.getUser = function(id, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", endpoints["USERSTATS"] + id, function _sanitizeUser(err, user) {
-        callback && callback(err, models.parseUser(user));
+        callback && callback(err, mapper.mapUser(user));
     }, true);
 };
 
@@ -1581,7 +1581,7 @@ Plugged.prototype.getRoomHistory = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", endpoints["HISTORY"], function _sanitizeHistory(err, history) {
         callback && callback(err, (!err && history ? history.map(function(historyEntry) {
-            return models.parseHistoryEntry(historyEntry);
+            return mapper.mapHistoryEntry(historyEntry);
         }) : []));
     });
 };
@@ -1603,7 +1603,7 @@ Plugged.prototype.getMutes = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", endpoints["MUTES"], function _sanitizeMutes(err, mutes) {
         callback && callback(err, (!err && mutes ? mutes.map(function (mute) {
-            return models.parseMute(mute);
+            return mapper.mapMute(mute);
         }) : []));
     });
 };
@@ -1613,7 +1613,7 @@ Plugged.prototype.getBans = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", endpoints["BANS"], function _sanitizeBans(err, bans) {
         callback && callback(err, (!err && bans ? bans.map(function (ban) {
-            return models.parseBan(ban);
+            return mapper.mapBan(ban);
         }) : []));
     });
 };
@@ -1700,7 +1700,7 @@ Plugged.prototype.addPlaylist = function(name, media, callback) {
     }
 
     this.query.query("POST", endpoints["PLAYLISTS"],
-        { name: name, media: models.serializeMediaObjects(media) },
+        { name: name, media: mapper.serializeMediaObjects(media) },
         callback, true);
 };
 
@@ -1892,10 +1892,9 @@ Plugged.prototype.deleteMessage = function(chatID, callback) {
 // DELETE plug.dj/_/auth/session
 Plugged.prototype.logout = function(callback) {
     this.query.query("DELETE", endpoints["SESSION"], function _loggedOut(err, body) {
+        this._clearState();
         if(!err) {
-            this._clearState();
             this._log("Logged out.", 1, "magenta");
-
             this.emit(this.LOGOUT_SUCCESS);
             callback && callback(null);
         } else {
@@ -1914,7 +1913,7 @@ Plugged.prototype.requestSelf = function(callback) {
 
     this.query.query("GET", endpoints["USERSTATS"] + "me", function _requestedSelf(err, data) {
         if(!err && data) {
-            self.state.self = models.parseSelf(data);
+            self.state.self = mapper.mapSelf(data);
 
             self.getFriends(function(err, data) {
                 if(!err && data) {
@@ -1941,7 +1940,7 @@ Plugged.prototype.getFriends = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", endpoints["FRIENDS"], function _sanitizeFriends(err, friends) {
         callback && callback(err, (!err && friends ? friends.map(function(friend) {
-            return models.parseUser(friend);
+            return mapper.mapUser(friend);
         }) : []));
     });
 };
@@ -1951,7 +1950,7 @@ Plugged.prototype.getFriendRequests = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", endpoints["INVITES"], function _sanitizeFriendRequests(err, requests) {
         callback && callback(err, (!err && requests ? requests.map(function(request) {
-            return models.parseFriendRequest(request);
+            return mapper.mapFriendRequest(request);
         }) : []));
     });
 };
@@ -2066,7 +2065,7 @@ Plugged.prototype.getFavoriteRooms = function(callback) {
     this.query.query("GET", endpoints["FAVORITEROOM"], function(err, rooms) {
         if(!err) {
             callback && callback(err, (!err && rooms ? rooms.map(function(room) {
-                return models.parseExtendedRoom(room);
+                return mapper.mapExtendedRoom(room);
             }) : []));
         } else {
             callback && callback(err);
@@ -2202,7 +2201,7 @@ Plugged.prototype.addMedia = function(playlistID, mediaObjects, append, callback
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("POST",
         endpoints["PLAYLISTS"] + '/' + playlistID + "/media/insert",
-        { media: models.serializeMediaObjects(mediaObjects), append: append },
+        { media: mapper.serializeMediaObjects(mediaObjects), append: append },
         callback);
 };
 
@@ -2211,7 +2210,7 @@ Plugged.prototype.insertMedia = function(playlistID, media, append, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("POST",
         endpoints["PLAYLISTS"] + '/' + playlistID + "/media/insert",
-        { media: models.serializeMediaObjects(media), append: append },
+        { media: mapper.serializeMediaObjects(media), append: append },
         callback);
 };
 
