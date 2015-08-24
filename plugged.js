@@ -652,7 +652,7 @@ Plugged.prototype._wsaprocessor = function(msg, flags) {
             }
 
             this.state.room.grabs.push(data.p);
-            this.emit(this.GRAB_UPDATE, data.p);
+            this.emit(this.GRAB, data.p);
             break;
 
         case this.MOD_BAN:
