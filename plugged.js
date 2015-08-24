@@ -1279,10 +1279,20 @@ Plugged.prototype.isFriend = function(userID) {
 };
 
 Plugged.prototype.getCurrentDJ = function() {
+    this._log("getCurrentDJ has been deprecated, please use getDJ now", 0, "yellow");
     return this.getUserByID(this.state.room.booth.dj);
 };
 
+Plugged.prototype.getDJ = function() {
+    return this.getUserByID(this.state.room.booth.dj, this.CACHE.DISABLE);
+};
+
 Plugged.prototype.getCurrentMedia = function() {
+    this._log("getCurrentMedia has been deprecated, please use getMedia now", 0, "yellow");
+    return this.state.room.playback.media;
+};
+
+Plugged.prototype.getMedia = function() {
     return this.state.room.playback.media;
 };
 
@@ -1299,6 +1309,11 @@ Plugged.prototype.getBooth = function() {
 };
 
 Plugged.prototype.getCurrentRoomStats = function() {
+    this._log("getCurrentRoomStats has been deprecated, please use getRoom now", 0, "yellow");
+    return this.state.room;
+};
+
+Plugged.prototype.getRoom = function() {
     return this.state.room;
 };
 
