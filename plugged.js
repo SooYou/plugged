@@ -137,9 +137,9 @@ Plugged.prototype.GLOBALROLE = {
 };
 
 Plugged.prototype.CACHE = {
-    NO:     0,
-    YES:    1,
-    ONLY:   2
+    DISABLE:    0,
+    ENABLE:     1,
+    ONLY:       2
 };
 
 /*===== GENERAL EVENTS =====*/
@@ -514,7 +514,7 @@ Plugged.prototype._connectSocket = function() {
 };
 
 // WebSocket action processor
-Plugged.prototype._wsaprocessor = function(msg) {
+Plugged.prototype._wsaprocessor = function(msg, flags) {
     if(typeof msg !== "string") {
         this._log("socket received message that isn't a string", 3, "yellow");
         return;
@@ -536,6 +536,7 @@ Plugged.prototype._wsaprocessor = function(msg) {
         case this.ADVANCE:
             var previous = {
                 historyID: this.state.room.playback.historyID,
+                playlistID: this.state.room.playback.playlistID,
                 media: this.state.room.playback.media,
                 dj: this.getUserByID(this.state.room.booth.dj),
                 score: {
@@ -821,7 +822,7 @@ Plugged.prototype._wsaprocessor = function(msg) {
             break;
 
         case this.BAN:
-            this.emit(this.BAN, models.parseBan(data.p));
+            this.emit(this.BAN, models.parseOwnBan(data.p));
             break;
 
         case this.NAME_CHANGED:
@@ -837,6 +838,14 @@ Plugged.prototype._wsaprocessor = function(msg) {
 
 Plugged.prototype.clearUserCache = function() {
     this.state.usercache = [];
+};
+
+Plugged.prototype.clearChatCache = function() {
+    this.state.chatcache = [];
+};
+
+Plugged.prototype.clearChatQueue = function() {
+    this.chatQueue = [];
 };
 
 Plugged.prototype.getChatByUser = function(username) {
@@ -881,14 +890,6 @@ Plugged.prototype.removeChatMessage = function(cid, cacheOnly) {
             break;
         }
     }
-};
-
-Plugged.prototype.clearChatCache = function() {
-    this.state.chatcache = [];
-};
-
-Plugged.prototype.clearChatQueue = function() {
-    this.chatQueue = [];
 };
 
 // keeps the usercache clean by deleting invalidate objects
@@ -1185,15 +1186,11 @@ Plugged.prototype.connect = function(room, callback) {
 
 /*================ ROOM CALLS ================*/
 
-Plugged.prototype.getCurrentRoomStats = function() {
-    return this.state.room;
-};
-
 Plugged.prototype.getUserByID = function(id, checkCache) {
-    checkCache = checkCache || this.CACHE.NO;
+    checkCache = checkCache || this.CACHE.DISABLE;
 
     if(checkCache === true)
-        checkCache = this.CACHE.YES;
+        checkCache = this.CACHE.ENABLE;
 
     if(id == this.state.self.id)
         return this.state.self;
@@ -1203,7 +1200,7 @@ Plugged.prototype.getUserByID = function(id, checkCache) {
             return this.state.room.users[i];
     }
 
-    for(var i = 0, l = this.state.usercache.length, m = (checkCache !== this.CACHE.NO); m && i < l; i++) {
+    for(var i = 0, l = this.state.usercache.length, m = (checkCache !== this.CACHE.DISABLE); m && i < l; i++) {
         if(this.state.usercache[i].id == id)
             return this.state.usercache[i];
     }
@@ -1212,11 +1209,11 @@ Plugged.prototype.getUserByID = function(id, checkCache) {
 };
 
 Plugged.prototype.getUserByName = function(username, checkCache) {
-    checkCache = checkCache || this.CACHE.NO;
+    checkCache = checkCache || this.CACHE.DISABLE;
     username = username.toLowerCase();
 
     if(checkCache === true)
-        checkCache = this.CACHE.YES;
+        checkCache = this.CACHE.ENABLE;
 
     if(this.state.self.username.toLowerCase() === username)
         return this.state.self;
@@ -1226,7 +1223,7 @@ Plugged.prototype.getUserByName = function(username, checkCache) {
             return this.state.room.users[i];
     }
 
-    for(var i = 0, l = this.state.usercache.length, m = (checkCache !== this.CACHE.NO); m && i < l; i++) {
+    for(var i = 0, l = this.state.usercache.length, m = (checkCache !== this.CACHE.DISABLE); m && i < l; i++) {
         if(this.state.usercache[i].username.toLowerCase() === username)
             return this.state.usercache[i];
     }
@@ -1255,9 +1252,7 @@ Plugged.prototype.setSetting = function(setting, value, callback) {
     if(this.state.self.settings.hasOwnProperty(setting)) {
         this.state.self.settings[setting] = value;
 
-        this.saveSettings(function(err) {
-            callback && callback(err, true);
-        });
+        this.saveSettings(callback);
         return true;
     }
     callback && callback(null, false);
@@ -1301,6 +1296,10 @@ Plugged.prototype.getStartTime = function() {
 
 Plugged.prototype.getBooth = function() {
     return this.state.room.booth;
+};
+
+Plugged.prototype.getCurrentRoomStats = function() {
+    return this.state.room;
 };
 
 Plugged.prototype.getRoomMeta = function() {
@@ -1498,7 +1497,7 @@ Plugged.prototype.getRoomStats = function(callback) {
     }, true);
 };
 
-// GET plug.dj/_/rooms?q=<query>&page=<page=0>&limit=<limit=50>
+// GET plug.dj/_/rooms?q=<query>&page=<page:0>&limit=<limit:50>
 Plugged.prototype.findRooms = function(query, page, limit, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) :
         typeof limit === "function" ? limit :
@@ -1519,14 +1518,29 @@ Plugged.prototype.findRooms = function(query, page, limit, callback) {
     });
 };
 
-// GET plug.dj/_/rooms?q=<query>&page=0&limit=50
-Plugged.prototype.getRooms = function(callback) {
+// GET plug.dj/_/rooms?q=<query>&page=<page:0>&limit=<limit:50>
+Plugged.prototype.getRoomList = function(page, limit, callback) {
+    if(typeof page === "function") {
+        callback = page;
+        page = 0;
+    } else if(typeof limit === "function") {
+        callback = limit;
+        limit = 50;
+    }
+
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", endpoints["ROOMS"] + "?q=&page=0&limit=50", function _sanitizeRooms(err, rooms) {
         callback && callback(err, (!err && rooms ? rooms.map(function(room) {
             return models.parseExtendedRoom(room);
         }) : []));
     });
+};
+
+// GET plug.dj/_/rooms?q=<query>&page=0&limit=50
+// TODO: remove with 3.0.0
+Plugged.prototype.getRooms = function(callback) {
+    this._log("getRooms is deprecated, please use getRoomList", 0, "yellow");
+    this.getRoomList(0, 50, callback);
 };
 
 // GET plug.dj/_/staff
@@ -1584,8 +1598,7 @@ Plugged.prototype.getBans = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", endpoints["BANS"], function _sanitizeBans(err, bans) {
         callback && callback(err, (!err && bans ? bans.map(function (ban) {
-            ban.timestamp = models.convertPlugTimeToDate(ban.timestamp);
-            return ban;
+            return models.parseBan(ban);
         }) : []));
     });
 };
@@ -1931,8 +1944,19 @@ Plugged.prototype.getFriendRequests = function(callback) {
 Plugged.prototype.findPlaylist = function(query, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", endpoints["PLAYLISTS"], function _findPlaylist(err, playlists) {
-        var regex = new RegExp('(' + query + ')', 'i');
+        var regex = null;
         var result = [];
+
+        try {
+            if(query instanceof RegExp) {
+                regex = query;
+            } else {
+                query = encodeURIComponent(query);
+                regex = new RegExp('(' + query.replace(/%20/, '|') + ')', 'i');
+            }
+        } catch(err) {
+            return callback && callback(err);
+        }
 
         for(var i = (!err ? playlists.length - 1 : 0); i >= 0; i--) {
             if(playlists[i].name && playlists[i].name.match(regex))
@@ -1944,37 +1968,63 @@ Plugged.prototype.findPlaylist = function(query, callback) {
 };
 
 Plugged.prototype.findMedia = function(query, callback) {
-    this.searchMediaPlaylist(playlistID, query, callback);
-};
+    callback = (typeof callback === "function" ? callback.bind(this) : undefined);
 
-Plugged.prototype.findMediaPlaylist = function(playlistID, query, callback) {
-    this.searchMediaPlaylist(playlistID, query, callback);
+    this.getPlaylists(function(err, playlists) {
+        if(err)
+            return callback && callback(err);
+
+        var media = [];
+        var index = 0;
+        var _findMediaPlaylist = this.findMediaPlaylist.bind(this);
+
+        (function _gatherMedia(err, mediaArray) {
+            if(Array.isArray(mediaArray) && mediaArray.length > 0)
+                media = media.concat(mediaArray);
+
+            if(!err && index < playlists.length)
+                _findMediaPlaylist(playlists[index++].id, query, _gatherMedia);
+            else
+                callback && callback(err, media);
+        })();
+    });
 };
 
 // GET plug.dj/_/playlists/<id>/media
-Plugged.prototype.searchMediaPlaylist = function(playlistID, query, callback) {
+Plugged.prototype.findMediaPlaylist = function(playlistID, query, callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("GET", [endpoints["PLAYLISTS"], '/', playlistID, "/media"].join(''), function(err, data) {
-        if(!err && data) {
-            var result = [];
-            try {
+        if(err || !data || data.length === 0)
+            return callback && callback(err);
+
+        var result = [];
+        var regex = null;
+
+        try {
+            if(query instanceof RegExp) {
+                regex = query;
+            } else {
                 query = encodeURIComponent(query);
-                query = query.replace(/%20/, '|');
-                var regex = new RegExp('(' + query + ')', 'i');
-
-                for(var i = (!err ? data.length - 1 : 0); i >= 0; i--) {
-                    if(data[i].title && data[i].title.match(regex) || data[i].author && data[i].author.match(regex))
-                        result.push(data[i]);
-                }
-
-                callback && callback(err, result);
-            } catch(err) {
-                callback && callback(err);
+                regex = new RegExp('(' + query.replace(/%20/, '|') + ')', 'i');
             }
-        } else {
-            callback && callback(err);
+        } catch(err) {
+            return callback && callback(err);
         }
-    }.bind(this));
+
+        for(var i = (!err ? data.length - 1 : 0); i >= 0; i--) {
+            if(data[i].title && data[i].title.match(regex) || data[i].author && data[i].author.match(regex))
+                result.push(data[i]);
+        }
+
+        callback && callback(err, result);
+    });
+};
+
+// GET plug.dj/_/playlists/<id>/media
+// TODO: remove with 3.0.0
+Plugged.prototype.searchMediaPlaylist = function(playlistID, query, callback) {
+    this.findMediaPlaylist(playlistID, query, callback);
+    this._log("searchMediaPlaylist is deprecated, please use findMediaPlaylist", 0, "yellow");
 };
 
 // GET plug.dj/_/playlists/<id>/media
