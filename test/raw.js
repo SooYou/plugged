@@ -61,7 +61,7 @@ var serializeMediaObjects = function(data) {
 };
 
 // preserve sanity of internal state
-var parseSelf = function(data) {
+var mapSelf = function(data) {
     data = data || {};
     data.friends = [];
 
@@ -80,37 +80,37 @@ var createState = function(data) {
     };
 };
 
-exports.parseXP = function(data) { return data; };
-exports.parseBan = function(data) { return data; };
+exports.mapXP = function(data) { return data; };
+exports.mapBan = function(data) { return data; };
 exports.pushVote = function(data) { return data; };
-exports.parseChat = function(data) { return data; };
-exports.parseSelf = parseSelf;
-exports.parseUser = function(data) { return data; };
-exports.parseRoom = function(data) { return data; };
-exports.parseMeta = function(data) { return data; };
-exports.parseLock = function(data) { return data; };
-exports.parseMute = function(data) { return data; };
-exports.parseCycle = function(data) { return data; };
-exports.parseGrabs = function(data) { return data; };
-exports.parseMedia = function(data) { return data; };
-exports.parseVotes = function(data) { return data; };
-exports.parseBooth = function(data) { return data; };
-exports.parseModBan = function(data) { return data; };
+exports.mapChat = function(data) { return data; };
+exports.mapSelf = mapSelf;
+exports.mapUser = function(data) { return data; };
+exports.mapRoom = function(data) { return data; };
+exports.mapMeta = function(data) { return data; };
+exports.mapLock = function(data) { return data; };
+exports.mapMute = function(data) { return data; };
+exports.mapCycle = function(data) { return data; };
+exports.mapGrabs = function(data) { return data; };
+exports.mapMedia = function(data) { return data; };
+exports.mapVotes = function(data) { return data; };
+exports.mapBooth = function(data) { return data; };
+exports.mapModBan = function(data) { return data; };
 exports.createState = createState;
-exports.parseModMove = function(data) { return data; };
-exports.parseSettings = function(data) { return data; };
-exports.parseModAddDJ = function(data) { return data; };
-exports.parsePlayback = function(data) { return data; };
+exports.mapModMove = function(data) { return data; };
+exports.mapSettings = function(data) { return data; };
+exports.mapModAddDJ = function(data) { return data; };
+exports.mapPlayback = function(data) { return data; };
 exports.serializeMedia = serializeMedia;
-exports.parsePromotion = function(data) { return data; };
-exports.parseModRemove = function(data) { return data; };
-exports.parseUserUpdate = function(data) { return data; };
-exports.parseChatDelete = function(data) { return data; };
-exports.parseExtendedRoom = function(data) { return data; };
-exports.parseHistoryEntry = function(data) { return data; };
-exports.parseFriendRequest = function(data) { return data; };
-exports.parseRoomNameUpdate = function(data) { return data; };
+exports.mapPromotion = function(data) { return data; };
+exports.mapModRemove = function(data) { return data; };
+exports.mapUserUpdate = function(data) { return data; };
+exports.mapChatDelete = function(data) { return data; };
+exports.mapExtendedRoom = function(data) { return data; };
+exports.mapHistoryEntry = function(data) { return data; };
+exports.mapFriendRequest = function(data) { return data; };
+exports.mapRoomNameUpdate = function(data) { return data; };
 exports.serializeMediaObjects = serializeMediaObjects;
 exports.convertPlugTimeToDate = function(data) { return data; };
-exports.parseRoomWelcomeUpdate = function(data) { return data; };
-exports.parseRoomDescriptionUpdate = function(data) { return data; };
+exports.mapRoomWelcomeUpdate = function(data) { return data; };
+exports.mapRoomDescriptionUpdate = function(data) { return data; };
