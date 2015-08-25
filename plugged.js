@@ -494,6 +494,7 @@ Plugged.prototype._connectSocket = function() {
 
     /*================= SOCK CLOSED =================*/
     this.sock.on("close", function _sockClose() {
+        self._log("sock closed", 3, "magenta");
         if(self.keepAliveTries < 6 && self.keepAliveID !== -1) {
             self.keepAliveTries = 6;
             self._keepAlive();
@@ -517,6 +518,7 @@ Plugged.prototype._connectSocket = function() {
 Plugged.prototype._wsaprocessor = function(msg, flags) {
     if(typeof msg !== "string") {
         this._log("socket received message that isn't a string", 3, "yellow");
+        this._log(msg, 3, "yellow");
         return;
     }
 
@@ -925,6 +927,10 @@ Plugged.prototype.setChatCacheSize = function(size) {
         return this.chatcachesize;
 };
 
+Plugged.prototype.getChatCacheSize = function() {
+    return this.chatcachesize;
+};
+
 Plugged.prototype.cacheUserOnLeave = function(enabled) {
     if(this.cleanCacheInterval !== -1)
         this.sleave = enabled;
@@ -1190,21 +1196,21 @@ Plugged.prototype.connect = function(room, callback) {
 
 /*================ ROOM CALLS ================*/
 
-Plugged.prototype.getUserByID = function(id, checkCache) {
-    checkCache = checkCache || this.CACHE.DISABLE;
+Plugged.prototype.getUserByID = function(id, cache) {
+    cache = cache || this.CACHE.DISABLE;
 
-    if(checkCache === true)
-        checkCache = this.CACHE.ENABLE;
+    if(cache === true)
+        cache = this.CACHE.ENABLE;
 
     if(id == this.state.self.id)
         return this.state.self;
 
-    for(var i = 0, l = this.state.room.users.length, m = (checkCache !== this.CACHE.ONLY); m && i < l; i++) {
+    for(var i = 0, l = this.state.room.users.length, m = (cache !== this.CACHE.ONLY); m && i < l; i++) {
         if(this.state.room.users[i].id == id)
             return this.state.room.users[i];
     }
 
-    for(var i = 0, l = this.state.usercache.length, m = (checkCache !== this.CACHE.DISABLE); m && i < l; i++) {
+    for(var i = 0, l = this.state.usercache.length, m = (cache !== this.CACHE.DISABLE); m && i < l; i++) {
         if(this.state.usercache[i].id == id)
             return this.state.usercache[i];
     }
@@ -1212,22 +1218,22 @@ Plugged.prototype.getUserByID = function(id, checkCache) {
     return undefined;
 };
 
-Plugged.prototype.getUserByName = function(username, checkCache) {
-    checkCache = checkCache || this.CACHE.DISABLE;
+Plugged.prototype.getUserByName = function(username, cache) {
+    cache = cache || this.CACHE.DISABLE;
     username = username.toLowerCase();
 
-    if(checkCache === true)
-        checkCache = this.CACHE.ENABLE;
+    if(cache === true)
+        cache = this.CACHE.ENABLE;
 
     if(this.state.self.username.toLowerCase() === username)
         return this.state.self;
 
-    for(var i = 0, l = this.state.room.users.length, m = (checkCache !== this.CACHE.ONLY); m && i < l; i++) {
+    for(var i = 0, l = this.state.room.users.length, m = (cache !== this.CACHE.ONLY); m && i < l; i++) {
         if(this.state.room.users[i].username.toLowerCase() === username)
             return this.state.room.users[i];
     }
 
-    for(var i = 0, l = this.state.usercache.length, m = (checkCache !== this.CACHE.DISABLE); m && i < l; i++) {
+    for(var i = 0, l = this.state.usercache.length, m = (cache !== this.CACHE.DISABLE); m && i < l; i++) {
         if(this.state.usercache[i].username.toLowerCase() === username)
             return this.state.usercache[i];
     }
@@ -1325,6 +1331,10 @@ Plugged.prototype.getRoomMeta = function() {
     return this.state.room.meta;
 };
 
+Plugged.prototype.getRoomName = function() {
+    return this.state.room.meta.name;
+};
+
 Plugged.prototype.getFX = function() {
     return this.state.room.fx;
 };
@@ -1361,10 +1371,6 @@ Plugged.prototype.getMinChatLevel = function() {
 
 Plugged.prototype.isFavorite = function() {
     return this.state.room.meta.favorite;
-};
-
-Plugged.prototype.getRoomName = function() {
-    return this.state.room.meta.name;
 };
 
 Plugged.prototype.getDescription = function() {
