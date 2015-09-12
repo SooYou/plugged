@@ -269,32 +269,6 @@ Plugged.prototype._keepAliveCheck = function() {
     this.keepAliveID = setTimeout(this._keepAlive, 30*1000);
 };
 
-Plugged.prototype._emitChat = function(chat) {
-    if(chat.message.indexOf('@' + this.state.self.username) > -1)
-        this.emit(this.CHAT_MENTION, chat);
-    else if(chat.message.charAt(0) == '/')
-        this.emit(this.CHAT_COMMAND, chat);
-
-    this.emit(this.CHAT, chat);
-};
-
-Plugged.prototype._pushUser = function(user) {
-    if(user.guest) {
-        this.state.room.meta.guests++;
-
-        user.joined = new Date().toISOString();
-        this.emit(this.GUEST_JOIN, user);
-    } else {
-        this.state.room.users.push(user);
-        this.state.room.meta.population++;
-
-        if(this.isFriend(user.id))
-            this.emit(this.FRIEND_JOIN, user);
-        else
-            this.emit(this.USER_JOIN, user);
-    }
-};
-
 // TODO: remove with 3.0.0
 // just a temporary method to ensure compatibility with the old
 // logging.
@@ -579,24 +553,12 @@ Plugged.prototype._wsaprocessor = function(msg, flags) {
                     this.state.chatcache.shift();
             }
 
-            // guests who log in whilst in the room don't emit USER_JOIN
-            // messages, so they won't be in the user list yet. that means that
-            // plug.dj might send CHAT events from nonexistent users, so we
-            // first grab the user info, and then emit the chat event later
-            // NOTE: this seems to be fixed with version 1.4.5.8843
-            // should it be that there is another glitch, this will
-            // be reverted.
-            // broken in 8871..
-
-            var user = this.getUserByID(chat.id);
-            if(!user || user.guest) {
-                this.getUser(chat.id, function(e, userData) {
-                    this._pushUser(userData);
-                    this._emitChat(chat);
-                });
-            }
+            if(chat.message.indexOf('@' + this.state.self.username) > -1)
+                this.emit(this.CHAT_MENTION, chat);
+            else if(chat.message.charAt(0) == '/')
+                this.emit(this.CHAT_COMMAND, chat);
             else
-                this._emitChat(chat);
+                this.emit(this.CHAT, chat);
             break;
 
         case this.CHAT_DELETE:
@@ -765,7 +727,21 @@ Plugged.prototype._wsaprocessor = function(msg, flags) {
 
         case this.USER_JOIN:
             var user = mapper.mapUser(data.p);
-            this._pushUser(user);
+
+            if(user.guest) {
+                this.state.room.meta.guests++;
+
+                user.joined = new Date().toISOString();
+                this.emit(this.GUEST_JOIN, user);
+            } else {
+                this.state.room.users.push(user);
+                this.state.room.meta.population++;
+
+                if(this.isFriend(user.id))
+                    this.emit(this.FRIEND_JOIN, user);
+                else
+                    this.emit(this.USER_JOIN, user);
+            }
             break;
 
         case this.USER_UPDATE:
