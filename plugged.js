@@ -212,6 +212,7 @@ Plugged.prototype.MAINTENANCE_MODE_ALERT = "plugMaintenanceAlert";
 Plugged.prototype.ROOM_DESCRIPTION_UPDATE = "roomDescriptionUpdate";
 Plugged.prototype.ROOM_MIN_CHAT_LEVEL_UPDATE = "roomMinChatLevelUpdate";
 
+/*================== Private Functions ==================*/
 Plugged.prototype._sendMessage = function(type, data) {
     if(!this.sock || this.sock.readyState !== WebSocket.OPEN) {
         this._log("socket is not opened!", 1, "red");
@@ -484,7 +485,7 @@ Plugged.prototype._connectSocket = function() {
         origin: "https://plug.dj"
     });
 
-    /*================= SOCK OPENED =================*/
+    /* SOCK OPENED */
     this.sock.on("open", function _sockOpen() {
         self._log("socket opened", 3, "magenta");
         self.emit(self.SOCK_OPEN, self);
@@ -492,7 +493,7 @@ Plugged.prototype._connectSocket = function() {
         self._keepAliveCheck.call(self);
     });
 
-    /*================= SOCK CLOSED =================*/
+    /* SOCK CLOSED */
     this.sock.on("close", function _sockClose() {
         self._log("sock closed", 3, "magenta");
         if(self.keepAliveTries < 6 && self.keepAliveID !== -1) {
@@ -504,17 +505,17 @@ Plugged.prototype._connectSocket = function() {
         self.emit(self.SOCK_CLOSED, self);
     });
 
-    /*================= SOCK ERROR ==================*/
+    /* SOCK ERROR */
     this.sock.on("error", function _sockError(err) {
         self._log("sock error", 3, "magenta");
         self.emit(self.SOCK_ERROR, self, err);
     });
 
-    /*================= SOCK MESSAGE =================*/
+    /* SOCK MESSAGE */
     this.sock.on("message", self._wsaprocessor);
 };
 
-// WebSocket action processor
+/*============== Action Processor ===============*/
 Plugged.prototype._wsaprocessor = function(msg, flags) {
     if(typeof msg !== "string") {
         this._log("socket received message that isn't a string", 3, "yellow");
@@ -995,13 +996,18 @@ Plugged.prototype.sendChat = function(message, deleteTimeout) {
 
     message = this.messageProc(message);
 
-    if(!Array.isArray(message))
-        return null;
-
-    for(var i = 0, l = message.length; i < l; i++) {
+    if(Array.isArray(message)) {
+        for(var i = 0, l = message.length; i < l; i++) {
+            // timeout: pass a timeout for the last message only
+            this.chatQueue.push({
+                message: message[i],
+                timeout: (l - 1 === i ? deleteTimeout : -1)
+            });
+        }
+    } else if(typeof message === "string") {
         this.chatQueue.push({
-            message: message[i],
-            timeout: (l - 1 === i ? deleteTimeout : -1)
+            message: message,
+            timeout: deleteTimeout
         });
     }
 
