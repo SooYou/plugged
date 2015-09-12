@@ -1986,18 +1986,20 @@ Plugged.prototype.findMedia = function(query, callback) {
             return callback && callback(err);
 
         var media = [];
-        var index = 0;
-        var _findMediaPlaylist = this.findMediaPlaylist.bind(this);
-
-        (function _gatherMedia(err, mediaArray) {
-            if(Array.isArray(mediaArray) && mediaArray.length > 0)
+        var pending = playlists.length;
+        var cb = function(err, mediaArray) {
+            if(err)
+                return callback && callback(err, media);
+            else(Array.isArray(mediaArray) && mediaArray.length > 0)
                 media = media.concat(mediaArray);
 
-            if(!err && index < playlists.length)
-                _findMediaPlaylist(playlists[index++].id, query, _gatherMedia);
-            else
-                callback && callback(err, media);
-        })();
+            pending--;
+            if(pending === 0)
+                callback && callback(null, media);
+        };
+
+        for(var i = pending - 1; i >= 0; i--)
+            this.findMediaPlaylist(playlists[i].id, query, cb);
     });
 };
 
