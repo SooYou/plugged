@@ -1,6 +1,9 @@
 var request = require("request");
 var util = require("util");
 
+var QUERY_TIMEOUT_INC = 200;
+var QUERY_TIMEOUT_MAX = 2200;
+
 var verbs = ["GET", "POST", "PUT", "DELETE"];
 
 var RequestError = function(data, status, code) {
@@ -14,16 +17,8 @@ var RequestError = function(data, status, code) {
 
 util.inherits(RequestError, Error);
 
-var watcher = function(query) {
-    if(query.queue.length === 0)
-        query._stopWatcher();
-
-    while(query._process());
-};
-
 var processEntry = function(query, entry) {
     request(entry.options, function requestCB(err, res, body) {
-        query.active--;
 
         if(typeof entry.callback !== "undefined") {
              if(!err && res.statusCode == 200) {
@@ -64,7 +59,9 @@ var processEntry = function(query, entry) {
                 if((entry.tries >= 0 && entry.tries < 2) && (res ? res.statusCode : 0) >= 500) {
                     entry.tries++;
                     query.queue.push(entry);
-                    query._process();
+
+                    if(query.offset === 0)
+                        query._process();
                 } else {
                     if(!err) {
                         err = new RequestError(
@@ -90,36 +87,25 @@ var processEntry = function(query, entry) {
 function Query() {
     this.jar = null;
     this.queue = [];
-    this.active = 0;
-    this.watcherID = -1;
+    this.offset = 0;
+    this._process = this._process.bind(this);
 }
 
-Query.prototype._process = function() {
+Query.prototype._process = function(lastRequest) {
+    lastRequest = lastRequest || 0;
+
     if(this.queue.length > 0) {
-        if(this.active <= 5) {
-            this.active++;
+        if(lastRequest + this.offset <= Date.now()) {
             processEntry(this, this.queue.shift());
 
-            return true;
-        } else if(this.watcherID === -1) {
-            this._startWatcher();
+            if(this.offset < QUERY_TIMEOUT_MAX)
+                this.offset += QUERY_TIMEOUT_INC;
         }
+
+        setTimeout(this._process, this.offset, Date.now());
+    } else {
+        this.offset = 0;
     }
-
-    return false;
-};
-
-Query.prototype._startWatcher = function() {
-    if(this.watcherID >= 0)
-        this._stopWatcher();
-
-    //otherwise plug flips its shit and tells us to stop flooding its API
-    this.watcherID = setTimeout(watcher, 5*1000, this);
-};
-
-Query.prototype._stopWatcher = function() {
-    clearTimeout(this.watcherID);
-    this.watcherID = -1;
 };
 
 Query.prototype.setJar = function(jar, storage) {
@@ -135,7 +121,7 @@ Query.prototype.query = function(verb, url, data, callback, extractArray, flush)
     flush = flush || false;
 
     // reorganize arguments since parameter data is optional
-    if(typeof data === "function") {
+    if(typeof data !== "object") {
         if(typeof callback === "boolean") {
             flush = extractArray;
             extractArray = callback;
@@ -170,16 +156,15 @@ Query.prototype.query = function(verb, url, data, callback, extractArray, flush)
 
     if(!flush) {
         this.queue.push(entry);
-        this._process();
+        if(this.offset === 0)
+            this._process();
     } else {
-        this.active++;
         processEntry(this, entry);
     }
 };
 
 Query.prototype.flushQueue = function() {
     this.queue = [];
-    this._stopWatcher();
 };
 
 module.exports = Query;
