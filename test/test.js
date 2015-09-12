@@ -902,6 +902,7 @@ describe("REST", function () {
                     expect(history[0].room).to.be.an("object");
                     expect(history[0].room).to.have.all.keys([
                         "name",
+                        "private",
                         "slug"
                     ]);
 
