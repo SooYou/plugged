@@ -1,7 +1,7 @@
 {
     "name" : "plugged",
     "description" : "plugged is a vast API for plug.dj",
-    "version" : "2.5.0",
+    "version" : "2.5.1",
     "main" : "plugged",
     "author" : "Sooyou",
     "homepage" : "https://github.com/SooYou/plugged/wiki",
@@ -44,6 +44,6 @@
 
     "dependencies": {
         "request": "~2",
-        "ws": "~0.8"
+        "ws": "~0.9"
     }
 }
