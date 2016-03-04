@@ -385,7 +385,7 @@ describe("REST", function () {
         it("should get an array of news objects", function (done) {
             client.getNews(function (err, news) {
                 expect(err).to.be.a("null");
-                expect(news).to.be.an("array").and.to.have.length.above(0);
+                expect(news).to.be.an("array");
 
                 if(news.length > 0) {
                     expect(news[0]).to.be.an("object");
