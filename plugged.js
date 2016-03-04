@@ -1,11 +1,13 @@
 var EventEmitter = require("events").EventEmitter;
-var mapper = require("./mapper");
-var Query = require("./query");
-var utils = require("./utils");
 var WebSocket = require("ws");
 var util = require("util");
 
-var baseURL = "https://plug.dj";
+var config = require("./conf/config");
+var mapper = require("./mapper");
+var Query = require("./query");
+var utils = require("./utils");
+
+var baseURL = config.provider;
 
 var endpoints = {
     /*--------------- GET ---------------*/
@@ -455,7 +457,7 @@ Plugged.prototype._connectSocket = function() {
     }
 
     var self = this;
-    this.sock = new WebSocket("wss://godj.plug.dj:443/socket", {
+    this.sock = new WebSocket(config.socket, {
         origin: "https://plug.dj"
     });
 
