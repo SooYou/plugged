@@ -44,6 +44,6 @@
 
     "dependencies": {
         "request": "~2",
-        "ws": "~0.9"
+        "ws": "~1"
     }
 }
