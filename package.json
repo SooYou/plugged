@@ -1,7 +1,7 @@
 {
     "name" : "plugged",
     "description" : "plugged is a vast API for plug.dj",
-    "version" : "2.5.3",
+    "version" : "2.5.4",
     "main" : "plugged",
     "author" : "Sooyou",
     "homepage" : "https://github.com/SooYou/plugged/wiki",
@@ -26,7 +26,8 @@
         "README.md",
         "test/raw.js",
         "test/test.js",
-        "test/README.md"
+        "test/README.md",
+        "conf/config.json"
     ],
 
     "keywords" : [
