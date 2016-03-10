@@ -1772,6 +1772,14 @@ Plugged.prototype.updateRoomInfo = function(name, description, welcome, callback
     }, callback);
 };
 
+// POST plug.dj/_/rooms/update
+Plugged.prototype.setMinChatLevel = function(level, callback) {
+    callback = (typeof callback === "function" ? callback.bind(this) : undefined);
+    this.query.query("POST", endpoints["UPDATEROOM"], {
+        minChatLevel: level
+    }, callback);
+};
+
 // POST plug.dj/_/bans/add
 Plugged.prototype.banUser = function(userID, time, reason, callback) {
     if(typeof reason === "function") {
