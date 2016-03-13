@@ -674,7 +674,7 @@ Plugged.prototype._wsaprocessor = function(msg, flags) {
             break;
 
         case this.MOD_SKIP:
-            this.emit(this.MOD_SKIP, data.p);
+            this.emit(this.MOD_SKIP, mapper.mapModSkip(data.p));
             break;
 
         case this.SKIP:
