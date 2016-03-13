@@ -408,6 +408,15 @@ var mapModRemove = function(data) {
     };
 };
 
+var mapModSkip = function(data) {
+    data = data || {};
+
+    return {
+        moderator: utils.decode(data.m) || "",
+        moderatorID: data.mi || -1
+    };
+};
+
 var mapOwnBan = function(data) {
     data = data || {};
 
