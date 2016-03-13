@@ -678,7 +678,7 @@ Plugged.prototype._wsaprocessor = function(msg, flags) {
             break;
 
         case this.SKIP:
-            this.emit(this.SKIP, data.p);
+            this.emit(this.SKIP, mapper.mapModSkip(data.p));
             break;
 
         case this.ROOM_NAME_UPDATE:
