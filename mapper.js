@@ -39,7 +39,7 @@ var serializeMedia = function(data) {
     } else {
         var title = utils.splitTitle(data.title);
 
-        media.author = title[0];
+        media.author = title[0];map
         media.title = title[1];
         media.format = 2;
         media.image = data.artwork_url || "";
@@ -111,6 +111,7 @@ var mapUser = function(data) {
         role: data.role || 0,
         sub: data.sub || 0,
         guest: data.guest || false,
+        silver: data.silver || false,
         id: data.id || -1
     };
 };
