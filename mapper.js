@@ -577,6 +577,7 @@ exports.createState = createState;
 exports.mapModMove = mapModMove;
 exports.mapSettings = mapSettings;
 exports.mapModAddDJ = mapModAddDJ;
+exports.mapModSkip = mapModSkip;
 exports.mapPlayback = mapPlayback;
 exports.serializeMedia = serializeMedia;
 exports.mapPromotion = mapPromotion;
