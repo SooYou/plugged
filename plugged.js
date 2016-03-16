@@ -654,19 +654,22 @@ Plugged.prototype._wsaprocessor = function(msg, flags) {
             break;
 
         case this.MOD_STAFF:
-            var promotion = mapper.mapPromotion(data.p);
+            var promotions = mapper.mapPromotion(data.p);
 
-            if(this.state.self.id == promotion.id)
-                this.state.self.role = promotion.role;
+            for (var i = 0; i < promotions.length; i++){
+                var promotion = promotions[i];
+                if(this.state.self.id == promotion.id)
+                    this.state.self.role = promotion.role;
 
-            for(var i = this.state.room.users.length - 1; i >= 0; i--) {
-                if(this.state.room.users[i].id == promotion.id) {
-                    this.state.room.users[i].role = promotion.role;
+                for(var j = this.state.room.users.length - 1; j >= 0; j--) {
+                    if(this.state.room.users[j].id == promotion.id) {
+                        this.state.room.users[j].role = promotion.role;
 
-                    if(this.removeCachedUserByID(this.state.room.users[i].id))
-                        this.cacheUser(this.state.room.users[i]);
+                        if(this.removeCachedUserByID(this.state.room.users[j].id))
+                            this.cacheUser(this.state.room.users[j]);
 
-                    break;
+                        break;
+                    }
                 }
             }
 
