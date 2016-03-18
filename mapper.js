@@ -39,7 +39,7 @@ var serializeMedia = function(data) {
     } else {
         var title = utils.splitTitle(data.title);
 
-        media.author = title[0];map
+        media.author = title[0];
         media.title = title[1];
         media.format = 2;
         media.image = data.artwork_url || "";
