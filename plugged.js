@@ -654,7 +654,7 @@ Plugged.prototype._wsaprocessor = function(msg, flags) {
             break;
 
         case this.MOD_STAFF:
-            var promotions = mapper.mapPromotion(data.p);
+            var promotions = mapper.mapPromotions(data.p);
 
             for (var i = 0; i < promotions.length; i++){
                 var promotion = promotions[i];
