@@ -656,24 +656,36 @@ Plugged.prototype._wsaprocessor = function(msg, flags) {
         case this.MOD_STAFF:
             var promotions = mapper.mapPromotions(data.p);
 
-            for (var i = 0; i < promotions.length; i++){
-                var promotion = promotions[i];
-                if(this.state.self.id == promotion.id)
-                    this.state.self.role = promotion.role;
+            if (promotions.length === 2) {
+                var host = this.getUserByID(this.getHostID());
 
-                for(var j = this.state.room.users.length - 1; j >= 0; j--) {
-                    if(this.state.room.users[j].id == promotion.id) {
-                        this.state.room.users[j].role = promotion.role;
+                for (var i = this.promotions.length - 1; i >= 0; i--) {
+                    if(promotions[i].id == host.id) {
+                        host.role = promotions.splice(i, 1)[0].role;
 
-                        if(this.removeCachedUserByID(this.state.room.users[j].id))
-                            this.cacheUser(this.state.room.users[j]);
+                        if(this.removeCachedUserByID(host.id))
+                            this.cacheUser(host);
+
+                        this.state.room.meta.hostID = promotions[0].id;
+                        this.state.room.meta.hostName = promotions[0].username;
 
                         break;
                     }
                 }
             }
 
-            this.emit(this.MOD_STAFF, promotion);
+            for(var i = this.state.room.users.length - 1; i >= 0; i--) {
+                if(this.state.room.users[i].id == promotions[0].id) {
+                    this.state.room.users[i].role = promotions[0].role;
+
+                    if(this.removeCachedUserByID(this.state.room.users[i].id))
+                        this.cacheUser(this.state.room.users[i]);
+
+                    break;
+                }
+            }
+
+            this.emit(this.MOD_STAFF, promotions);
             break;
 
         case this.MOD_SKIP:
