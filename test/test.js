@@ -721,6 +721,15 @@ describe("REST", function () {
         });
     });
 
+    describe("#setMinChatLevel", function () {
+        it("should set the minimum chat level", function (done) {
+            client.setMinChatLevel(3, function () {
+                expect(client.getMinChatLevel()).to.be.a("number").and.equal(3);
+                done();
+            });
+        });
+    });
+
     execTest()("#addStaff", function () {
         it("should add a user as staff", function (done) {
             client.addStaff(_user.id, client.USERROLE.BOUNCER, done);
