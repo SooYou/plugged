@@ -328,7 +328,7 @@ var mapExtendedRoom = function(data) {
                     ""
             ),
         favorite: data.favorite || false,
-        format: parseInt(data.format) || 1,
+        format: parseInt(data.format, 10) || 1,
         guests: data.guests || 0,
         host: utils.decode(data.host) || "",
         id: data.id || -1,
@@ -337,7 +337,7 @@ var mapExtendedRoom = function(data) {
         name: utils.decode(data.name) || "",
         nsfw: data.nsfw || false,
         capacity: data.capacity || 5000,
-        population: parseInt(data.population) || 0,
+        population: parseInt(data.population, 10) || 0,
         private: data.private || false,
         slug: data.slug || ""
     };
@@ -367,7 +367,7 @@ var mapMeta = function(data) {
         hostID: data.hostID || -1,
         hostName: utils.decode(data.hostName) || "",
         id: data.id || -1,
-        minChatLevel: data.minChatLevel || 0,
+        minChatLevel: parseInt(data.minChatLevel, 10) || 0,
         name: utils.decode(data.name) || "",
         population: data.population || 0,
         slug: data.slug || undefined,
