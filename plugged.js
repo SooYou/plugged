@@ -1789,10 +1789,16 @@ Plugged.prototype.updateRoomInfo = function(name, description, welcome, callback
 
 // POST plug.dj/_/rooms/update
 Plugged.prototype.setMinChatLevel = function(level, callback) {
+    level = (typeof level === "string" ? parseInt(level, 10) : level);
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
     this.query.query("POST", endpoints["UPDATEROOM"], {
         minChatLevel: level
-    }, callback);
+    }, function(err) {
+        if (!err)
+            this.state.room.meta.minChatLevel = level;
+
+        callback && callback(err);
+    }.bind(this));
 };
 
 // POST plug.dj/_/bans/add
