@@ -1,4 +1,4 @@
 {
-  "provider": "https://stg.plug.dj",
-  "socket": "wss://gostagedj.plug.dj:443/socket"
+  "provider": "https://plug.dj",
+  "socket": "wss://godj.plug.dj:443/socket"
 }
