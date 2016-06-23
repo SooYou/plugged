@@ -659,7 +659,7 @@ Plugged.prototype._wsaprocessor = function(msg, flags) {
             if (promotions.length === 2) {
                 var host = this.getUserByID(this.getHostID());
 
-                for (var i = this.promotions.length - 1; i >= 0; i--) {
+                for (var i = promotions.length - 1; i >= 0; i--) {
                     if(promotions[i].id == host.id) {
                         host.role = promotions.splice(i, 1)[0].role;
 
