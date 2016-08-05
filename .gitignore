@@ -30,6 +30,9 @@ build/Release
 # https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git
 node_modules
 
+#Editor directory
+.vscode
+
 # Test
 test/node_modules
 test/test.json
