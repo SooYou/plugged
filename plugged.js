@@ -271,9 +271,6 @@ Plugged.prototype._keepAliveCheck = function() {
     this.keepAliveID = setTimeout(this._keepAlive, 30*1000);
 };
 
-// TODO: remove with 3.0.0
-// just a temporary method to ensure compatibility with the old
-// logging.
 Plugged.prototype._log = function(msg, verbosity, type) {
     if(typeof this.log === "object") {
         switch(type) {
@@ -1560,13 +1557,6 @@ Plugged.prototype.getRoomList = function(page, limit, callback) {
     });
 };
 
-// GET plug.dj/_/rooms?q=<query>&page=0&limit=50
-// TODO: remove with 3.0.0
-Plugged.prototype.getRooms = function(callback) {
-    this._log("getRooms is deprecated, please use getRoomList", 0, "yellow");
-    this.getRoomList(0, 50, callback);
-};
-
 // GET plug.dj/_/staff
 Plugged.prototype.getStaff = function(callback) {
     callback = (typeof callback === "function" ? callback.bind(this) : undefined);
@@ -2062,13 +2052,6 @@ Plugged.prototype.findMediaPlaylist = function(playlistID, query, callback) {
 
         callback && callback(err, result);
     });
-};
-
-// GET plug.dj/_/playlists/<id>/media
-// TODO: remove with 3.0.0
-Plugged.prototype.searchMediaPlaylist = function(playlistID, query, callback) {
-    this.findMediaPlaylist(playlistID, query, callback);
-    this._log("searchMediaPlaylist is deprecated, please use findMediaPlaylist", 0, "yellow");
 };
 
 // GET plug.dj/_/playlists/<id>/media
