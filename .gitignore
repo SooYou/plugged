@@ -1,6 +1,7 @@
 # Test application
 app.js
 guest.js
+jsconfig.json
 
 # Logs
 logs
