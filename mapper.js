@@ -1,20 +1,18 @@
-var utils = require("./utils");
+const utils = require("./utils");
 
-var serializeMedia = function(data) {
-    data = data || {};
-
-    var flag = 0;
+const serializeMedia = function(data = {}) {
+    let flag = 0;
     flag |= data.hasOwnProperty("artwork_url") ? 1 << 0 : 0;
     flag |= data.hasOwnProperty("thumbnails") ? 1 << 1 : 0;
     flag |= data.hasOwnProperty("snippet") ? 1 << 2 : 0;
 
-    if(flag === 0)
+    if (flag === 0)
         return data;
 
-    if(typeof data.id !== "string")
+    if (typeof data.id !== "string")
         data.id = String(data.id);
 
-    var media = {
+    const media = {
         id: 0,
         cid: data.id || "",
         author: "",
@@ -22,10 +20,10 @@ var serializeMedia = function(data) {
         duration: 0
     };
 
-    if(flag > 1) {
-        var title;
+    if (flag > 1) {
+        let title;
 
-        if((flag & 0x04) === 0x04) {
+        if ((flag & 0x04) === 0x04) {
             data.id = data.id.videoId;
             title = utils.splitTitle(data.snippet.title);
         } else {
@@ -35,9 +33,9 @@ var serializeMedia = function(data) {
         media.author = title[0];
         media.title = title[1];
         media.format = 1;
-        media.image = ["https://i.ytimg.com/vi/", data.id, "/default.jpg"].join('');
+        media.image = `https://i.ytimg.com/vi/${data.id}/default.jpg`;
     } else {
-        var title = utils.splitTitle(data.title);
+        const title = utils.splitTitle(data.title);
 
         media.author = title[0];
         media.title = title[1];
@@ -49,19 +47,16 @@ var serializeMedia = function(data) {
     return media;
 };
 
-var serializeMediaObjects = function(data) {
-    data = data || {};
-    var arr = [];
+const serializeMediaObjects = function(data = {}) {
+    const arr = [];
 
-    for(var i = 0, l = data.length; i < l; i++)
+    for(let i = 0, l = data.length; i < l; i++)
         arr[i] = serializeMedia(data[i]);
 
     return arr;
 };
 
-var mapSelf = function(data) {
-    data = data || {};
-
+let mapSelf = function(data = {}) {
     return {
         joined: utils.convertPlugTimeToDate(data.joined),
         username: utils.decode(data.username) || "",
@@ -95,9 +90,7 @@ var mapSelf = function(data) {
     };
 };
 
-var mapUser = function(data) {
-    data = data || {};
-
+const mapUser = function(data = {}) {
     return {
         joined: utils.convertPlugTimeToDate(data.joined),
         username: utils.decode(data.username) || "",
@@ -116,19 +109,16 @@ var mapUser = function(data) {
     };
 };
 
-var mapUsers = function(data) {
-    data = data || {};
-    var arr = [];
+const mapUsers = function(data = {}) {
+    const arr = [];
 
-    for(var i = data.length-1; i >= 0; i--)
+    for(let i = data.length-1; i >= 0; i--)
         arr.push(mapUser(data[i]));
 
     return arr;
 };
 
-var mapUserUpdate = function(data) {
-    data = data || {};
-
+const mapUserUpdate = function(data = {}) {
     return {
         id: data.i || -1,
         level: data.level || undefined,
@@ -138,9 +128,7 @@ var mapUserUpdate = function(data) {
     };
 };
 
-var mapMedia = function(data) {
-    data = data || {};
-
+const mapMedia = function(data = {}) {
     return {
         author: utils.decode(data.author) || "",
         title: utils.decode(data.title) || "",
@@ -152,31 +140,27 @@ var mapMedia = function(data) {
     }
 };
 
-var mapMute = function(data, expireDate) {
-    data = data || {};
-
+const mapMute = function(data = {}, expireDate) {
     return {
         username: utils.decode(data.username) || data.t || "",
         id: data.id || data.i || -1,
         moderator: utils.decode(data.moderator) || data.m || "",
+        moderatorID: data.mi || -1,
         reason: data.reason || data.r || 1,
         expires: data.expires || expireDate || -1
     };
 };
 
-var mapGrabs = function(data) {
-    data = data || {};
-    var arr = [];
+const mapGrabs = function(data = {}) {
+    const arr = [];
 
-    for(var key in data)
+    for(let key in data)
         arr.push(key);
 
     return arr;
 };
 
-var mapModAddDJ = function(data) {
-    data = data || {};
-
+const mapModAddDJ = function(data = {}) {
     return {
         moderator: utils.decode(data.m) || "",
         moderatorID: data.mi || -1,
@@ -184,9 +168,7 @@ var mapModAddDJ = function(data) {
     };
 };
 
-var mapModMove = function(data) {
-    data = data || {};
-
+const mapModMove = function(data = {}) {
     return {
         moderator: utils.decode(data.m) || "",
         moderatorID: data.mi || -1,
@@ -196,9 +178,7 @@ var mapModMove = function(data) {
     };
 };
 
-var mapPlayback = function(data) {
-    data = data || {};
-
+const mapPlayback = function(data = {}) {
     return {
         media: mapMedia(data.media),
         historyID: data.historyID || "",
@@ -207,9 +187,7 @@ var mapPlayback = function(data) {
     };
 };
 
-var mapHistoryEntry = function (data) {
-    data = data || {};
-
+const mapHistoryEntry = function(data = {}) {
     return {
         id: data.id || "",
         media: (data.media ? {
@@ -260,9 +238,7 @@ var mapHistoryEntry = function (data) {
     };
 };
 
-var mapFriendRequest = function(data) {
-    data = data || {};
-
+const mapFriendRequest = function(data = {}) {
     return {
         username: utils.decode(data.username) || "",
         avatarID: data.avatarID || "",
@@ -275,11 +251,10 @@ var mapFriendRequest = function(data) {
     };
 };
 
-var mapVotes = function(data) {
-    data = data || {};
-    var arr = [];
+const mapVotes = function(data = {}) {
+    const arr = [];
 
-    for(var key in data) {
+    for(let key in data) {
         arr.push({
             id: key,
             direction: data[key]
@@ -289,16 +264,14 @@ var mapVotes = function(data) {
     return arr;
 };
 
-var pushVote = function(vote) {
+const pushVote = function(vote = {}) {
     return {
         id: vote.i || -1,
         direction: vote.v || 1
     };
 };
 
-var mapSettings = function(data) {
-    data = data || {};
-
+const mapSettings = function(data = {}) {
     return {
         volume: data.volume || 50,
         avatarcap: data.avatarcap || 50,
@@ -316,9 +289,7 @@ var mapSettings = function(data) {
     };
 };
 
-var mapExtendedRoom = function(data) {
-    data = data || {};
-
+const mapExtendedRoom = function(data = {}) {
     return {
         cid: data.cid || "",
         dj: (typeof data.dj === "string" ?
@@ -343,9 +314,7 @@ var mapExtendedRoom = function(data) {
     };
 };
 
-var mapRoom = function(data) {
-    data = data || {};
-
+const mapRoom = function(data = {}) {
     return {
         booth: mapBooth(data.booth),
         fx: data.fx || [],
@@ -358,9 +327,7 @@ var mapRoom = function(data) {
     };
 };
 
-var mapMeta = function(data) {
-    data = data || {};
-
+const mapMeta = function(data = {}) {
     return {
         description: utils.decode(data.description) || "",
         favorite: data.favorite || false,
@@ -376,9 +343,7 @@ var mapMeta = function(data) {
     };
 };
 
-var mapBooth = function(data) {
-    data = data || {};
-
+const mapBooth = function(data = {}) {
     return {
         dj: data.currentDJ || -1,                                       // id of the active DJ
         isLocked: data.isLocked || false,                               // is waitlist locked?
@@ -387,9 +352,7 @@ var mapBooth = function(data) {
     };
 };
 
-var mapModBan = function(data) {
-    data = data || {};
-
+const mapModBan = function(data = {}) {
     return {
         moderator: utils.decode(data.m) || "",
         moderatorID: data.mi || -1,
@@ -398,38 +361,30 @@ var mapModBan = function(data) {
     };
 };
 
-var mapModRemove = function(data) {
-    data = data || {};
-
+const mapModRemove = function(data = {}) {
     return {
         moderator: utils.decode(data.m) || "",
         moderatorID: data.mi || -1,
         username: utils.decode(data.t) || "",
-        wasPlaying: data.d || false
+        wasPlaying: data.d || false // TODO: that is not associated to whether they were playing or not.
     };
 };
 
-var mapModSkip = function(data) {
-    data = data || {};
-
+const mapModSkip = function(data = {}) {
     return {
         moderator: utils.decode(data.m) || "",
         moderatorID: data.mi || -1
     };
 };
 
-var mapOwnBan = function(data) {
-    data = data || {};
-
+const mapOwnBan = function(data = {}) {
     return {
         reason: data.r || 1,
         duration: data.l || ''
     };
 };
 
-var mapBan = function(data) {
-    data = data || {};
-
+const mapBan = function(data = {}) {
     return {
         id: data.id || -1,
         reason: data.reason || -1,
@@ -440,9 +395,7 @@ var mapBan = function(data) {
     };
 };
 
-var mapCycle = function(data) {
-    data = data || {};
-
+const mapCycle = function(data = {}) {
     return {
         shouldCycle: data.f || false,
         moderator: utils.decode(data.m) || "",
@@ -450,9 +403,7 @@ var mapCycle = function(data) {
     };
 };
 
-var mapLock = function(data) {
-    data = data || {};
-
+const mapLock = function(data = {}) {
     return {
         clearWaitlist: data.c || false,
         isLocked: data.f || false,
@@ -461,11 +412,10 @@ var mapLock = function(data) {
     };
 };
 
-var mapPromotions = function(data) {
-    data = data || {};
-    var promotions = [];
+const mapPromotions = function(data = {}) {
+    let promotions = []
 
-    for(var i = (data.hasOwnProperty('u') ? data.u.length - 1 : -1); i >= 0; i--) {
+    for(let i = (data.hasOwnProperty('u') ? data.u.length - 1 : -1); i >= 0; i--) {
         promotions.push({
             moderator: utils.decode(data.m) || "",
             moderatorID: data.mi || -1,
@@ -478,18 +428,15 @@ var mapPromotions = function(data) {
     return promotions;
 };
 
-var mapXP = function(data) {
-    data = data || {};
-
+const mapXP = function(data = {}) {
     return {
         xp: data.xp || 0,
+        pp: data.pp || 0,
         level: data.level || -1
     };
 };
 
-var mapChat = function(data) {
-    data = data || {};
-
+const mapChat = function(data = {}) {
     return {
         message: utils.decode(data.message) || "",
         username: utils.decode(data.un) || "",
@@ -499,18 +446,14 @@ var mapChat = function(data) {
     };
 };
 
-var mapChatDelete = function(data) {
-    data = data || {};
-
+const mapChatDelete = function(data = {}) {
     return {
         moderatorID: data.mi || -1,     //ID of mod that issued the deletion
         cid: data.c || ""               //chat ID
     };
 };
 
-var createState = function(data) {
-    data = data || {};
-
+const createState = function(data = {}) {
     return {
         credentials: data.credentials || {},
         self: mapSelf(data.self),
@@ -520,36 +463,28 @@ var createState = function(data) {
     };
 };
 
-var mapRoomNameUpdate = function(data) {
-    data = data || {};
-
+const mapRoomNameUpdate = function(data = {}) {
     return {
         name: utils.decode(data.n) || "",
         moderatorID: data.u || -1
     };
 };
 
-var mapRoomDescriptionUpdate = function(data) {
-    data = data || {};
-
+const mapRoomDescriptionUpdate = function(data = {}) {
     return {
         description: utils.decode(data.d) || "",
         moderatorID: data.u || -1
     };
 };
 
-var mapRoomWelcomeUpdate = function(data) {
-    data = data || {};
-
+const mapRoomWelcomeUpdate = function(data = {}) {
     return {
         welcome: utils.decode(data.w) || "",
         moderatorID: data.u || -1
     };
 };
 
-var mapChatLevelUpdate = function(data) {
-    data = data || {};
-
+const mapChatLevelUpdate = function(data = {}) {
     return {
         chatLevel: data.m || 1,
         moderatorID: data.u || -1
