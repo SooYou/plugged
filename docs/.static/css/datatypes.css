@@ -1,0 +1,13 @@
+.datatype {
+    font-weight: bold;
+    color: darkred;
+    background-color: #ecf0f3;
+    padding: 0 2px;
+}
+
+.ev {
+    font-weight: bold;
+    color: green;
+    background-color: #ecf0f3;
+    padding: 0 2px;
+}
