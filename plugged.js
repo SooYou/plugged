@@ -998,7 +998,7 @@ class Plugged extends EventEmitter {
      * @param {boolean} enable
      */
     cacheChat(enable) {
-        this.ccache = enable;
+        return (this.ccache = enable);
     }
 
     /**
