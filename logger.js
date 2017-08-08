@@ -20,16 +20,16 @@ class Logger {
     }) {
         this.options = options;
 
-        if (fs.existsSync(this.file))
-            fs.unlink(path.resolve(this.file));
+        if (fs.existsSync(this.options.file))
+            fs.unlink(path.resolve(this.options.file));
     }
 
     log(msg, verbosity = 0, color = this.options.colors.white) {
-        if (this.verbosity > verbosity)
+        if (this.options.verbosity > verbosity)
             console.log(msg);
-        
-        if(this.file)
-            fs.appendFile(this.file, msg.replace(/\x1b\[\d+(;\d)?m/g, '') + '\r\n');
+
+        if(this.options.file)
+            fs.appendFile(this.options.file, msg.replace(/\x1b\[\d+(;\d)?m/g, '') + '\r\n');
     }
 
     info(msg) {
@@ -37,19 +37,19 @@ class Logger {
     }
 
     warn(msg) {
-        this.log(`[  warn  ] ${msg}`, 1, this.options.yellow);
+        this.log(`[  warn  ] ${msg}`, 1, this.options.colors.yellow);
     }
 
     success(msg) {
-        this.log(`[ success ] ${msg}`, 1, this.options.green);
+        this.log(`[ success ] ${msg}`, 1, this.options.colors.green);
     }
 
     error(msg) {
-        this.log(`[  error  ] ${msg}`, 1, this.options.red);
+        this.log(`[  error  ] ${msg}`, 1, this.options.colors.red);
     }
 
     wtf(msg) {
-        this.log(`[  wtf  ] ${msg}`, 2, this.options.red);
+        this.log(`[  wtf  ] ${msg}`, 2, this.options.colors.red);
     }
 }
 
