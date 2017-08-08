@@ -567,7 +567,7 @@ getUserById
    **Parameters**:
 
       **id**: :dt:`Number` user's ID.
-      **cache**: :dt:`Enum`
+      **cache**: :doc:`CACHE</datatypes/cache>`
 
    **Return Value**:
 
