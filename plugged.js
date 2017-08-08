@@ -588,7 +588,7 @@ class Plugged extends EventEmitter {
                 this.state.room.playback.media = mapper.mapMedia(data.p.m);
                 this.state.room.playback.historyID = data.p.h;
                 this.state.room.playback.playlistID = data.p.p;
-                this.state.room.playback.startTime = data.p.t;
+                this.state.room.playback.startTime = utils.convertPlugTimeToDate(data.p.t);
 
                 this.emit(this.ADVANCE, this.state.room.booth, this.state.room.playback, previous);
             }
