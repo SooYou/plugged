@@ -2669,7 +2669,7 @@ class Plugged extends EventEmitter {
 
         this.query.query("GET", endpoints["CSRF"], function _gotCSRF(err, body) {
             if (!err) {
-                const idx = body.indexOf("_csrf") + 7;
+                const idx = body.indexOf("_csrf") + 9;
 
                 body = body.substr(idx, body.indexOf('\"', idx) - idx);
 
