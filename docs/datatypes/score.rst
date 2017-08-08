@@ -38,34 +38,34 @@ Detail
 
 **grabs**
    Amount of grabs gathered.
-   
+
    **Type**: :dt:`Number` |br|
    **Default Value**: ``-1``
 
 
 **listeners**
-   Amount of listeners at the time this started playing.
+   Amount of listeners at the time this was playing.
 
    **Type**: :dt:`Number` |br|
    **Default Value**: ``-1``
-   
+
 
 **negative**
    Amount of mehs.
-   
+
    **Type**: :dt:`Number` |br|
    **Default Value**: ``-1``
 
 
 **positive**
    Amount of woots.
-   
+
    **Type**: :dt:`Number` |br|
    **Default Value**: ``-1``
 
 
 **skipped**
    Whether the media was skipped.
-   
+
    **Type**: :dt:`Number` |br|
    **Default Value**: ``-1``

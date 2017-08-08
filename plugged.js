@@ -567,6 +567,8 @@ class Plugged extends EventEmitter {
                     score: {
                         positive: 0,
                         negative: 0,
+                        listeners: this.getUsers().length,
+                        skipped: 0,
                         grabs: this.state.room.grabs.length
                     }
                 };
