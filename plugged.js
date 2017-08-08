@@ -563,7 +563,7 @@ class Plugged extends EventEmitter {
                     historyID: this.state.room.playback.historyID,
                     playlistID: this.state.room.playback.playlistID,
                     media: this.state.room.playback.media,
-                    dj: this.getUserByID(this.state.room.booth.dj, this.CACHE.ENABLED),
+                    dj: this.getUserById(this.state.room.booth.dj, this.CACHE.ENABLED),
                     score: {
                         positive: 0,
                         negative: 0,
@@ -1051,11 +1051,15 @@ class Plugged extends EventEmitter {
     /**
      * @description clears a user from the voting and grab list
      * @param {number} ID of a user
+     * @returns {boolean} true when user was found and cleared, false otherwise
      */
     clearUserFromLists(id) {
+        let cleared = false;
+
         for (let i = 0, l = this.state.room.votes; i < l; i++) {
             if (this.state.room.votes[i].id == id) {
                 this.state.room.votes.splice(i, 1);
+                cleared = true;
                 break;
             }
         }
@@ -1063,9 +1067,12 @@ class Plugged extends EventEmitter {
         for (let i = 0, l = this.state.room.grabs; i < l; i++) {
             if (this.state.room.grabs[i] == id) {
                 this.state.room.grabs.splice(i, 1);
+                cleared = true;
                 break;
             }
         }
+
+        return cleared;
     }
 
     /**

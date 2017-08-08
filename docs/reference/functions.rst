@@ -406,7 +406,7 @@ clearUserFromLists
 
    **Return Value**:
 
-      :dt:`undefined`
+      :dt:`Boolean` true when user was found and cleared, false otherwise
 
 
 setJar
@@ -2139,7 +2139,7 @@ getCSRF
    Gets csrf token.
 
    .. note::
-   
+
       This is one form of a prevention for a Man in the Middle Attack
       (short MitM). This token is only relevant for login, after that you'll not
       need it anymore which is the reason why this call is only successful
