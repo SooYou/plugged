@@ -1947,7 +1947,7 @@ class Plugged extends EventEmitter {
     validateRoomName(name, callback) {
         // GET /_/rooms/validate/<name>
         callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-        this.query.query("GET", endpoints["VALIDATEROOM"] + name, callback, true);
+        this.query.query("GET", endpoints["VALIDATEROOM"] + name, (err, name) => callback(err, name.slug), true);
     }
 
     /**
@@ -1958,7 +1958,7 @@ class Plugged extends EventEmitter {
     validateUsername(name, callback) {
         // GET /_/users/validate/<name>
         callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-        this.query.query("GET", endpoints["VALIDATEUSER"] + name, callback, true);
+        this.query.query("GET", endpoints["VALIDATEUSER"] + name, (err, name) => callback(err, name.slug), true);
     }
 
     /**
