@@ -95,8 +95,8 @@ ADVANCE
       **booth**: :doc:`Booth</datatypes/booth>`
 
       **playback**: :doc:`Playback</datatypes/playback>
-      
-      **previous**: :doc:`Playback</datatypes/playback>`
+
+      **previous**: :doc:`Previous</datatypes/previous>`
 
 
 BAN
@@ -199,7 +199,7 @@ CONN_WARNING
 
       **time**: :dt:`Number` Time in seconds since the last message. This has an
       incrementation rate of 30 seconds per call. The client will close the
-      connection after 6 emitted warnings, or 3 minutes of no connection. 
+      connection after 6 emitted warnings, or 3 minutes of no connection.
 
 
 DJ_LIST_CYCLE
@@ -229,7 +229,7 @@ FLOOD_API
    Emitted when you send too many requests to the API at a time.
 
    .. note::
-   
+
       Plugged takes care of the effect of rate limiters in plug so that
       you don't have to care about this happening.
 
@@ -245,7 +245,7 @@ FLOOD_CHAT
    Emitted when you send too many chat messages at once.
 
    .. note::
-   
+
    Plugged takes care of this as well as it does for FLOOD_API. In a
    default environment, this event will never fire.
 
@@ -370,7 +370,7 @@ LOGOUT_ERROR
 ############
 
    Emitted on failure of logging out.
-   
+
    .. note::
 
       This only happens when the server is failing to return a proper response
