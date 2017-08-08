@@ -2783,7 +2783,7 @@ class Plugged extends EventEmitter {
     activatePlaylist(id, callback) {
         // PUT /_/playlists/<id>
         callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-        this.query.query("PUT", endpoints["PLAYLISTS"] + '/' + id + "/activate", callback, true);
+        this.query.query("PUT", endpoints["PLAYLISTS"] + '/' + id + "/activate", (err, playlist) => callback(err, playlist.activated), true);
     }
 
     /**
