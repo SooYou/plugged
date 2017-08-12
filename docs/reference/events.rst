@@ -639,5 +639,4 @@ WAITLIST_UPDATE
 
    **Parameters**:
 
-      **previous**: :dt:`[Number]` waitlist with user IDs before the update
       **waitlist**: :dt:`[Number]` waitlist with user IDs

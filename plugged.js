@@ -650,7 +650,7 @@ class Plugged extends EventEmitter {
                 break;
 
             case this.WAITLIST_UPDATE:
-                this.emit(this.WAITLIST_UPDATE, this.state.room.booth.waitlist, data.p);
+                this.emit(this.WAITLIST_UPDATE, data.p);
                 this.state.room.booth.waitlist = data.p;
                 break;
 
