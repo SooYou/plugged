@@ -403,6 +403,10 @@ const mapCycle = function(data = {}) {
     };
 };
 
+const mapPlaylistCycle = function(data = {}) {
+    return data.p || -1;
+}
+
 const mapLock = function(data = {}) {
     return {
         clearWaitlist: data.c || false,
@@ -521,6 +525,7 @@ exports.mapUserUpdate = mapUserUpdate;
 exports.mapChatDelete = mapChatDelete;
 exports.mapExtendedRoom = mapExtendedRoom;
 exports.mapHistoryEntry = mapHistoryEntry;
+exports.mapPlaylistCycle = mapPlaylistCycle;
 exports.mapFriendRequest = mapFriendRequest;
 exports.mapRoomNameUpdate = mapRoomNameUpdate;
 exports.mapChatLevelUpdate = mapChatLevelUpdate;

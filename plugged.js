@@ -636,7 +636,7 @@ class Plugged extends EventEmitter {
             break;
 
             case this.PLAYLIST_CYCLE:
-                this.emit(this.PLAYLIST_CYCLE, data.p);
+                this.emit(this.PLAYLIST_CYCLE, mapper.mapPlaylistCycle(data.p));
                 break;
 
             case this.DJ_LIST_CYCLE:
