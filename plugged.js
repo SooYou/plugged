@@ -1123,14 +1123,22 @@ class Plugged extends EventEmitter {
         return false;
     }
 
-    // TODO: normalize pipeline to have a clear structure
     /**
      * @description sends a chat message
      * @param {string} message message to send
      * @param {number=} deleteTimeout delay in ms until message is deleted
-     * @returns {string|string[]} message the formatted message
+     * @throws {Error} message must be of type string
+     * @throws {Error} deleteTimeout must be of type number
+     * @throws {Error} message processor must return an array of strings
+     * @returns {string[]} the formatted message
      */
     sendChat(message, deleteTimeout = -1) {
+        if (typeof message !== "string")
+            throw Error("message must be of type string");
+
+        if (typeof deleteTImeout !== "number")
+            throw Error("deleteTimeout must be of type number");
+
         if (!message || message.length <= 0) {
             this._log("no message given", 1, "yellow");
             return;
@@ -1138,17 +1146,12 @@ class Plugged extends EventEmitter {
 
         message = this.messageProc(message);
 
-        if (Array.isArray(message)) {
-            for (let i = 0, l = message.length; i < l; i++) {
-                // timeout: pass a timeout for the last message only
-                this.chatQueue.push({
-                    message: message[i],
-                    timeout: (l - 1 === i ? deleteTimeout : -1)
-                });
-            }
-        } else if (typeof message === "string") {
+        if (!Array.isArray(message))
+            throw Error("messageprocessor does not return an array of strings!");
+
+        for (let i = 0, l = message.length; i < l; i++) {
             this.chatQueue.push({
-                message: message,
+                message: message[i],
                 timeout: deleteTimeout
             });
         }
