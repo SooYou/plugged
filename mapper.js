@@ -160,6 +160,13 @@ const mapGrabs = function(data = {}) {
     return arr;
 };
 
+const mapGifted = function (data = {}) {
+    return {
+        sender: data.s || "",
+        recipient: data.r || ""
+    };
+};
+
 const mapModAddDJ = function(data = {}) {
     return {
         moderator: utils.decode(data.m) || "",
@@ -514,6 +521,7 @@ exports.mapGrabs = mapGrabs;
 exports.mapMedia = mapMedia;
 exports.mapVotes = mapVotes;
 exports.mapBooth = mapBooth;
+exports.mapGifted = mapGifted;
 exports.mapOwnBan = mapOwnBan;
 exports.mapModBan = mapModBan;
 exports.mapLevelUp = mapLevelUp;

@@ -626,10 +626,8 @@ class Plugged extends EventEmitter {
                 break;
 
             case this.GIFTED: {
-                // TODO: only send names now.
-                const sender = this.getUserByName(data.p.s);
-                const recipient = this.getUserByName(data.p.r);
-                this.emit(this.GIFTED, sender || data.p.s, recipient || data.p.r);
+                const gifted = mapper.mapGifted(data.p || {});
+                this.emit(this.GIFTED, gifted.sender, gifted.recipient);
             }
             break;
 
