@@ -50,12 +50,10 @@ Events
    * FLOOD_API_.
    * MOD_ADD_DJ_.
    * GUEST_JOIN_.
-   * PLUG_ERROR_.
    * USER_LEAVE_.
    * FLOOD_CHAT_.
    * MOD_MOVE_DJ_.
    * GUEST_LEAVE_.
-   * JOINED_ROOM_.
    * USER_UPDATE_.
    * CHAT_DELETE_.
    * FRIEND_JOIN_.
@@ -326,16 +324,6 @@ GUEST_LEAVE
       :dt:`undefined`
 
 
-JOINED_ROOM
-###########
-
-   Emitted when you join a room.
-
-   **Parameters**:
-
-      **room**: :doc:`Room</datatypes/room>`
-
-
 LEVEL_UP
 ########
 
@@ -498,16 +486,6 @@ PLAYLIST_CYCLE
    **Parameters**:
 
       **Cycle**: :dt:`Number` playlist ID.
-
-
-PLUG_ERROR
-##########
-
-   Emitted on successfully etablishing a websocket connection to plug.
-
-   **Parameters**:
-
-      **err**: :dt:`String` containing the error message.
 
 
 PLUG_UPDATE

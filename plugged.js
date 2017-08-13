@@ -180,12 +180,10 @@ class Plugged extends EventEmitter {
         this.FLOOD_API = "floodAPI";
         this.MOD_ADD_DJ = "modAddDJ";
         this.GUEST_JOIN = "guestJoin";
-        this.PLUG_ERROR = "plugError";
         this.USER_LEAVE = "userLeave";
         this.FLOOD_CHAT = "floodChat";
         this.MOD_MOVE_DJ = "modMoveDJ";
         this.GUEST_LEAVE = "guestLeave";
-        this.JOINED_ROOM = "joinedRoom";
         this.USER_UPDATE = "userUpdate";
         this.CHAT_DELETE = "chatDelete";
         this.FRIEND_JOIN = "friendJoin";
@@ -1294,16 +1292,13 @@ class Plugged extends EventEmitter {
                 this._connectSocket();
                 this.getRoomStats(function(err, stats) {
                     if (!err) {
-                        this.emit(this.JOINED_ROOM, stats);
                         callback && callback(null, stats);
                     } else {
-                        this.emit(this.PLUG_ERROR, err);
                         callback && callback(err);
                     }
                 });
             } else {
                 const err = new Error("couldn't join room \"" + room + "\" as a guest")
-                this.emit(this.PLUG_ERROR, err);
                 callback && callback(err);
             }
         }.bind(this), false, true);
@@ -1328,43 +1323,31 @@ class Plugged extends EventEmitter {
 
         this.joinRoom(slug, function _joinedRoom(err) {
             if (!err) {
-                this.watchUserCache(true);
-                this.clearUserCache();
-                this.clearChatCache();
-
                 this.getRoomStats(function(err, stats) {
 
                     if (!err) {
-                        this.state.room = stats;
+                        //clear all room related data
+                        this.clearUserCache();
+                        this.clearChatQueue();
+                        this.clearChatCache();
+                        this.query.flushQueue();
+
+                        this.state.room = mapper.mapRoom(stats);
                         this.state.self.role = stats.role;
-                        this.emit(this.JOINED_ROOM, this.state.room);
+                        callback(null, this.state.room);
                     } else {
                         this.state.room = mapper.mapRoom();
-                        this.state.self.role = 0;
-                        this.emit(this.PLUG_ERROR, err);
+                        this.state.self.role = USERROLE.NONE;
+                        callback(err);
                     }
                 });
 
             } else {
                 this.state.room = mapper.mapRoom();
-                this.state.self.role = 0;
-                this.emit(this.PLUG_ERROR, err);
+                this.state.self.role = USERROLE.NONE;
+                callback(err);
             }
         });
-
-        if (callback) {
-            const onSuccess = function(state) {
-                this.removeListener(this.PLUG_ERROR, onError);
-                callback(null, state);
-            };
-            const onError = function(err) {
-                this.removeListener(this.JOINED_ROOM, onSuccess);
-                callback(err);
-            };
-
-            this.once(this.JOINED_ROOM, onSuccess);
-            this.once(this.PLUG_ERROR, onError);
-        }
     }
 
     /**

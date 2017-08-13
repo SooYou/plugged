@@ -17,22 +17,28 @@ plugged is relatively easy to use. Most functions are exposed via events, thus i
 To start with a simple bot, do this:
 
 ```javascript
-var Plugged = require("plugged");
-var plugged = new Plugged();
+const Plugged = require("plugged");
+const plugged = new Plugged();
+
+const joined = function(err, state) {
+    if (!err) {
+        plugged.on(plugged.ADVANCE, function _advance() {
+            //WOOT!
+            plugged.woot();
+        });
+    }
+    else
+    {
+        console.log(err);
+    }
+};
 
 // log into the service
 plugged.login({ email: "examplemail@examplehost.com", password: "examplepassword" });
 
 plugged.on(plugged.LOGIN_SUCCESS, function _loginSuccess() {
     plugged.cacheChat(true);
-    plugged.connect("exampleroom");
-});
-
-plugged.on(plugged.JOINED_ROOM, function _joinedRoom() {
-    plugged.on(plugged.ADVANCE, function() {
-        //WOOT!
-        plugged.woot();
-    });
+    plugged.connect("exampleroom", joined.bind(this));
 });
 ```
 
