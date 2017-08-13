@@ -41,6 +41,7 @@ Events
    * NOTIFY_.
    * GIFTED_.
    * MOD_BAN_.
+   * MOD_WAITLIST_BAN_.
    * ADVANCE_.
    * LEVEL_UP_.
    * MOD_SKIP_.
@@ -418,6 +419,16 @@ MOD_BAN
    **Parameters**:
 
       **modban**: :doc:`ModBan</datatypes/modban>`
+
+
+MOD_WAITLIST_BAN
+#######
+
+   Emitted when a mod bans a user from the booth.
+
+   **Parameters**:
+
+      **modwaitlistban**: :doc:`ModWaitlistBan</datatypes/modwaitlistban>`
 
 
 MOD_MOVE_DJ

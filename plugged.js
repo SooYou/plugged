@@ -201,6 +201,7 @@ class Plugged extends EventEmitter {
         this.PLAYLIST_CYCLE = "playlistCycle";
         this.FRIEND_REQUEST = "friendRequest";
         this.WAITLIST_UPDATE = "djListUpdate";
+        this.MOD_WAITLIST_BAN = "modWaitlistBan";
         this.ROOM_NAME_UPDATE = "roomNameUpdate";
         this.MAINTENANCE_MODE = "plugMaintenance";
         this.ROOM_WELCOME_UPDATE = "roomWelcomeUpdate";
@@ -677,6 +678,10 @@ class Plugged extends EventEmitter {
                 this.clearUserFromLists(data.p.i);
                 this.state.room.meta.population--;
                 this.emit(this.MOD_BAN, mapper.mapModBan(data.p));
+                break;
+
+            case this.MOD_WAITLIST_BAN:
+                this.emit(this.MOD_WAITLIST_BAN, mapper.mapModWaitlistBan(data.p));
                 break;
 
             case this.MOD_MOVE_DJ:

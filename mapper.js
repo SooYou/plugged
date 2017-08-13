@@ -162,8 +162,8 @@ const mapGrabs = function(data = {}) {
 
 const mapGifted = function (data = {}) {
     return {
-        sender: data.s || "",
-        recipient: data.r || ""
+        sender: utils.decode(data.s) || "",
+        recipient: utils.decode(data.r) || ""
     };
 };
 
@@ -189,10 +189,10 @@ const mapNotify = function(data = {}) {
     const time = utils.convertPlugTimeToDate(data.timestamp);
 
     return {
-        action: data.action || "",
+        action: utils.decode(data.action) || "",
         id: data.id || -1,
         timestamp: time !== "Invalid Date" ? time : "",
-        value: data.value || ""
+        value: utils.decode(data.value) || ""
     };
 };
 
@@ -379,6 +379,16 @@ const mapModBan = function(data = {}) {
     };
 };
 
+const mapModWaitlistBan = function(data = {}) {
+    return {
+        moderator: utils.decode(data.m) || "",
+        moderatorID: data.mi || -1,
+        username: utils.decode(data.t) || "",
+        userID: data.ti || -1,
+        duration: data.d || -1
+    };
+};
+
 const mapModRemove = function(data = {}) {
     return {
         moderator: utils.decode(data.m) || "",
@@ -552,6 +562,7 @@ exports.mapExtendedRoom = mapExtendedRoom;
 exports.mapHistoryEntry = mapHistoryEntry;
 exports.mapPlaylistCycle = mapPlaylistCycle;
 exports.mapFriendRequest = mapFriendRequest;
+exports.mapModWaitlistBan = mapModWaitlistBan;
 exports.mapRoomNameUpdate = mapRoomNameUpdate;
 exports.mapChatLevelUpdate = mapChatLevelUpdate;
 exports.serializeMediaObjects = serializeMediaObjects;
