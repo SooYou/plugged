@@ -661,7 +661,7 @@ class Plugged extends EventEmitter {
 
             case this.LEVEL_UP:
                 this.state.self.level++;
-                this.emit(this.LEVEL_UP, data.p);
+                this.emit(this.LEVEL_UP, mapper.mapLevelUp(data.p));
                 break;
 
             case this.GRAB:

@@ -407,6 +407,10 @@ const mapPlaylistCycle = function(data = {}) {
     return data.p || -1;
 }
 
+const mapLevelUp = function(data = {}) {
+    return data.p || -1;
+}
+
 const mapLock = function(data = {}) {
     return {
         clearWaitlist: data.c || false,
@@ -512,6 +516,7 @@ exports.mapVotes = mapVotes;
 exports.mapBooth = mapBooth;
 exports.mapOwnBan = mapOwnBan;
 exports.mapModBan = mapModBan;
+exports.mapLevelUp = mapLevelUp;
 exports.createState = createState;
 exports.mapModMove = mapModMove;
 exports.mapSettings = mapSettings;
