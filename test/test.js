@@ -284,9 +284,8 @@ describe("Login", function () {
 
 describe("Joining a room", function () {
     it("should return a room object with the current stats", function (done) {
-        client.connect(testLogin.room);
-
-        client.once(client.JOINED_ROOM, function (room) {
+        client.connect(testLogin.room, function(err, room) {
+            expect(err).to.be.a("null");
             expect(room).to.be.an("object");
             done();
         });

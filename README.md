@@ -20,7 +20,7 @@ To start with a simple bot, do this:
 const Plugged = require("plugged");
 const plugged = new Plugged();
 
-const joined = function(err, state) {
+const joined = function(err, room) {
     if (!err) {
         plugged.on(plugged.ADVANCE, function _advance() {
             //WOOT!
