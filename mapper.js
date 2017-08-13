@@ -185,6 +185,17 @@ const mapModMove = function(data = {}) {
     };
 };
 
+const mapNotify = function(data = {}) {
+    const time = utils.convertPlugTimeToDate(data.timestamp);
+
+    return {
+        action: data.action || "",
+        id: data.id || -1,
+        timestamp: time !== "Invalid Date" ? time : "",
+        value: data.value || ""
+    };
+};
+
 const mapPlayback = function(data = {}) {
     return {
         media: mapMedia(data.media),
@@ -410,12 +421,12 @@ const mapCycle = function(data = {}) {
     };
 };
 
-const mapPlaylistCycle = function(data = {}) {
-    return data.p || -1;
+const mapPlaylistCycle = function(data = null) {
+    return data || -1;
 }
 
-const mapLevelUp = function(data = {}) {
-    return data.p || -1;
+const mapLevelUp = function(data = null) {
+    return data || -1;
 }
 
 const mapLock = function(data = {}) {
@@ -524,6 +535,7 @@ exports.mapBooth = mapBooth;
 exports.mapGifted = mapGifted;
 exports.mapOwnBan = mapOwnBan;
 exports.mapModBan = mapModBan;
+exports.mapNotify = mapNotify;
 exports.mapLevelUp = mapLevelUp;
 exports.createState = createState;
 exports.mapModMove = mapModMove;

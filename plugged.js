@@ -622,7 +622,7 @@ class Plugged extends EventEmitter {
             break;
 
             case this.NOTIFY:
-                this.emit(this.NOTIFY, data.p);
+                this.emit(this.NOTIFY, mapper.mapNotify(data.p));
                 break;
 
             case this.GIFTED: {
