@@ -34,7 +34,6 @@ Events
    * BAN_.
    * CHAT_.
    * VOTE_.
-   * GRAB_.
    * EARN_.
    * SKIP_.
    * BAN_IP_.

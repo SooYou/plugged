@@ -664,14 +664,18 @@ class Plugged extends EventEmitter {
                 break;
 
             case this.GRAB:
+                const uid = data.p || -1;
 
-                for (let i = 0, l = this.state.room.grabs.length; i < l; i++) {
-                    if (this.state.room.grabs[i] == data.p)
-                        return;
+                if (uid !== -1) {
+                    for (let i = 0, l = this.state.room.grabs.length; i < l; i++) {
+                        if (this.state.room.grabs[i] == uid)
+                            return;
+                    }
+
+                    this.state.room.grabs.push(uid);
                 }
 
-                this.state.room.grabs.push(data.p);
-                this.emit(this.GRAB, data.p);
+                this.emit(this.GRAB, uid);
                 break;
 
             case this.MOD_BAN:
