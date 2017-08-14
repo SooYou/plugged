@@ -24,6 +24,7 @@ Events
    * LOGOUT_SUCCESS_.
    * LOGIN_ERROR_.
    * LOGIN_SUCCESS_.
+   * SOCK_CLOSE_.
    * SOCK_ERROR_.
    * SOCK_OPEN_.
    * BAN_.
@@ -558,6 +559,16 @@ SKIP
       **userid**: :dt:`Number` User's ID.
 
 
+SOCK_CLOSED
+##########
+
+   Emitted when socket is closed
+
+   **Parameters**:
+
+      :dt:`undefined`
+
+
 SOCK_ERROR
 ##########
 
@@ -566,7 +577,6 @@ SOCK_ERROR
    **Parameters**:
 
       **err**: :dt:`String` containing the error message.
-      **self**: :dt:`Object` Self object containing account information.
 
 
 SOCK_OPEN
@@ -576,7 +586,7 @@ SOCK_OPEN
 
    **Parameters**:
 
-      **self**: :dt:`Object` Self object containing account information.
+      :dt:`undefined`
 
 
 USER_JOIN

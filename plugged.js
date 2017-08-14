@@ -495,40 +495,39 @@ class Plugged extends EventEmitter {
             return;
         }
 
-        const self = this;
         this.sock = new WebSocket(config.socket, {
             origin: "https://plug.dj"
         });
 
         /* SOCK OPENED */
-        this.sock.on("open", function _sockOpen() {
-            self._log("socket opened", 3, "magenta");
-            self.emit(self.SOCK_OPEN, self);
-            self._sendMessage("auth", self.auth);
-            self._keepAliveCheck.call(self);
+        this.sock.on("open", () => {
+            this._log("socket opened", 3, "magenta");
+            this.emit(this.SOCK_OPEN);
+            this._sendMessage("auth", this.auth);
+            this._keepAliveCheck.call(this);
         });
 
         /* SOCK CLOSED */
-        this.sock.on("close", function _sockClose() {
-            self._log("sock closed", 3, "magenta");
+        this.sock.on("close", () => {
+            this._log("sock closed", 3, "magenta");
             // make sure to clean up if the socket has been closed forcibly
-            if (self.keepAliveTries < 6 && self.keepAliveID !== -1) {
-                self.keepAliveTries = 6;
-                self._keepAlive();
+            if (this.keepAliveTries < 6 && this.keepAliveID !== -1) {
+                this.keepAliveTries = 6;
+                this._keepAlive();
             }
 
-            self._log("sock closed", 3, "magenta");
-            self.emit(self.SOCK_CLOSED, self);
+            this._log("sock closed", 3, "magenta");
+            this.emit(this.SOCK_CLOSED);
         });
 
         /* SOCK ERROR */
-        this.sock.on("error", function _sockError(err) {
-            self._log("sock error", 3, "magenta");
-            self.emit(self.SOCK_ERROR, self, err);
+        this.sock.on("error", err => {
+            this._log("sock error", 3, "magenta");
+            this.emit(this.SOCK_ERROR, err);
         });
 
         /* SOCK MESSAGE */
-        this.sock.on("message", self._wsaprocessor);
+        this.sock.on("message", this._wsaprocessor);
     }
 
     /**
