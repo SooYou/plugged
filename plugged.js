@@ -92,7 +92,6 @@ class Plugged extends EventEmitter {
         this.chatcachesize = 256;
         this.keepAliveTries = 0;
         this.keepAliveID = -1;
-        this.credentials = null;
         this.sock = null;
         this.auth = null;
         this.sleave = false;                    /* userleave cache toggle */
@@ -141,10 +140,6 @@ class Plugged extends EventEmitter {
         };
 
         /*===== GENERAL EVENTS =====*/
-        /* LOGIN BASED EVENTS */
-        this.LOGIN_ERROR = "loginError";
-        this.LOGIN_SUCCESS = "loginSuccess";
-
         this.LOGOUT_ERROR = "logoutError";
         this.LOGOUT_SUCCESS = "logoutSuccess";
 
@@ -436,50 +431,44 @@ class Plugged extends EventEmitter {
     /**
      * @description sets up the websocket and basic data
      */
-    _loggedIn() {
+    _loggedIn(callback) {
         this._connectSocket();
         this._log("logged in", 1, "green");
-        this.requestSelf(function _requestSelfLogin(err, self) {
-            if (!err)
-                this.emit(this.LOGIN_SUCCESS, self);
-            else
-                this.emit(this.LOGIN_ERROR, err);
-        });
+        this.requestSelf(callback);
     }
 
     /**
      * @description login with the credentials and csrf token given
+     * @param {object} credentials login data to use
+     * @param {function} callback function to call when done
      * @param {number=} tries number of login tries
      */
-    _login(tries = 0) {
-        utils.waterfall([
-            this.getCSRF,
-            this.setLogin,
-            this._getAuthToken
-        ], function _callback(err) {
+    _login(credentials, callback, tries = 0) {
+        const cb = err => {
             if (!err) {
-                this._loggedIn();
+                this._loggedIn(callback);
             } else {
-                this._log(
-                    err && err.hasOwnProperty("message") ?
-                    err.message :
-                    "An unrecorded error occured while trying to log in",
-                    0, "red"
-                );
+                this._log(err);
 
                 if (this.retryLogin && tries <= 2) {
                     this._log("retrying now...", 0, "white");
-                    this._login(tries++);
+                    this._login(credentials, callback, tries++);
                 } else {
                     this._log([
                         "failed to log in with \"",
-                        (this.credentials.email || this.credentials.accessToken),
+                        (credentials.email || credentials.userID),
                         "\""
                     ].join(''));
-                    this.emit(this.LOGIN_ERROR, err);
+                    callback(err);
                 }
             }
-        }, this);
+        };
+
+        utils.waterfall([
+            this._getCSRF,
+            this._setLogin,
+            this._getAuthToken
+        ], cb, this, null, credentials);
     }
 
     /**
@@ -1138,10 +1127,10 @@ class Plugged extends EventEmitter {
      */
     sendChat(message, deleteTimeout = -1) {
         if (typeof message !== "string")
-            throw Error("message must be of type string");
+            throw new Error("message must be of type string");
 
         if (typeof deleteTImeout !== "number")
-            throw Error("deleteTimeout must be of type number");
+            throw new Error("deleteTimeout must be of type number");
 
         if (!message || message.length <= 0) {
             this._log("no message given", 1, "yellow");
@@ -1151,7 +1140,7 @@ class Plugged extends EventEmitter {
         message = this.messageProc(message);
 
         if (!Array.isArray(message))
-            throw Error("messageprocessor does not return an array of strings!");
+            throw new Error("messageprocessor does not return an array of strings!");
 
         for (let i = 0, l = message.length; i < l; i++) {
             this.chatQueue.push({
@@ -1183,51 +1172,58 @@ class Plugged extends EventEmitter {
     // TODO: streamline error messages
     /**
      * @description log into https://www.plug.dj
-     * @param {object} credentials formatted login info
-     * @param {string} authToken last session token
+     * @param {object} credentials formatted login info or session token
      * @param {function} callback called after logging in
      */
-    login(credentials, authToken, callback) {
-        if (typeof authToken === "function") {
-            callback = authToken;
-            authToken = null;
-        }
+    login(credentials, callback) {
+        if (typeof credentials !== "object")
+            throw new Error("credentials has to be of type object");
 
-        if (!authToken) {
-            if (typeof credentials !== "object")
-                throw new Error("credentials has to be of type object");
-
+        if (!credentials.hasOwnProperty("session")) {
             const errorMsg = [];
             let flag = 0;
 
-            flag |= (!credentials.hasOwnProperty("email") ? 1 << 0 : 0);
-            flag |= (!credentials.hasOwnProperty("password") ? 1 << 1 : 0);
-            flag |= (!credentials.hasOwnProperty("accessToken") ? 1 << 2 : 0);
-            flag |= (!credentials.hasOwnProperty("userID") ? 1 << 3 : 0);
+            flag |= (credentials.hasOwnProperty("email") ? 1 << 0 : 0);
+            flag |= (credentials.hasOwnProperty("password") ? 1 << 1 : 0);
+            flag |= (credentials.hasOwnProperty("accessToken") ? 1 << 2 : 0);
+            flag |= (credentials.hasOwnProperty("userID") ? 1 << 3 : 0);
+
+            const hasEmailCredentials = ((flag & 0x03) === 0x03);
+            const hasFacebookCredentials = ((flag & 0x0C) === 0x0C);
+            const partialEmail = (((flag & 0x03) !== 0x00) && ((flag & 0x03) !== 0x03));
+            const partialFacebook = (((flag & 0x0C) !== 0x00) && ((flag & 0x0C) !== 0x0C));
 
             // doing this with hasOwnProperty would have been possible but would be a real mess
-            if (flag & 0x03 && ((flag & 0x0C) === 0x0C)) {           // missing email but no facebook credentials
+            // missing email but no facebook credentials
+            if (partialEmail && !hasFacebookCredentials) {
                 if (flag & 0x01)
                     errorMsg.push("email missing");
 
                 if (flag & 0x02)
                     errorMsg.push("password missing");
 
-            } else if (flag & 0x0C && ((flag & 0x03) === 0x03)) {    // missing facebook but no email credentials
+            }
+            // missing facebook but no email credentials
+            else if (partialFacebook && !hasEmailCredentials) {
                 if (flag & 0x04)
                     errorMsg.push("accessToken missing");
 
                 if (flag & 0x08)
                     errorMsg.push("userID missing");
-            } else {                                                // credentials for both are set
-                if (flag & 0x03 && !(flag & 0x0C)) {                 // nullify malformed email credentials
+            }
+            // credentials for both are set
+            else {
+                // nullify malformed email credentials
+                if (partialEmail) {
                     delete credentials.email;
                     delete credentials.password;
-                // same for
-                } else if (flag & 0x0C && !(flag & 0x03)) {          // nullify malformed facebook credentials
-                    delete credentials.accessToken;
+                // nullify malformed facebook credentials
+                } else if (partialFacebook) {
                     delete credentials.userID;
-                } else {                                            // both are malformed
+                    delete credentials.accessToken;
+                }
+                // both are malformed
+                else if (partialEmail && partialFacebook) {
                     errorMsg.push("credentials are malformed");
                 }
             }
@@ -1235,34 +1231,17 @@ class Plugged extends EventEmitter {
             if (errorMsg.length > 0)
                 throw new Error(errorMsg.join(", "));
 
-            this.credentials = credentials;
-
             // requests a new cookie jar
             if (!this.getJar())
                 this.setJar(null);
 
             this._log("logging in with account: " + (credentials.email || credentials.userID) + "...", 2, "white");
 
-            this._login();
+            this._login(credentials, callback);
         } else {
             this._log("trying to resume session...", 2, "white");
-            this.auth = authToken;
-            this._loggedIn();
-        }
-
-        if (callback) {
-            const onSuccess = function(self) {
-                this.removeListener(this.LOGIN_ERROR, onError);
-                callback(null, self);
-            };
-
-            const onError = function(err) {
-                this.removeListener(this.LOGIN_SUCCESS, onSuccess);
-                callback(err);
-            };
-
-            this.once(this.LOGIN_SUCCESS, onSuccess);
-            this.once(this.LOGIN_ERROR, onError);
+            this.auth = credentials.session;
+            this._loggedIn(callback);
         }
     }
 
@@ -2026,26 +2005,27 @@ class Plugged extends EventEmitter {
 
     /**
      * @description logs an account in
+     * @param {object} credentials login data to use
      * @param {string} csrf cross site request forgery token
      * @param {function} callback called on retrieval
      */
-    setLogin(csrf, callback) {
+    _setLogin(credentials, csrf, callback) {
         // POST /_/auth/login
         callback = (typeof callback === "function" ? callback.bind(this) : undefined);
 
         this._log("setting login data...", 1, "white");
 
-        if (this.credentials.hasOwnProperty("email")) {
+        if (credentials.hasOwnProperty("email")) {
             this.query.query("POST", endpoints["LOGIN"], {
                 "csrf": csrf,
-                "email": this.credentials.email,
-                "password": this.credentials.password
+                "email": credentials.email,
+                "password": credentials.password
             }, callback);
-        } else if (this.credentials.hasOwnProperty("accessToken")) {
+        } else if (credentials.hasOwnProperty("accessToken")) {
             this.query.query("POST", endpoints["FACEBOOK"], {
                 "csrf": csrf,
-                "accessToken": this.credentials.accessToken,
-                "userID": this.credentials.userID
+                "accessToken": credentials.accessToken,
+                "userID": credentials.userID
             }, callback);
         };
     }
@@ -2659,14 +2639,15 @@ class Plugged extends EventEmitter {
 
     /**
      * @description gets csrf token
+     * @param {object} credentials login data to use
      * @param {function} callback called on retrieval
      */
-    getCSRF(callback) {
+    _getCSRF(credentials, callback) {
         // MitM protection, only available before login
         // GET plug.dj
         callback = (typeof callback === "function" ? callback.bind(this) : undefined);
 
-        this.query.query("GET", endpoints["CSRF"], function _gotCSRF(err, body) {
+        this.query.query("GET", endpoints["CSRF"], (err, body) => {
             if (!err) {
                 const idx = body.indexOf("_csrf") + 9;
 
@@ -2674,7 +2655,7 @@ class Plugged extends EventEmitter {
 
                 if (body.length === 60) {
                     this._log("CSRF token: " + body, 2, "magenta");
-                    callback && callback(null, body);
+                    callback && callback(null, credentials, body);
                 } else {
                     callback && callback(new Error("Couldn't find CSRF token in body, are you logged in already?"));
                 }
@@ -2682,7 +2663,7 @@ class Plugged extends EventEmitter {
             } else {
                 callback && callback(err);
             }
-        }.bind(this));
+        });
     }
 
     /**

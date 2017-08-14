@@ -99,7 +99,6 @@ Functions
    * saveSettings_.
    * setLock_.
    * setCycle_.
-   * setLogin_.
    * resetPassword_.
    * requestUsers_.
    * joinRoom_.
@@ -136,7 +135,6 @@ Functions
    * getPlaylists_.
    * getIgnores_.
    * getFavoriteRooms_.
-   * getCSRF_.
    * setProfileMessage_.
    * renamePlaylist_.
    * setAvatar_.
@@ -1407,25 +1405,6 @@ setCycle
       * :dt:`undefined`
 
 
-setLogin
-########
-
-   Logs an account in.
-
-   **Parameters**:
-
-      * **csrf**: :dt:`String` cross site request forgery token.
-      * **callback**: :dt:`function` called on retrieval.
-
-   **callback**:
-
-      * **err**: :dt:`String` possible error returned.
-
-   **Return Value**:
-
-      * :dt:`undefined`
-
-
 resetPassword
 #############
 
@@ -2127,33 +2106,6 @@ getFavoriteRooms
 
       * **err**: :dt:`String` possible error returned.
       * **rooms**: :doc:`[Room]</datatypes/room>` favorited rooms.
-
-   **Return Value**:
-
-      * :dt:`undefined`
-
-
-getCSRF
-#######
-
-   Gets csrf token.
-
-   .. note::
-
-      This is one form of a prevention for a Man in the Middle Attack
-      (short MitM). This token is only relevant for login, after that you'll not
-      need it anymore which is the reason why this call is only successful
-      before you logged in.
-
-
-   **Parameters**:
-
-      * **callback**: :dt:`function` called on retrieval.
-
-   **callback**:
-
-      * **err**: :dt:`String` possible error returned.
-      * **csrf**: :dt:`String` the token.
 
    **Return Value**:
 

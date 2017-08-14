@@ -94,6 +94,35 @@ _getAuthToken
       :dt:`undefined`
 
 
+_getCSRF
+#######
+
+   Gets csrf token.
+
+   .. note::
+
+      This is one form of a prevention for a Man in the Middle Attack
+      (short MitM). This token is only relevant for login, after that you'll not
+      need it anymore which is the reason why this call is only successful
+      before you logged in.
+
+
+   **Parameters**:
+
+      * **credentials**: :dt:`Object` login data to use.
+      * **callback**: :dt:`function` called on retrieval.
+
+   **callback**:
+
+      * **err**: :dt:`String` possible error returned.
+      * **credentials**: :dt:`Object` login data to use.
+      * **csrf**: :dt:`String` the token.
+
+   **Return Value**:
+
+      * :dt:`undefined`
+
+
 _keepAlive
 ##############
 
@@ -213,6 +242,26 @@ _sendMessage
    **Return Value**:
 
       :dt:`Boolean` true when the message was sent successfully
+
+
+_setLogin
+########
+
+   Logs an account in.
+
+   **Parameters**:
+
+      * **credentials**: :dt:`Object` login data to use.
+      * **csrf**: :dt:`String` cross site request forgery token.
+      * **callback**: :dt:`function` called on retrieval.
+
+   **callback**:
+
+      * **err**: :dt:`String` possible error returned.
+
+   **Return Value**:
+
+      * :dt:`undefined`
 
 
 _wsaprocessor

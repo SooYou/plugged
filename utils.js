@@ -5,7 +5,7 @@ class Iterator {
     constructor(array) {
         if (!Array.isArray(array))
             throw new Error("Parameter is not an array");
-    
+
         this.array = array;
         this.index = 0;
     }
@@ -17,7 +17,7 @@ class Iterator {
     }
 }
 
-const waterfall = function(funcs, callback, context) {
+const waterfall = function(funcs, callback, context, ...args) {
     const iterator = new Iterator(funcs);
 
     (function _obj() {
@@ -37,7 +37,7 @@ const waterfall = function(funcs, callback, context) {
                 callback && callback.apply(context, args);
             }, context, args, callback);
         }
-    }());
+    }(...args));
 };
 
 const splitTitle = function(title = "") {

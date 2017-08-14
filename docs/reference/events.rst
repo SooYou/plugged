@@ -22,8 +22,6 @@ Events
    * CONN_WARNING_.
    * LOGOUT_ERROR_.
    * LOGOUT_SUCCESS_.
-   * LOGIN_ERROR_.
-   * LOGIN_SUCCESS_.
    * SOCK_CLOSE_.
    * SOCK_ERROR_.
    * SOCK_OPEN_.
@@ -333,26 +331,6 @@ LEVEL_UP
    **Parameters**:
 
       **level**: :dt:`Number` your new level.
-
-
-LOGIN_ERROR
-###########
-
-   Emitted on failure of logging in.
-
-   **Parameters**:
-
-      **err**: :dt:`String` containing the error message.
-
-
-LOGIN_SUCCESS
-#############
-
-   Emitted on successful login.
-
-   **Parameters**:
-
-      **self**: :doc:`Self</datatypes/modelself>`
 
 
 LOGOUT_ERROR
