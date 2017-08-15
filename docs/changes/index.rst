@@ -6,15 +6,33 @@ CHANGELOG
 3.0.0
 -----
 
-Modified:
-
     * use the latest, stable es6 features
-
-Added:
+    * score now represents an actual model
+    * updated getCSRF to use the new API endpoint
+    * validateRoomName and validateUsername return the sanitized string now instead of an
+      object
+    * added data checks to GRAB event
+    * added return value to clearUserFromLists
+    * cacheChat now returns boolean value indicating if it was set
+    * flattened the response of activatePlaylist to just return the playlist ID
+    * refactored all models to use unix time now
+    * refactored _connectSocket
+    * refactored login
+    * refactored keepAlive as well to better suit everyone's needs
+    * refactored log
 
     + a new documentation (This should solve a lot of starter issues)
+    + the previous model was added into the documentation
+    + mapped PlaylistCycle
+    + mapped LevelUp
+    + mapped Transaction
+    + added setHeartbeatRate function in action of refactoring keepAlive
+    + added getHeartbeatRate function in action of refactoring keepAlive
+    + added setVerbosity function in action of refactoring log
+    + added getVerbosity function in action of refactoring log
+    + added waitlistBan event
 
-Removed:
-
-    - placeholder
-
+    - removed logger from the package since it served its purpose
+    - removed JOINED_ROOM and PLUG_ERROR were removed, you have to use a callback now
+    - removed LOGIN_SUCCESSFULL, LOGOUT_SUCCESSFULL, LOGIN_ERROR and LOGOUT_ERROR
+    - removed the previous waitlist from the waitlist event
