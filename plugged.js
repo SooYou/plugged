@@ -2963,7 +2963,19 @@ class Plugged extends EventEmitter {
     getTransactions(callback) {
         // GET /_/users/me/transactions
         callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-        this.query.query("GET", endpoints["TRANSACTIONS"], callback);
+        this.query.query("GET", endpoints["TRANSACTIONS"], (err, transactions) => {
+            const ta = [];
+
+            if (!err) {
+                for (let i = 0; i < transactions.length; i++)
+                    ta.push(mapper.mapTransaction(transactions[i]));
+
+                callback && callback(null, ta);
+            }
+            else {
+                callback && callback(err);
+            }
+        });
     }
 
     /**

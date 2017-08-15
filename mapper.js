@@ -186,12 +186,10 @@ const mapModMove = function(data = {}) {
 };
 
 const mapNotify = function(data = {}) {
-    const time = utils.convertPlugTimeToDate(data.timestamp);
-
     return {
         action: utils.decode(data.action) || "",
         id: data.id || -1,
-        timestamp: time !== "Invalid Date" ? time : "",
+        timestamp: utils.convertPlugTimeToDate(data.timestamp),
         value: utils.decode(data.value) || ""
     };
 };
@@ -304,6 +302,17 @@ const mapSettings = function(data = {}) {
         notifyScore: data.notifyScore || 0,
         tooltips: data.tooltips || 0,
         videoOnly: data.videoOnly || 0
+    };
+};
+
+const mapTransaction = function(data = {}) {
+    return {
+        id: utils.decode(data.id) || "",
+        item: utils.decode(data.item) || "",
+        pp: data.pp || -1,
+        cash: data.cash || -1,
+        timestamp: utils.convertPlugTimeToDate(data.timestamp),
+        type: utils.decode(data.type) || ""
     };
 };
 
@@ -550,6 +559,7 @@ exports.mapLevelUp = mapLevelUp;
 exports.createState = createState;
 exports.mapModMove = mapModMove;
 exports.mapSettings = mapSettings;
+exports.mapTransaction = mapTransaction;
 exports.mapModAddDJ = mapModAddDJ;
 exports.mapModSkip = mapModSkip;
 exports.mapPlayback = mapPlayback;
