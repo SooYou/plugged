@@ -159,6 +159,21 @@ _heartbeat
       :dt:`undefined`
 
 
+_log
+#########################
+
+   Internal logging function that calls the invoked logger.
+
+   **Parameters**:
+
+      * :dt:`number` verbosity level of message |br|
+      * :dt:`string` message to be logged
+
+   **Return Value**:
+
+      :dt:`undefined`
+
+
 _loggedIn
 #########################
 
@@ -167,12 +182,7 @@ _loggedIn
 
    **Parameters**:
 
-      * :dt:`undefined`
-
-   **Fires**:
-
-      * :ev:`LOGIN_SUCCESS`
-      * :ev:`LOGIN_ERROR`
+      * :dt:`function` callback
 
    **Return Value**:
 
@@ -186,11 +196,9 @@ _login
 
    **Parameters**:
 
+      * **credentials** :dt:`Object` account information
+      * **callback** :dt:`Function` callback
       * **tries** :dt:`Number` amount of unsuccessful tries
-
-   **Fires**:
-
-      * :ev:`LOGIN_ERROR`
 
    **Return Value**:
 

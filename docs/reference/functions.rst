@@ -512,7 +512,7 @@ sendChat
 
    **Return Value**:
 
-      :dt:`String|[String]` message the formatted message.
+      :dt:`[String]` message the formatted message.
 
 
 invokeLogger
@@ -527,6 +527,32 @@ invokeLogger
    **Return Value**:
 
       :dt:`Boolean` true when logger has been registered.
+
+
+setVerbosity
+############
+
+   Defines verbosity to use for logging.
+
+   **Parameters**:
+
+      **verbosity**: :dt:`Number` sets verbosity.
+
+   **Return Value**:
+
+      :dt:`undefined`
+
+
+getVerbosity
+############
+
+   **Parameters**:
+
+      :dt:`undefined`
+
+   **Return Value**:
+
+      :dt:`Number` verbosity.
 
 
 login

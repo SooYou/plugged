@@ -78,7 +78,7 @@ class Plugged extends EventEmitter {
         if (options.test)
             mapper = require("./test/raw.js");
 
-        this.log = options.log || function() {};
+        this.log = options.log;
         this.messageProc = options.messageProc || this.defaultMessageProc;
         this.retryLogin = options.retryLogin || true;
 
@@ -88,6 +88,7 @@ class Plugged extends EventEmitter {
         this.query = new Query();
         this.chatQueue = [];
         this.chatTimeout = 0;
+        this.verbosity = options.verbosity || 0;
         this.cleanCacheInterval = -1;
         this.chatcachesize = 256;
         this.heartbeatRate = 20;
@@ -211,7 +212,7 @@ class Plugged extends EventEmitter {
      */
     _sendMessage(type, data) {
         if (!this.sock || this.sock.readyState !== WebSocket.OPEN) {
-            this._log("socket is not opened!", 1, "red");
+            this._log(1, "socket is not opened!");
         } else {
             if (typeof type === "string" && (typeof data === "string" || typeof data === "number")) {
                 this.sock.send(JSON.stringify({
@@ -234,7 +235,7 @@ class Plugged extends EventEmitter {
                 else if (!(typeof data === "string") || !(typeof data === "string"))
                     err.push("data was not of type string or number");
 
-                this._log("couldn't send message. " + err.join(err.length > 1 ? ", " : ''));
+                this._log(0, "couldn't send message. " + err.join(err.length > 1 ? ", " : ''));
             }
         }
 
@@ -250,7 +251,7 @@ class Plugged extends EventEmitter {
         const repeat = 4;
         if (Date.now() - this.lastHeartbeat >= this.heartbeatRate * 1000 * repeat) {
             // TODO: change style of messages
-            this._log(`haven't received a heartbeat from host for more than ${this.heartbeatRate * repeat} seconds, is it on fire?`, 1, "red");
+            this._log(1, `haven't received a heartbeat from host for more than ${this.heartbeatRate * repeat} seconds, is it on fire?`);
             // save meta information of the room since clearState erases all data
             const meta = this.getRoomMeta();
             this._clearState();
@@ -273,28 +274,14 @@ class Plugged extends EventEmitter {
         this.keepAliveID = setTimeout(this._keepAlive, this.heartbeatRate * 1000);
     }
 
-    // TODO: remove function
-    _log(msg, verbosity, type) {
-        if (typeof this.log === "object") {
-            switch (type) {
-                case "magenta":
-                    type = "debug";
-                    break;
-                case "red":
-                    type = "error";
-                    break;
-                case "yellow":
-                    type = "warn";
-                    break;
-                default:
-                    type = "info";
-                    break;
-            }
-
-            this.log[type] && this.log[type](msg);
-        } else if (typeof this.log === "function") {
-            this.log(msg, verbosity, type);
-        }
+    /**
+     * @description internal logging function that calls the invoked logger
+     * @param {number} verbosity number defining the verbosity of the message
+     * @param {*} msg the message to log
+     */
+    _log(verbosity, msg) {
+        if (verbosity >= this.verbosity)
+            this.log && this.log(msg);
     }
 
     /**
@@ -317,7 +304,7 @@ class Plugged extends EventEmitter {
                 const msg = this.chatQueue.shift();
                 if (!this._sendMessage("chat", msg.message)) {
                     this.chatQueue.unshift(msg);
-                    this._log("message was put back into the queue", 1, "white");
+                    this._log(1, "message was put back into the queue");
 
                     return;
                 } else {
@@ -346,7 +333,7 @@ class Plugged extends EventEmitter {
      */
     _removeChatMessageByDelay(message) {
         if (typeof message !== "string") {
-            this._log("message \"" + message + "\" is not of type string", 2, "red");
+            this._log(2, `message \"${message}\" is not of type string`);
 
             return;
         }
@@ -413,7 +400,7 @@ class Plugged extends EventEmitter {
      * @param {function} callback function to be called on retrieval
      */
     _getAuthToken(data, callback) {
-        this._log("getting auth token...", 1, "white");
+        this._log(1, "getting auth token...");
         this.getAuthToken(function(err, token) {
             if (!err)
                 this.auth = token;
@@ -427,7 +414,7 @@ class Plugged extends EventEmitter {
      */
     _loggedIn(callback) {
         this._connectSocket();
-        this._log("logged in", 1, "green");
+        this._log(1, "logged in");
         this.requestSelf(callback);
     }
 
@@ -442,13 +429,13 @@ class Plugged extends EventEmitter {
             if (!err) {
                 this._loggedIn(callback);
             } else {
-                this._log(err);
+                this._log(0, err);
 
                 if (this.retryLogin && tries <= 2) {
-                    this._log("retrying now...", 0, "white");
+                    this._log(0, "retrying now...");
                     this._login(credentials, callback, tries++);
                 } else {
-                    this._log([
+                    this._log(0, [
                         "failed to log in with \"",
                         (credentials.email || credentials.userID),
                         "\""
@@ -471,9 +458,9 @@ class Plugged extends EventEmitter {
     _connectSocket() {
             if (this.sock) {
             if (this.sock.readyState !== WebSocket.OPEN)
-                this._log("sock is already instantiated but not open", 1, "red");
+                this._log(1, "sock is already instantiated but not open");
             else
-                this._log("sock is already instantiated and open", 1, "yellow");
+                this._log(1, "sock is already instantiated and open");
 
             return;
         }
@@ -484,7 +471,7 @@ class Plugged extends EventEmitter {
 
         /* SOCK OPENED */
         this.sock.on("open", () => {
-            this._log("socket opened", 3, "magenta");
+            this._log(3, "socket opened");
             this.emit(this.SOCK_OPEN);
             this._sendMessage("auth", this.auth);
             this._heartbeat.call(this);
@@ -492,20 +479,20 @@ class Plugged extends EventEmitter {
 
         /* SOCK CLOSED */
         this.sock.on("close", () => {
-            this._log("sock closed", 3, "magenta");
+            this._log(3, "sock closed");
             // make sure to clean up if the socket has been closed forcibly
             if (this.lastHeartbeat - Date.now() < this.heartbeatRate * 4 && this.keepAliveID !== -1) {
                 this.lastHeartbeat = 0;
                 this._keepAlive();
             }
 
-            this._log("sock closed", 3, "magenta");
+            this._log(3, "sock closed");
             this.emit(this.SOCK_CLOSED);
         });
 
         /* SOCK ERROR */
         this.sock.on("error", err => {
-            this._log("sock error", 3, "magenta");
+            this._log(3, "sock error");
             this.emit(this.SOCK_ERROR, err);
         });
 
@@ -520,8 +507,8 @@ class Plugged extends EventEmitter {
      */
     _wsaprocessor(msg, flags) {
         if (typeof msg !== "string") {
-            this._log("socket received message that isn't a string", 3, "yellow");
-            this._log(msg, 3, "yellow");
+            this._log(3, "socket received message that isn't a string");
+            this._log(3, msg);
             return;
         }
 
@@ -873,11 +860,10 @@ class Plugged extends EventEmitter {
 
             default:
                 this._log(
-                    "An unknown action appeared!\nPlease report this to https://www.github.com/SooYou/plugged\nit's super effective!",
-                    1,
-                    "magenta"
+                    0,
+                    "An unknown action appeared!\nPlease report this to https://www.github.com/SooYou/plugged\nit's super effective!"
                 );
-                this._log(data, 1, "magenta")
+                this._log(0, data);
                 break;
         }
     }
@@ -1151,7 +1137,7 @@ class Plugged extends EventEmitter {
             throw new Error("deleteTimeout must be of type number");
 
         if (!message || message.length <= 0) {
-            this._log("no message given", 1, "yellow");
+            this._log(1, "no message given");
             return;
         }
 
@@ -1175,19 +1161,36 @@ class Plugged extends EventEmitter {
 
     /**
      * @description hooks up a logging library into plug
+     * @param {function} log the function that receives the message as a parameter
      * @returns {boolean} true when logger has been registered
      */
-    invokeLogger(logfunc) {
-        if (typeof logfunc === "function" ||
-            (!Array.isArray(logfunc) && typeof logfunc === "object")) {
-            this.log = logfunc;
+    invokeLogger(log) {
+        if (typeof log === "function") {
+            this.log = log;
             return true;
         }
 
         return false;
     }
 
-    // TODO: streamline error messages
+    /**
+     * @description defines verbosity to use for logging
+     * @param {number} verbosity sets verbosity
+     */
+    setVerbosity(verbosity) {
+        if (typeof verbosity !== "number")
+            throw new Error("verbosity has to be of type number");
+
+        this.verbosity = verbosity;
+    }
+
+    /**
+     * @returns {number} verbosity
+     */
+    getVerbosity() {
+        return this.verbosity;
+    }
+
     /**
      * @description log into https://www.plug.dj
      * @param {object} credentials formatted login info or session token
@@ -1253,11 +1256,11 @@ class Plugged extends EventEmitter {
             if (!this.getJar())
                 this.setJar(null);
 
-            this._log("logging in with account: " + (credentials.email || credentials.userID) + "...", 2, "white");
+            this._log(2, `logging in with account: \"${(credentials.email || credentials.userID)}\"...`);
 
             this._login(credentials, callback);
         } else {
-            this._log("trying to resume session...", 2, "white");
+            this._log(2, "trying to resume session...");
             this.auth = credentials.session;
             this._loggedIn(callback);
         }
@@ -1272,13 +1275,13 @@ class Plugged extends EventEmitter {
     guest(room, callback) {
         if (this.sock) {
             if (this.sock.readyState === WebSocket.OPEN)
-                this._log("you seem to be logged in already", 0, "yellow");
+                this._log(0, "you seem to be logged in already");
             else
-                this._log("the socket is already instantiated", 0, "red");
+                this._log(0, "the socket is already instantiated");
             return;
         }
 
-        this._log("Joining room \"" + room + "\" as a guest...", 1, "white");
+        this._log(1, `Joining room \"${room}\" as a guest...`);
         this.query.query("GET", baseURL + '/' + room, function _guestRoom(err, data) {
             // get auth token directly from the page
             const idx = data.indexOf("_jm=\"") + 5;
@@ -1314,12 +1317,12 @@ class Plugged extends EventEmitter {
      */
     connect(slug, callback) {
         if (!slug) {
-            this._log("slug has to be defined", 1, "red");
+            this._log(1, "slug has to be defined");
             return;
         }
 
         if (!this.auth || this.state.self.guest) {
-            this._log("joining plug in guest mode, functions are highly limited!", 1, "yellow");
+            this._log(1, "joining plug in guest mode, functions are highly limited!");
             this.guest(slug);
             return;
         }
@@ -2031,7 +2034,7 @@ class Plugged extends EventEmitter {
         // POST /_/auth/login
         callback = (typeof callback === "function" ? callback.bind(this) : undefined);
 
-        this._log("setting login data...", 1, "white");
+        this._log(1, "setting login data...");
 
         if (credentials.hasOwnProperty("email")) {
             this.query.query("POST", endpoints["LOGIN"], {
@@ -2432,7 +2435,7 @@ class Plugged extends EventEmitter {
         this.query.query("DELETE", endpoints["SESSION"], function _loggedOut(err, body) {
             this._clearState();
             if (!err) {
-                this._log("Logged out.", 1, "magenta");
+                this._log(1, "Logged out.");
                 callback && callback(null);
             } else {
                 callback && callback(err);
@@ -2670,7 +2673,7 @@ class Plugged extends EventEmitter {
                 body = body.substr(idx, body.indexOf('\"', idx) - idx);
 
                 if (body.length === 60) {
-                    this._log("CSRF token: " + body, 2, "magenta");
+                    this._log(2, "CSRF token: " + body);
                     callback && callback(null, credentials, body);
                 } else {
                     callback && callback(new Error("Couldn't find CSRF token in body, are you logged in already?"));
