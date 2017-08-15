@@ -33,13 +33,19 @@ const joined = function(err, room) {
     }
 };
 
-// log into the service
-plugged.login({ email: "examplemail@examplehost.com", password: "examplepassword" });
+const loggedIn = function(err, me) {
+    if (!err) {
+        plugged.cacheChat(true);
+        plugged.connect("exampleroom", joined.bind(this));
+    }
+    else
+    {
+        console.log(err);
+    }
+}
 
-plugged.on(plugged.LOGIN_SUCCESS, function _loginSuccess() {
-    plugged.cacheChat(true);
-    plugged.connect("exampleroom", joined.bind(this));
-});
+// log into the service
+plugged.login({ email: "examplemail@examplehost.com", password: "examplepassword" }, loggedIn.bind(this));
 ```
 
 Events
