@@ -40,6 +40,8 @@ Functions
    * clearUserFromLists_.
    * setJar_.
    * getJar_.
+   * setHeartbeatRate_.
+   * getHeartbeatRate_.
    * defaultMessageProc_.
    * setMessageProcessor_.
    * sendChat_.
@@ -439,6 +441,34 @@ getJar
    **Return Value**:
 
       :dt:`Object` the cookie jar.
+
+
+setHeartbeatRate
+################
+
+   Sets the time in between heartbeats in seconds
+
+   **Parameters**:
+
+      :dt:`Number` time in between heartbeats in seconds.
+
+   **Return Value**:
+
+      :dt:`undefined`
+
+
+getHeartbeatRate
+################
+
+   Gets the time in between heartbeats in seconds.
+
+   **Parameters**:
+
+      :dt:`undefined`
+
+   **Return Value**:
+
+      :dt:`Number` time in between heartbeats in seconds.
 
 
 defaultMessageProc

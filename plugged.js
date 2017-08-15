@@ -90,7 +90,8 @@ class Plugged extends EventEmitter {
         this.chatTimeout = 0;
         this.cleanCacheInterval = -1;
         this.chatcachesize = 256;
-        this.keepAliveTries = 0;
+        this.heartbeatRate = 20;
+        this.lastHeartbeat = 0;
         this.keepAliveID = -1;
         this.sock = null;
         this.auth = null;
@@ -241,39 +242,35 @@ class Plugged extends EventEmitter {
     }
 
     /**
-     * @description check function that gets called every 30 seconds to see if the connection to the server is still alive
+     * @description check function that gets called to see if the connection to the server is still alive
      * if it detects that the server hasn't responded for a while it will fire a CONN_WARNING
-     * This will happen 5 times before the CONN_PART event will be fired
+     * This will happen 3 times before the CONN_PART event will be fired
      */
     _keepAlive() {
-        // TODO: make the amount of tries before the connection will be identified as dead customizable
-        if (this.keepAliveTries >= 6) {
+        const repeat = 4;
+        if (Date.now() - this.lastHeartbeat >= this.heartbeatRate * 1000 * repeat) {
             // TODO: change style of messages
-            this._log("haven't received a keep alive message from host for more than 3 minutes, is it on fire?", 1, "red");
+            this._log(`haven't received a heartbeat from host for more than ${this.heartbeatRate * repeat} seconds, is it on fire?`, 1, "red");
             // save meta information of the room since clearState erases all data
             const meta = this.getRoomMeta();
             this._clearState();
             this.emit(this.CONN_PART, meta);
         } else {
-            this.keepAliveTries++;
             clearTimeout(this.keepAliveID);
-            // TODO: make the alive timer customizable
-            this.keepAliveID = setTimeout(this._keepAlive, 30*1000);
+            this.keepAliveID = setTimeout(this._keepAlive, this.heartbeatRate * 1000);
 
-            if (this.keepAliveTries > 1)
-                this.emit(this.CONN_WARNING, this.keepAliveTries * 30);
+            if (Date.now() - this.lastHeartbeat >= this.heartbeatRate * 1000)
+                this.emit(this.CONN_WARNING, (Date.now() - this.lastHeartbeat) / 1000);
         }
     }
 
     /**
-     * @description resets the keep alive counter
+     * @description updates the heartbeat
      */
-    _keepAliveCheck() {
-        // the hiccup counter gets set back to zero
-        this.keepAliveTries = 0;
+    _heartbeat() {
+        this.lastHeartbeat = Date.now();
         clearTimeout(this.keepAliveID);
-        // TODO: same as above, the time needs to be customizable
-        this.keepAliveID = setTimeout(this._keepAlive, 30*1000);
+        this.keepAliveID = setTimeout(this._keepAlive, this.heartbeatRate * 1000);
     }
 
     // TODO: remove function
@@ -407,7 +404,7 @@ class Plugged extends EventEmitter {
 
         this.sock = null;
         this.auth = null;
-        this.keepAliveTries = 0;
+        this.lastHeartbeat = 0;
     }
 
     /**
@@ -490,15 +487,15 @@ class Plugged extends EventEmitter {
             this._log("socket opened", 3, "magenta");
             this.emit(this.SOCK_OPEN);
             this._sendMessage("auth", this.auth);
-            this._keepAliveCheck.call(this);
+            this._heartbeat.call(this);
         });
 
         /* SOCK CLOSED */
         this.sock.on("close", () => {
             this._log("sock closed", 3, "magenta");
             // make sure to clean up if the socket has been closed forcibly
-            if (this.keepAliveTries < 6 && this.keepAliveID !== -1) {
-                this.keepAliveTries = 6;
+            if (this.lastHeartbeat - Date.now() < this.heartbeatRate * 4 && this.keepAliveID !== -1) {
+                this.lastHeartbeat = 0;
                 this._keepAlive();
             }
 
@@ -530,7 +527,7 @@ class Plugged extends EventEmitter {
 
         // can only occur when it's really a ping message
         if (msg.charAt(0) === 'h') {
-            this._keepAliveCheck();
+            this._heartbeat();
             return;
         }
 
@@ -1080,6 +1077,30 @@ class Plugged extends EventEmitter {
      */
     setJar(jar, storage=null) {
         this.query.setJar(jar, storage);
+    }
+
+    /**
+     * @description sets the time in between heartbeats
+     * @param {number} time amount of time per heartbeat in seconds
+     * @throws {Error} if time is not of type number
+     * @throws {Error} if number is not greater than zero
+     */
+    setHeartbeatRate(time) {
+        if (typeof time !== "number")
+            throw new Error("time has to be of type number");
+
+        if (time <= 0)
+            throw new Error("time has to be greater zero");
+
+        this.heartbeatRate = time;
+    }
+
+    /**
+     * @description gets the time in between heartbeats
+     * @returns {number} time in between heartbeats in seconds
+     */
+    getHeartbeatRate() {
+        return this.heartbeatRate;
     }
 
     /**

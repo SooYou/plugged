@@ -126,9 +126,9 @@ _getCSRF
 _keepAlive
 ##############
 
-   Function that gets called by :ref:`_keepAliveCheck</keepAliveCheck>` to
+   Function that gets called by :ref:`_heartbeat</heartbeat>` to
    check if the connection to the server is still open. The check happens by a
-   constant delta offset. If the server hasn't responded after 6 checks the
+   constant delta offset. If the server hasn't responded after 4 checks the
    connection will be reset by the client.
 
    **Parameters**:
@@ -145,7 +145,7 @@ _keepAlive
       :dt:`undefined`
 
 
-_keepAliveCheck
+_heartbeat
 ##############
 
    Calls _keepAlive for consequent checks of an etablished server connection.
