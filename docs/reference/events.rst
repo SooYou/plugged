@@ -20,8 +20,6 @@ Events
    * CONN_PART_.
    * CONN_SUCCESS_.
    * CONN_WARNING_.
-   * LOGOUT_ERROR_.
-   * LOGOUT_SUCCESS_.
    * SOCK_CLOSE_.
    * SOCK_ERROR_.
    * SOCK_OPEN_.
@@ -331,32 +329,6 @@ LEVEL_UP
    **Parameters**:
 
       **level**: :dt:`Number` your new level.
-
-
-LOGOUT_ERROR
-############
-
-   Emitted on failure of logging out.
-
-   .. note::
-
-      This only happens when the server is failing to return a proper response
-      when logging out.
-
-
-   **Parameters**:
-
-      **err**: :dt:`String` containing the error message.
-
-
-LOGOUT_SUCCESS
-##############
-
-   Emitted on successful logout.
-
-   **Parameters**:
-
-      :dt:`undefined`
 
 
 MAINTENANCE_MODE

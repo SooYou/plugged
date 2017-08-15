@@ -140,9 +140,6 @@ class Plugged extends EventEmitter {
         };
 
         /*===== GENERAL EVENTS =====*/
-        this.LOGOUT_ERROR = "logoutError";
-        this.LOGOUT_SUCCESS = "logoutSuccess";
-
         /* SOCKET RELATED */
         this.CONN_PART = "connPart";
         this.CONN_ERROR = "connError";
@@ -2415,10 +2412,8 @@ class Plugged extends EventEmitter {
             this._clearState();
             if (!err) {
                 this._log("Logged out.", 1, "magenta");
-                this.emit(this.LOGOUT_SUCCESS);
                 callback && callback(null);
             } else {
-                this.emit(this.LOGOUT_ERROR, err);
                 callback && callback(err);
             }
         }.bind(this));
