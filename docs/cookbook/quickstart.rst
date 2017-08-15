@@ -102,7 +102,7 @@ Now that we got this set, I'll explain some things. What we did here is to
 inherit Plugged into our bot class. So we have access to all its functions
 through *this*... t.. the keyword, I mean.
 
-the options argument passed in the constructor enables you to pass several 
+the options argument passed in the constructor enables you to pass several
 startup settings to Plugged as shown :doc:`here</datatypes/index>` .
 
 The last line is just us using CommonJS to export our class so we can pull it
@@ -118,7 +118,7 @@ is better for that than a function? Time to extend our class!
         constructor(options={}) {
             super(options);
         }
-        
+
         // here we add our new code
         greet(user) {
             this.sendChat(`Hi, @${user.username}`);
@@ -152,7 +152,7 @@ This is relatively easy thanks to Plugged! Which is also why we are already done
 with our bot class. Remember that we inherited Plugged into our class?
 We inherited all functionality of Plugged with it into our Bot class, so our
 bot class is not just *one* function big, but it has **plenty** of functionality
-already built in thanks to this inheritation of which we will make use now!
+already built in thanks to this inheritance of which we will make use now!
 
 So hit up your editor and create a new file called *app.js* and write down
 the following code:
@@ -161,7 +161,7 @@ the following code:
 
     const OurSuperAwesomeBot = require("./bot");
     const bot = new OurSuperAwesomeBot();
-    
+
     /**
     * NOTE: you need to change the email and password to your own,
     * it has to be a second account.
@@ -186,60 +186,47 @@ functions.
 
 Next we need to wire everything to the respective events. Plugged
 uses **a lot** of events. I am not kidding. There's plenty of actions that erupt
-as events, but that's a topic for another time, so we'll just need 3 events
-which are:
+as events, but that's a topic for another time, so we'll just need one event
+which is:
 
-* :doc:`LOGIN_SUCCESSFUL</events/LOGIN_SUCCESSFUL>`
-* :doc:`ROOM_CONNECTED</events/ROOM_CONNECTED>`
 * :doc:`USER_JOIN</events/USER_JOIN>`
 
-Using these events is as simple as using the functions *on* and *once*
+Using events is as simple as using the functions *on* and *once*
 
 .. code-block:: JavaScript
 
     const OurSuperAwesomeBot = require("./bot");
     const bot = new OurSuperAwesomeBot();
-    
+
+    // NEW CODE HERE
+    const loggedIn = function(err, room) {
+        if (!err)
+            bot.connect("exampleroom", joinedRoom); // change exampleroom into your room of choice
+        else
+            console.log(err);
+    };
+
+    const joinedRoom = function(err, me) {
+        if (!err) {
+            console.log("connected to room!");
+            bot.on("USER_JOIN", user => bot.greet(user));
+        } else {
+            console.log(err);
+        }
+    }
+
     bot.login({
         email: "example@examplehost.moe",
         password: "examplepassword"
-    });
-
-    // new code here!
-    bot.once("LOGIN_SUCCESSFUL", () => {
-        console.log("connected to plug!");
-        // NOTE: also change this to a room >>you own<<!
-        bot.connect("exampleroom");
-    });
-
-    bot.once("ROOM_CONNECTED", () => {
-        console.log("connected to room!");
-        bot.on("USER_JOIN", user => bot.greet(user));
-    });
+    }, loggedIn);
 
 
 
-To explain the last part, what we did here is to register a function once on
-the *LOGIN_SUCCESSFUL* event which will, once emitted, log to our console
-that it actually connected successfully so that we know it actually did work!
+To explain the last part, what we did here is to add a callback to the login function,
+which allows us to connect to the room we want to with :doc:`connect</reference/connect>`.
+The parameter we gave it is the name of the room we want to connect to.
 
-In the next line we use :doc:`connect</reference/connect>` to connect to a room,
-the parameter we gave it is the name of the room we want to connect to.
-
-The second function we register once is on the *ROOM_CONNECTED* event, which
-will be emitted once we are connected to the room.
-
-
-.. hint::
-
-   As you might notice I used the word once in both cases. This identifies a
-   good reason why we use the once function instead of the on function. For our
-   case, it does not make sense to leave those two functions registered since
-   those two events will only be called once and that's it. For this exact
-   reason it is good practice to leave the cleanup to the system and not let us
-   bother about it.
-
-In this function we once again log an output to the console so we know we are
+In the callback of connect we once again log an output to the console so we know we are
 actually connected to our room. The last new part includes the registration
 of the our greet function on the *USER_JOIN* event, which passes a
 :doc:`user</datatypes/user>` object to the function.
