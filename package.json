@@ -39,7 +39,7 @@
         "test": "mocha test/test.js -t 10000"
     },
     "dependencies": {
-        "request": "~2",
-        "ws": "~1.1.1"
+        "request": "^2.81",
+        "ws": "^3.1"
     }
 }
