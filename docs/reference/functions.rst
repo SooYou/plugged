@@ -111,9 +111,12 @@ Functions
    * skipDJ_.
    * moveDJ_.
    * createRoom_.
+   * sendSOS_.
    * updateRoomInfo_.
    * setMinChatLevel_.
    * banUser_.
+   * banBooth_.
+   * deleteBanBooth_.
    * muteUser_.
    * addStaff_.
    * ignoreUser_.
@@ -1730,6 +1733,50 @@ banUser
       * **id**: :dt:`Number` user's ID.
       * **time**: :dt:`Enum` duration of ban.
       * **reason**: :dt:`Enum` reason of ban.
+      * **callback**: :dt:`function` called on retrieval.
+
+   **callback**:
+
+      * **err**: :dt:`String` possible error returned.
+
+   **Return Value**:
+
+      * :dt:`undefined`
+
+
+banBooth
+########
+
+   Bans a user from the booth.
+
+   For time see :doc:`BOOTHBANDURATION</datatypes/boothbanduration>`
+
+   For reason see :doc:`BOOTHBANREASON</datatypes/boothbanreason>`
+
+   **Parameters**:
+
+      * **id**: :dt:`Number` user's ID.
+      * **time**: :dt:`Enum` duration of ban.
+      * **reason**: :dt:`Enum` reason of ban.
+      * **callback**: :dt:`function` called on retrieval.
+
+   **callback**:
+
+      * **err**: :dt:`String` possible error returned.
+
+   **Return Value**:
+
+      * :dt:`undefined`
+
+
+deleteBanBooth
+##############
+
+   Removes a previously registered ban.
+
+   **Parameters**:
+
+      * **id**: :dt:`Number` user's ID.
       * **callback**: :dt:`function` called on retrieval.
 
    **callback**:

@@ -108,10 +108,25 @@ class Plugged extends EventEmitter {
             NEGATIVE_ATTITUDE:          5
         };
 
+        this.BOOTHBANREASON = {
+            SPAMMING:           1,
+            VERBAL_ABUSE:       2,
+            OFFENSIVE_VIDEOS:   3,
+            INAPPROPIATE_GENRE: 4,
+            NEGATIVE_ATTITUDE:  5
+        };
+
         this.BANDURATION = {
             HOUR:   'h',
             DAY:    'd',
             PERMA:  'f'
+        };
+
+        this.BOOTHBANDURATION = {
+            QUARTER:    's',
+            HOUR:       'm',
+            DAY:        'l',
+            FOREVER:    'f'
         };
 
         this.MUTEDURATION = {
@@ -2280,6 +2295,40 @@ class Plugged extends EventEmitter {
             reason: reason,
             duration: time
         }, callback);
+    }
+
+    /**
+     * @description Bans a user from the booth
+     * @param {number} userID user to ban
+     * @param {enum} time duration of ban
+     * @param {enum} reason why user was banned
+     * @param {function} callback
+     */
+    banBooth(userID, time, reason, callback) {
+        // POST /_/booth/waitlistban
+        if (typeof reason === "function") {
+            callback = reason;
+            reason = 1;
+        }
+
+        callback = (typeof callback === "function" ? callback.bind(this) : undefined);
+        this.query.query("POST", endpoints["MOD_WAITLIST_BAN"], {
+            userID: userID,
+            reason: reason,
+            duration: time
+        }, callback, true);
+    }
+
+    /**
+     * @description removes a previously registered ban
+     * @param {number} userID user to unban
+     * @param {function} callback
+     */
+    deleteBanBooth(userID, callback) {
+        // DELETE /_/booth/waitlistban
+
+        callback = (typeof callback === "function" ? callback.bind(this) : undefined);
+        this.query.query("DELETE", endpoints["MOD_WAITLIST_BAN"] + "/" + userID, callback, true);
     }
 
     /**
