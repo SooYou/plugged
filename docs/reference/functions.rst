@@ -1657,6 +1657,29 @@ createRoom
       * :dt:`undefined`
 
 
+sendSOS
+#######
+
+   Sends an SOS to the admins and global moderators of plug.dj
+
+   .. note::
+      Please keep in mind that this is a function with power and should be used only in
+      a real emergency. Don't just spam this function at your leisure.
+
+
+   **Parameters**:
+
+      * **message**: :dt:`String` message send to moderators.
+
+   **callback**:
+
+      * **err**: :dt:`String` possible error returned.
+
+   **Return Value**:
+
+      * :dt:`undefined`
+
+
 updateRoomInfo
 ##############
 

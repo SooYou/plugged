@@ -31,6 +31,7 @@ CHANGELOG
     + added setVerbosity function in action of refactoring log
     + added getVerbosity function in action of refactoring log
     + added waitlistBan event
+    + added sendSOS method
 
     - removed logger from the package since it served its purpose
     - removed JOINED_ROOM and PLUG_ERROR were removed, you have to use a callback now

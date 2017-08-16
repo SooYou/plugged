@@ -55,6 +55,7 @@ const endpoints = {
     SKIPBOOTH: baseURL +    "/_/booth/skip",
     MOVEBOOTH: baseURL +    "/_/booth/move",
     CREATEROOM: baseURL +   "/_/rooms",
+    SOS: baseURL +          "/_/rooms/sos",
     UPDATEROOM: baseURL +   "/_/rooms/update",
     UPDATESTAFF: baseURL +  "/_/staff/update",
     /*-------------- DELETE -------------*/
@@ -2207,6 +2208,19 @@ class Plugged extends EventEmitter {
         this.query.query("POST", endpoints["CREATEROOM"], {
             name: name,
             private: unlisted
+        }, callback, true);
+    }
+
+    /**
+     * @description sends an SOS message to the admins and global moderators of plug.dj
+     * @param {string} message send to the global moderators
+     * @param {function} callback called on retrieval
+     */
+    sendSOS(message, callback) {
+        // POST /_/rooms/sos
+        callback = (typeof callback === "function" ? callback.bind(this) : undefined);
+        this.query.query("POST", endpoints["SOS"], {
+            message: encodeURIComponent(message)
         }, callback, true);
     }
 
