@@ -41,5 +41,9 @@
     "dependencies": {
         "request": "^2.81",
         "ws": "^3.1"
+    },
+    "devDependencies": {
+        "chai": "^4.1.1",
+        "mocha": "^3.5.0"
     }
 }
