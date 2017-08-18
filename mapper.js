@@ -500,7 +500,6 @@ const mapChatDelete = function(data = {}) {
 
 const createState = function(data = {}) {
     return {
-        credentials: data.credentials || {},
         self: mapSelf(data.self),
         room: mapRoom(data.room),
         usercache: data.usercache || [],
