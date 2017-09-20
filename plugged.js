@@ -125,17 +125,17 @@ Plugged.prototype.MUTEDURATION = {
 
 Plugged.prototype.USERROLE = {
     NONE:       0,
-    RESIDENTDJ: 1,
-    BOUNCER:    2,
-    MANAGER:    3,
-    COHOST:     4,
-    HOST:       5
+    RESIDENTDJ: 1000,
+    BOUNCER:    2000,
+    MANAGER:    3000,
+    COHOST:     4000,
+    HOST:       5000
 };
 
 Plugged.prototype.GLOBALROLE = {
     NONE:               0,
-    BRAND_AMBASSADOR:   3,
-    ADMIN:              5
+    BRAND_AMBASSADOR:   3000,
+    ADMIN:              5000
 };
 
 Plugged.prototype.CACHE = {
