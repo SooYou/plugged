@@ -703,7 +703,7 @@ class Plugged extends EventEmitter {
                 const promotions = mapper.mapPromotions(data.p);
 
                 if (promotions.length === 2) {
-                    const host = this.getUserByID(this.getHostID());
+                    const host = this.getUserById(this.getHostID());
 
                     for (let i = promotions.length - 1; i >= 0; i--) {
                         if (promotions[i].id == host.id) {
@@ -1214,7 +1214,7 @@ class Plugged extends EventEmitter {
      */
     login(credentials, callback) {
         if (typeof credentials !== "object" || credentials == null)
-            throw new Error("credentials has to be of type object");
+            return callback && callback(new Error("credentials has to be of type object"), null);
 
         if (!credentials.hasOwnProperty("session")) {
             const errorMsg = [];
@@ -1266,7 +1266,7 @@ class Plugged extends EventEmitter {
             }
 
             if (errorMsg.length > 0)
-                throw new Error(errorMsg.join(", "));
+                return callback && callback(new Error(errorMsg.join(", ")), null);
 
             // requests a new cookie jar
             if (!this.getJar())
@@ -1334,13 +1334,12 @@ class Plugged extends EventEmitter {
     connect(slug, callback) {
         if (!slug) {
             this._log(1, "slug has to be defined");
-            return;
+            return callback && callback(new Error("slug has to be defined"), null);
         }
 
         if (!this.auth || this.state.self.guest) {
             this._log(1, "joining plug in guest mode, functions are highly limited!");
-            this.guest(slug);
-            return;
+            return this.guest(slug, callback);
         }
 
         this.joinRoom(slug, function _joinedRoom(err) {
@@ -1515,7 +1514,7 @@ class Plugged extends EventEmitter {
      * @returns {object} user
      */
     getDJ() {
-        return this.getUserByID(this.state.room.booth.dj, this.CACHE.DISABLE);
+        return this.getUserById(this.state.room.booth.dj, this.CACHE.DISABLE);
     }
 
     /**
@@ -1736,7 +1735,7 @@ class Plugged extends EventEmitter {
      * @returns {boolean} true when saved, false otherwise
      */
     cacheUser(user) {
-        if (typeof user === "object" && typeof this.getUserByID(user.id, this.CACHE.ONLY) === "undefined") {
+        if (typeof user === "object" && typeof this.getUserById(user.id, this.CACHE.ONLY) === "undefined") {
             this.state.usercache.push({ user: user, timestamp: Date.now() });
             return true;
         }
@@ -1906,7 +1905,7 @@ class Plugged extends EventEmitter {
         }
 
         callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-        this.query.query("GET", endpoints["ROOMS"] + "?q=&page=0&limit=50", function _sanitizeRooms(err, rooms) {
+        this.query.query("GET", endpoints["ROOMS"] + `?q=&page=${page}&limit=${limit}`, function _sanitizeRooms(err, rooms) {
             callback && callback(err, (!err && rooms ? rooms.map(function(room) {
                 return mapper.mapExtendedRoom(room);
             }) : []));
@@ -2129,14 +2128,19 @@ class Plugged extends EventEmitter {
     addPlaylist(name, media, callback) {
         // POST /_/playlists
         callback = (typeof callback === "function" ? callback.bind(this) : undefined);
+        let _media;
 
         if (typeof media === "function") {
             callback = media.bind(this);
             media = null;
         }
 
+        if (typeof media === "object" && media !== null) {
+            _media = mapper.serializeMediaObjects(media);
+        }
+
         this.query.query("POST", endpoints["PLAYLISTS"],
-            { name: name, media: mapper.serializeMediaObjects(media) },
+            { name: name, media: _media },
             callback, true);
     }
 
@@ -2667,6 +2671,14 @@ class Plugged extends EventEmitter {
 
             callback && callback(err, result);
         });
+    }
+
+    /**
+     * @description gets playback
+     * @returns playback object
+     */
+    getPlayback() {
+        return this.state.room.playback;
     }
 
     /**
