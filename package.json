@@ -19,6 +19,7 @@
         "query.js",
         "mapper.js",
         "utils.js",
+        "types.js",
         "package.json",
         "LICENSE",
         "README.md",
@@ -36,11 +37,11 @@
         "api"
     ],
     "scripts": {
-        "test": "mocha test/test.js -t 10000 || exit 0"
+        "test": "mocha test/test.js -t 10000"
     },
     "dependencies": {
         "request": "^2.81",
-        "ws": "^3.1"
+        "ws": "^3.2"
     },
     "devDependencies": {
         "chai": "^4.1.1",
