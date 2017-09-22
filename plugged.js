@@ -3,7 +3,7 @@ const WebSocket = require("ws");
 const util = require("util");
 
 const config = require("./conf/config");
-const mapper = require("./mapper");
+var mapper = require("./mapper");
 const Query = require("./query");
 const utils = require("./utils");
 
@@ -11,7 +11,7 @@ const baseURL = config.provider;
 
 const endpoints = {
     /*--------------- GET ---------------*/
-    CSRF: baseURL,
+    CSRF: baseURL +         "/_/mobile/init",
     NEWS: baseURL +         "/_/news",
     BANS: baseURL +         "/_/bans",
     STAFF: baseURL +        "/_/staff",
@@ -296,7 +296,7 @@ class Plugged extends EventEmitter {
      * @param {*} msg the message to log
      */
     _log(verbosity, msg) {
-        if (verbosity >= this.verbosity)
+        if (verbosity <= this.verbosity)
             this.log && this.log(msg);
     }
 
@@ -1149,7 +1149,7 @@ class Plugged extends EventEmitter {
         if (typeof message !== "string")
             throw new Error("message must be of type string");
 
-        if (typeof deleteTImeout !== "number")
+        if (typeof deleteTimeout !== "number")
             throw new Error("deleteTimeout must be of type number");
 
         if (!message || message.length <= 0) {
@@ -1213,7 +1213,7 @@ class Plugged extends EventEmitter {
      * @param {function} callback called after logging in
      */
     login(credentials, callback) {
-        if (typeof credentials !== "object")
+        if (typeof credentials !== "object" || credentials == null)
             throw new Error("credentials has to be of type object");
 
         if (!credentials.hasOwnProperty("session")) {
@@ -1233,19 +1233,19 @@ class Plugged extends EventEmitter {
             // doing this with hasOwnProperty would have been possible but would be a real mess
             // missing email but no facebook credentials
             if (partialEmail && !hasFacebookCredentials) {
-                if (flag & 0x01)
+                if (!(flag & 0x01))
                     errorMsg.push("email missing");
 
-                if (flag & 0x02)
+                if (!(flag & 0x02))
                     errorMsg.push("password missing");
 
             }
             // missing facebook but no email credentials
             else if (partialFacebook && !hasEmailCredentials) {
-                if (flag & 0x04)
+                if (!(flag & 0x04))
                     errorMsg.push("accessToken missing");
 
-                if (flag & 0x08)
+                if (!(flag & 0x08))
                     errorMsg.push("userID missing");
             }
             // credentials for both are set
@@ -2729,23 +2729,17 @@ class Plugged extends EventEmitter {
         // GET plug.dj
         callback = (typeof callback === "function" ? callback.bind(this) : undefined);
 
-        this.query.query("GET", endpoints["CSRF"], (err, body) => {
+        this.query.query("GET", endpoints["CSRF"], (err, data) => {
             if (!err) {
-                const idx = body.indexOf("_csrf") + 9;
-
-                body = body.substr(idx, body.indexOf('\"', idx) - idx);
-
-                if (body.length === 60) {
-                    this._log(2, "CSRF token: " + body);
-                    callback && callback(null, credentials, body);
+                if (typeof data !== "undefined" && typeof data.c !== "undefined") {
+                    callback && callback(null, credentials, data.c);
                 } else {
-                    callback && callback(new Error("Couldn't find CSRF token in body, are you logged in already?"));
+                    callback && callback(new Error("Couldn't get CSRF token"));
                 }
-
             } else {
                 callback && callback(err);
             }
-        });
+        }, true);
     }
 
     /**
