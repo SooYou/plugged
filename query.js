@@ -1,19 +1,9 @@
 const request = require("request");
+const types = require("./types");
 const util = require("util");
 
 const QUERY_TIMEOUT_INC = 200;
 const QUERY_TIMEOUT_MAX = 2200;
-
-const verbs = ["GET", "PUT", "POST", "DELETE"];
-
-const RequestError = function(data, status = null, code = null) {
-    Error.captureStackTrace(this);
-
-    this.name = "RequestError";
-    this.message = Array.isArray(data) ? data.toString() : typeof data === "string" ? data : "no data returned";
-    this.status = status;
-    this.code = code;
-};
 
 const processEntry = function(query, entry) {
     request(entry.options, (err, res, body) => {
@@ -22,14 +12,14 @@ const processEntry = function(query, entry) {
                 // remove unnecessary information like status and time
                 if (body && body.hasOwnProperty("data"))
                     body = body.data;
-                
+
                 // received data is expected to be just one object
                 if (entry.extractArray) {
                     const length = body.length;
 
                     if (length > 1) {
-                        err = new RequestError(
-                            `received data from endpoint [${entry.verb}] ${entry.url} contained 
+                        err = new types.RequestError(
+                            `received data from endpoint [${entry.verb}] ${entry.url} contained
                             more than one object. Enforced first object assignment anyway`,
                             "ok",
                             res.statusCode
@@ -45,7 +35,7 @@ const processEntry = function(query, entry) {
             } else {
                 if (entry.tries < 2 && (res ? res.statusCode : 0) >= 500) {
                     entry.tries++;
-                    
+
                     if (entry.flush) {
                         processEntry(query, entry);
                     } else {
@@ -56,10 +46,10 @@ const processEntry = function(query, entry) {
                     }
                 } else {
                     if (!err) {
-                        err = new RequestError(
+                        err = new types.RequestError(
                             body ? body.data : null,
                             body ? body.status : null,
-                            res ? res.code : null
+                            res ? res.statusCode : null
                         );
                     }
 
@@ -85,8 +75,11 @@ class Query {
         this.queue = [];
         this.offset = 0;
         this.encoding = "utf8";
+        this.accept = "application/json, text/javascript; q=0.1, */*; q=0.5";
+        this.contentType = "application/json";
+        this.json = true;
         this._process = this._process.bind(this);
-        
+
     }
 
     /**
@@ -141,13 +134,42 @@ class Query {
     }
 
     /**
+     * @param {string} accept data type for response to accept
+     */
+    setAccept(accept) {
+        this.accept = accept;
+    }
+
+    /**
+     * @returns {string} data type for response to accept
+     */
+    getAccept() {
+        return this.accept;
+    }
+
+    /**
+     * @param {string} type of content to accept
+     */
+    setContentType(type) {
+        this.json = type.includes("application/json");
+        this.contentType = type;
+    }
+
+    /**
+     * @returns {string} type of content to accept
+     */
+    getContentType() {
+        return this.contentType;
+    }
+
+    /**
      * queries a new HTTP request to the server
      * @param {string} verb - HTTP verb to be used, for example: "GET", "PUT", "POST", "DELETE", etc.
      * @param {string} url - composed string that defines the url to which server the request should be send
      * @param {object} data - JSON object containing all data that is to be send
      * @param {function} callback - function that will be called on reply
      * @param {boolean} extractArray - when true, flattens the information. Useful when you expect only a single value
-     * @param {boolean} flush - when true, Query will ignore the request queue and send the it straight to the server 
+     * @param {boolean} flush - when true, Query will ignore the request queue and send the it straight to the server
      */
     query(verb, url, data, callback, extractArray = false, flush = false) {
         if (typeof data !== "object") {
@@ -173,11 +195,11 @@ class Query {
                 jar: this.jar,
                 encoding: this.encoding,
                 body: data,
-                json: true,
+                json: this.json,
                 headers: {
-                    "User-Agent": "PlugClient/2.0 (NODE_ES6_TEST)",
-                    "Accept": "application/json, text/javascript; q=0.1, */*; q=0.5",
-                    "Content-Type": "application/json"
+                    "User-Agent": "Plugged/3.0",
+                    "Accept": this.accept,
+                    "Content-Type": this.contentType
                 }
             }
         };
