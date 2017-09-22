@@ -35,7 +35,6 @@ var _user;
 var _room;
 
 function execTest() {
-    return describe.skip;
     return isTravis ? describe.skip : describe;
 }
 
