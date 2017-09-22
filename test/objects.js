@@ -1,3 +1,6 @@
+const chai = require("chai");
+const expect = chai.expect;
+
 const testUser = (parse, user) => {
     expect(user).to.contain.all.keys([
         "username",
@@ -209,7 +212,7 @@ const testHistoryObject = (parse, history) => {
     expect(entry.user.username).to.be.a("string").and.have.length.above(0);
 };
 
-const testSelf = self => {
+const testSelf = (parse, self) => {
     testUser(true, self);
 
     expect(self).to.contain.all.keys([
@@ -223,7 +226,7 @@ const testSelf = self => {
     ]);
 
     expect(self.notifications).to.be.an("array");
-    expect(self.settings).to.be.an("array");
+    expect(self.settings).to.be.an("object");
     expect(self.ignores).to.be.an("array");
     expect(self.friends).to.be.an("array");
     expect(self.pw).to.be.a("boolean");
