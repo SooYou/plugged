@@ -39,7 +39,7 @@ const testUser = (parse, user) => {
 };
 
 
-const testMedia = media => {
+const testMedia = (parse, media) => {
     expect(media).to.have.all.keys([
         "author",
         "title",
@@ -132,7 +132,7 @@ const testExtendedRoom = (parse, room) => {
     expect(room.slug).to.be.a("string");
 };
 
-const testPlaylist = playlist => {
+const testPlaylist = (parse, playlist) => {
     expect(playlist).to.have.all.keys([
         "active",
         "count",
@@ -144,72 +144,6 @@ const testPlaylist = playlist => {
     expect(playlist.count).to.be.a("number");
     expect(playlist.id).to.be.a("number");
     expect(playlist.name).to.be.a("string");
-};
-
-const testHistoryObject = (parse, history) => {
-    expect(entry).to.be.an("object");
-    expect(entry).to.have.all.keys([
-        "id",
-        "media",
-        "room",
-        "score",
-        "timestamp",
-        "user"
-    ]);
-
-    expect(entry.id).to.be.a("string").and.have.length.above(0);
-    expect(entry.media).to.be.an("object");
-    expect(entry.media).to.have.all.keys([
-        "cid",
-        "title",
-        "author",
-        "image",
-        "duration",
-        "format",
-        "id"
-    ]);
-
-    expect(entry.media.cid).to.be.a("string").and.have.length.above(0);
-    expect(entry.media.title).to.be.a("string").and.have.length.above(0);
-    expect(entry.media.author).to.be.a("string").and.have.length.above(0);
-    expect(entry.media.image).to.be.a("string").and.have.length.above(0);
-    expect(entry.media.duration).to.be.a("number").and.not.equal(0);
-    expect(entry.media.format).to.be.a("number");
-    expect(entry.media.id).to.be.a("number").and.not.equal(-1);
-
-    expect(entry.room).to.be.an("object");
-    expect(entry.room).to.have.all.keys([
-        "name",
-        "slug"
-    ]);
-
-    expect(entry.room.name).to.be.a("string").and.have.length.above(0);
-    expect(entry.room.slug).to.be.a("string").and.have.length.above(0);
-
-    expect(entry.score).to.be.an("object");
-    expect(entry.score).to.have.all.keys([
-        "grabs",
-        "listeners",
-        "negative",
-        "positive",
-        "skipped"
-    ]);
-
-    expect(entry.score.grabs).to.be.a("number");
-    expect(entry.score.listeners).to.be.a("number");
-    expect(entry.score.negative).to.be.a("number");
-    expect(entry.score.positive).to.be.a("number");
-    expect(entry.score.skipped).to.be.a("number");
-
-    expect(entry.timestamp).to.be.a("string").and.have.length.above(0);
-    expect(entry.user).to.be.an("object");
-    expect(entry.user).to.have.all.keys([
-        "id",
-        "username"
-    ]);
-
-    expect(entry.user.id).to.be.a("number").and.not.equal(-1);
-    expect(entry.user.username).to.be.a("string").and.have.length.above(0);
 };
 
 const testSelf = (parse, self) => {
@@ -330,7 +264,7 @@ const testModMove = (parse, move) => {
     }
 };
 
-const testNotify = notify => {
+const testNotify = (parse, notify) => {
     expect(notify).to.contain.all.keys([
         "action",
         "id",
@@ -344,7 +278,7 @@ const testNotify = notify => {
     expect(notify.value).to.be.a("string");
 };
 
-const testPlayback = playback => {
+const testPlayback = (parse, playback) => {
     expect(playback).to.contain.all.keys([
         "media",
         "historyID",
@@ -353,7 +287,7 @@ const testPlayback = playback => {
     ]);
 
     expect(playback.media).to.be.an("object");
-    testMedia(playback.media);
+    testMedia(parse, playback.media);
     expect(playback.historyID).to.be.a("string");
     expect(playback.playlistID).to.be.a("number");
     expect(playback.startTime).to.be.a("string");
@@ -376,11 +310,44 @@ const testHistoryEntry = (parse, entry) => {
     expect(entry.timestamp).to.be.a("string");
     expect(entry.user).to.be.an("object");
 
-    testMedia(entry.media);
-    testRoom(parse, room)
+    expect(entry.room).to.contain.all.keys([
+        "name",
+        "private",
+        "slug"
+    ]);
+
+    expect(entry.room.name).to.be.a("string");
+    expect(entry.room.private).to.be.a("boolean");
+    expect(entry.room.slug).to.be.a("string");
+
+    testMedia(parse, entry.media);
     testScore(parse, entry.score);
-    testTimestamp(parse, entry.timestamp);
-    testUser(parse, entry.user);
+
+    expect(entry.timestamp).to.be.a("string");
+
+    expect(entry.user).to.contain.all.keys([
+        "id",
+        "username"
+    ]);
+
+    expect(entry.user.id).to.be.a("number");
+    expect(entry.user.username).to.be.a("string");
+};
+
+const testScore = (parse, score) => {
+    expect(score).to.contain.all.keys([
+        "grabs",
+        "listeners",
+        "negative",
+        "positive",
+        "skipped"
+    ]);
+
+    expect(score.grabs).to.be.a("number");
+    expect(score.listeners).to.be.a("number");
+    expect(score.negative).to.be.a("number");
+    expect(score.positive).to.be.a("number");
+    expect(score.skipped).to.be.a("number");
 };
 
 const testFriendRequest = (parse, request) => {
@@ -953,7 +920,6 @@ exports.testMedia = testMedia;
 exports.testRoom = testRoom;
 exports.testExtendedRoom = testExtendedRoom;
 exports.testPlaylist = testPlaylist;
-exports.testHistoryObject = testHistoryObject;
 exports.testSelf = testSelf;
 exports.testMute = testMute;
 exports.testGifted = testGifted;
