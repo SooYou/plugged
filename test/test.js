@@ -367,10 +367,10 @@ describe("REST", () => {
     });
 
     describe("#getAuthToken", () => {
-        it("should retrieve the 152 character long authentication token", done => {
+        it("should retrieve the authentication token", done => {
             client.getAuthToken((err, token) => {
                 expect(err).to.be.equal(null);
-                expect(token).to.be.a("string").and.to.have.length(152);
+                expect(token).to.be.a("string").and.to.have.above(0);
                 done();
             });
         });
