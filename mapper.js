@@ -226,10 +226,12 @@ const mapHistoryEntry = function(data = {}) {
         }),
         room: (data.room ? {
             name: utils.decode(data.room.name) || "",
-            slug: data.room.slug || ""
+            slug: data.room.slug || "",
+            private: data.room.private || false
         } : {
             name: "",
-            slug: ""
+            slug: "",
+            private: false
         }),
         score: (data.score ? {
             grabs: data.score.grabs || 0,
