@@ -77,6 +77,7 @@ let mapSelf = function(data = {}) {
         },
         ignores: data.ignores || [],
         friends: data.friends || [],
+        silver: data.silver || false,
         pw: data.pw || false,
         guest: data.guest || false,
         level: data.level || 0,
