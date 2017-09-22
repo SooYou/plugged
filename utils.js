@@ -66,7 +66,7 @@ const decode = function(str) {
 };
 
 const convertPlugTimeToDate = function(plugTime) {
-    const res = /(\d+)-(\d+)-(\d+)\s+(\d+):(\d+):(\d+).(\d+)/g.exec(plugTime);
+    const res = /(\d+)-(\d+)-(\d+)\s(\d+):(\d+):(\d+)(?:\.)?(\d+)?/g.exec(plugTime);
     let time = "Invalid Date";
 
     if(res === null)
@@ -78,10 +78,7 @@ const convertPlugTimeToDate = function(plugTime) {
             res.splice(i, 1);
     }
 
-    if(res.length === 3) {
-        res.unshift("%s-%s-%s");
-        time = util.format.apply(util, res);
-    } else if(res.length === 6) {
+    if(res.length === 6) {
         res.unshift("%s-%s-%sT%s:%s:%sZ");
         time = util.format.apply(util, res);
     } else if(res.length === 7) {
