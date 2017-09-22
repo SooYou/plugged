@@ -370,7 +370,8 @@ describe("REST", () => {
         it("should retrieve the authentication token", done => {
             client.getAuthToken((err, token) => {
                 expect(err).to.be.equal(null);
-                expect(token).to.be.a("string").and.to.have.above(0);
+                expect(token).to.be.a("string");
+                expect(token.length).to.be.above(0);
                 done();
             });
         });
