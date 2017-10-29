@@ -138,17 +138,17 @@ class Plugged extends EventEmitter {
 
         this.USERROLE = {
             NONE:       0,
-            RESIDENTDJ: 1,
-            BOUNCER:    2,
-            MANAGER:    3,
-            COHOST:     4,
-            HOST:       5
+            RESIDENTDJ: 1000,
+            BOUNCER:    2000,
+            MANAGER:    3000,
+            COHOST:     4000,
+            HOST:       5000
         };
 
         this.GLOBALROLE = {
             NONE:               0,
-            BRAND_AMBASSADOR:   3,
-            ADMIN:              5
+            BRAND_AMBASSADOR:   3000,
+            ADMIN:              5000
         };
 
         this.CACHE = {
@@ -709,7 +709,7 @@ class Plugged extends EventEmitter {
                         if (promotions[i].id == host.id) {
                             host.role = promotions.splice(i, 1)[0].role;
 
-                            if (this.removeCachedUserByID(host.id))
+                            if (this.removeCachedUserById(host.id))
                                 this.cacheUser(host);
 
                             this.state.room.meta.hostID = promotions[0].id;
@@ -724,7 +724,7 @@ class Plugged extends EventEmitter {
                     if (this.state.room.users[i].id == promotions[0].id) {
                         this.state.room.users[i].role = promotions[0].role;
 
-                        if (this.removeCachedUserByID(this.state.room.users[i].id))
+                        if (this.removeCachedUserById(this.state.room.users[i].id))
                             this.cacheUser(this.state.room.users[i]);
 
                         break;
@@ -1735,7 +1735,7 @@ class Plugged extends EventEmitter {
      * @returns {boolean} true when saved, false otherwise
      */
     cacheUser(user) {
-        if (typeof user === "object" && typeof this.getUserById(user.id, this.CACHE.ONLY) === "undefined") {
+        if (typeof user === "object" && typeof this.getUserById(user.id, this.CACHE.ONLY) === null) {
             this.state.usercache.push({ user: user, timestamp: Date.now() });
             return true;
         }
@@ -1747,7 +1747,7 @@ class Plugged extends EventEmitter {
      * @param {number} ID user ID
      * @returns {boolean} true when the user was found and removed, false otherwise
      */
-    removeCachedUserByID(id) {
+    removeCachedUserById(id) {
         for (let i = 0, l = this.state.usercache.length; i < l; i++) {
             if (this.state.usercache[i].user.id == id) {
                 this.state.usercache.splice(i, 1);
@@ -1762,7 +1762,7 @@ class Plugged extends EventEmitter {
      * @param {string} username
      * @returns {boolean} true when the user was found and removed, false otherwise
      */
-    removeCachedUserByName(username) {
+    removeCachedUserByUsername(username) {
         username = username.toLowerCase();
 
         for (let i = 0, l = this.state.usercache.length; i < l; i++) {
@@ -1869,10 +1869,15 @@ class Plugged extends EventEmitter {
      */
     findRooms(query, page, limit, callback) {
         // GET /_/rooms?q=<query>&page=<page:0>&limit=<limit:50>
-        callback = (typeof callback === "function" ? callback.bind(this) :
-            typeof limit === "function" ? limit :
-            typeof page === "function" ? page : undefined);
         query = query || "";
+
+        if (typeof page === "function") {
+            callback = page;
+            page = 0;
+        } else if (typeof limit === "function") {
+            callback = limit;
+            limit = 50;
+        }
 
         if (typeof page !== "number")
             page = 0;
@@ -1880,8 +1885,8 @@ class Plugged extends EventEmitter {
         if (typeof limit !== "number")
             limit = 50;
 
-        this.query.query("GET", [endpoints["ROOMS"], "?q=", query, "&page=", page, "&limit=", limit].join(''), function _sanitizeFoundRooms(err, rooms) {
-
+        callback = (typeof callback === "function" ? callback.bind(this) : undefined);
+        this.query.query("GET", endpoints["ROOMS"] + `?q=${query}&page=${page}&limit=${limit}`, function _sanitizeRooms(err, rooms) {
             callback && callback(err, (!err && rooms ? rooms.map(function(room) {
                 return mapper.mapExtendedRoom(room);
             }) : []));
@@ -1895,21 +1900,7 @@ class Plugged extends EventEmitter {
      * @param {function} callback called on retrieval
      */
     getRoomList(page, limit, callback) {
-        // GET /_/rooms?q=<query>&page=<page:0>&limit=<limit:50>
-        if (typeof page === "function") {
-            callback = page;
-            page = 0;
-        } else if (typeof limit === "function") {
-            callback = limit;
-            limit = 50;
-        }
-
-        callback = (typeof callback === "function" ? callback.bind(this) : undefined);
-        this.query.query("GET", endpoints["ROOMS"] + `?q=&page=${page}&limit=${limit}`, function _sanitizeRooms(err, rooms) {
-            callback && callback(err, (!err && rooms ? rooms.map(function(room) {
-                return mapper.mapExtendedRoom(room);
-            }) : []));
-        });
+        return this.findRooms("", page, limit, callback);
     }
 
     /**
@@ -2989,7 +2980,7 @@ class Plugged extends EventEmitter {
      * @param {number} ID user to remove
      * @param {function} callback called on retrieval
      */
-    removeFriends(id, callback) {
+    removeFriend(id, callback) {
         // DELETE /_/friends
         callback = (typeof callback === "function" ? callback.bind(this) : undefined);
         this.query.query("DELETE", endpoints["FRIENDS"] + '/' + id, function(err, data) {
