@@ -16,6 +16,7 @@
     "files": [
         "logger.js",
         "plugged.js",
+        "events.js",
         "query.js",
         "mapper.js",
         "utils.js",
