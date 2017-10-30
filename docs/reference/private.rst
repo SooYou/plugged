@@ -272,10 +272,10 @@ _setLogin
       * :dt:`undefined`
 
 
-_wsaprocessor
+_eventProcessor
 #############
 
-   The WebSocketAutomation Processor, it processes every message received by the
+   It processes every message received by the
    WebSocket and turns them into events and data.
 
    **Parameters**:
