@@ -3,6 +3,7 @@ const WebSocket = require("ws");
 const util = require("util");
 
 const config = require("./conf/config");
+const events = require("./events");
 var mapper = require("./mapper");
 const Query = require("./query");
 const utils = require("./utils");
@@ -83,7 +84,7 @@ class Plugged extends EventEmitter {
         this.messageProc = options.messageProc || this.defaultMessageProc;
         this.retryLogin = options.retryLogin || true;
 
-        this._wsaprocessor = this._wsaprocessor.bind(this);
+        this._eventProcessor = this._eventProcessor.bind(this);
         this._keepAlive = this._keepAlive.bind(this);
         this.state = mapper.createState(options.state);
         this.query = new Query();
@@ -472,7 +473,7 @@ class Plugged extends EventEmitter {
      * @description initializes the socket connection and checks whether a connection has already been made
      */
     _connectSocket() {
-            if (this.sock) {
+        if (this.sock) {
             if (this.sock.readyState !== WebSocket.OPEN)
                 this._log(1, "sock is already instantiated but not open");
             else
@@ -513,15 +514,15 @@ class Plugged extends EventEmitter {
         });
 
         /* SOCK MESSAGE */
-        this.sock.on("message", this._wsaprocessor);
+        this.sock.on("message", this._eventProcessor);
     }
 
     /**
-     * @description processes the messages received by the websocket
+     * @description processes the events received by the websocket
      * @param {string} msg message the server sent as a string
      * @param {string} flags flags sent with the packet
      */
-    _wsaprocessor(msg, flags) {
+    _eventProcessor(msg, flags) {
         if (typeof msg !== "string") {
             this._log(3, "socket received message that isn't a string");
             this._log(3, msg);
@@ -536,351 +537,14 @@ class Plugged extends EventEmitter {
 
         const data = JSON.parse(msg)[0];
 
-        switch (data.a) {
-            case this.ACK: {
-                this.emit((data.p === "1" ? this.CONN_SUCCESS : this.CONN_ERROR));
-            }
-            break;
-
-            case this.ADVANCE: {
-                const previous = {
-                    historyID: this.state.room.playback.historyID,
-                    playlistID: this.state.room.playback.playlistID,
-                    media: this.state.room.playback.media,
-                    dj: this.getUserById(this.state.room.booth.dj, this.CACHE.ENABLED),
-                    score: {
-                        positive: 0,
-                        negative: 0,
-                        listeners: this.getUsers().length,
-                        skipped: 0,
-                        grabs: this.state.room.grabs.length
-                    }
-                };
-
-                for (let i = this.state.room.votes.length - 1; i >= 0; i--) {
-                    if (this.state.room.votes[i].direction > 0)
-                        previous.score.positive++;
-                    else
-                        previous.score.negative++;
-                }
-
-                this.state.room.booth.dj = data.p.c;
-                this.state.room.booth.waitlist = data.p.d;
-                this.state.room.grabs = [];
-                this.state.room.votes = [];
-
-                this.state.room.playback.media = mapper.mapMedia(data.p.m);
-                this.state.room.playback.historyID = data.p.h;
-                this.state.room.playback.playlistID = data.p.p;
-                this.state.room.playback.startTime = utils.convertPlugTimeToDate(data.p.t);
-
-                this.emit(this.ADVANCE, this.state.room.booth, this.state.room.playback, previous);
-            }
-            break;
-
-            case this.CHAT: {
-                const chat = mapper.mapChat(data.p);
-
-                if (this.ccache) {
-                    this.state.chatcache.push(chat);
-
-                    if (this.state.chatcache.length > this.chatcachesize)
-                        this.state.chatcache.shift();
-                }
-
-                if (chat.message.indexOf('@' + this.state.self.username) > -1)
-                    this.emit(this.CHAT_MENTION, chat);
-                else if (chat.message.charAt(0) == '/')
-                    this.emit(this.CHAT_COMMAND, chat);
-                else
-                    this.emit(this.CHAT, chat);
-            }
-            break;
-
-            case this.CHAT_DELETE: {
-                const chat = mapper.mapChatDelete(data.p);
-
-                if (this.ccache)
-                    this.removeChatMessage(chat.cid, true);
-
-                this.emit(this.CHAT_DELETE, chat);
-            }
-            break;
-
-            case this.NOTIFY:
-                this.emit(this.NOTIFY, mapper.mapNotify(data.p));
-                break;
-
-            case this.GIFTED: {
-                const gifted = mapper.mapGifted(data.p || {});
-                this.emit(this.GIFTED, gifted.sender, gifted.recipient);
-            }
-            break;
-
-            case this.PLAYLIST_CYCLE:
-                this.emit(this.PLAYLIST_CYCLE, mapper.mapPlaylistCycle(data.p));
-                break;
-
-            case this.DJ_LIST_CYCLE:
-                this.state.room.booth.shouldCycle = data.p.f;
-                this.emit(this.DJ_LIST_CYCLE, mapper.mapCycle(data.p));
-                break;
-
-            case this.DJ_LIST_LOCKED:
-                this.state.room.booth.isLocked = data.p.f;
-                this.emit(this.DJ_LIST_LOCKED, mapper.mapLock(data.p));
-                break;
-
-            case this.WAITLIST_UPDATE:
-                this.emit(this.WAITLIST_UPDATE, data.p);
-                this.state.room.booth.waitlist = data.p;
-                break;
-
-            case this.EARN:
-                this.state.self.xp = data.p.xp;
-                this.state.self.pp = data.p.pp;
-                this.state.self.level = data.p.level;
-                this.emit(this.EARN, mapper.mapXP(data.p));
-                break;
-
-            case this.LEVEL_UP:
-                this.state.self.level++;
-                this.emit(this.LEVEL_UP, mapper.mapLevelUp(data.p));
-                break;
-
-            case this.GRAB:
-                const uid = data.p || -1;
-
-                if (uid !== -1) {
-                    for (let i = 0, l = this.state.room.grabs.length; i < l; i++) {
-                        if (this.state.room.grabs[i] == uid)
-                            return;
-                    }
-
-                    this.state.room.grabs.push(uid);
-                }
-
-                this.emit(this.GRAB, uid);
-                break;
-
-            case this.MOD_BAN:
-                this.clearUserFromLists(data.p.i);
-                this.state.room.meta.population--;
-                this.emit(this.MOD_BAN, mapper.mapModBan(data.p));
-                break;
-
-            case this.MOD_WAITLIST_BAN:
-                this.emit(this.MOD_WAITLIST_BAN, mapper.mapModWaitlistBan(data.p));
-                break;
-
-            case this.MOD_MOVE_DJ:
-                this.emit(this.MOD_MOVE_DJ, mapper.mapModMove(data.p));
-                break;
-
-            case this.MOD_REMOVE_DJ:
-                this.emit(this.MOD_REMOVE_DJ, mapper.mapModRemove(data.p));
-                break;
-
-            case this.MOD_ADD_DJ:
-                this.emit(this.MOD_ADD_DJ, mapper.mapModAddDJ(data.p));
-                break;
-
-            case this.MOD_MUTE: {
-                if (!data)
-                    break;
-
-                const time = (data.p.d === this.MUTEDURATION.SHORT ?
-                    15*60 : data.p.d === this.MUTEDURATION.MEDIUM ?
-                    30*60 : data.p.d === this.MUTEDURATION.LONG ?
-                    45*60 : 15*60);
-                const mute = mapper.mapMute(data.p, time);
-
-                this.emit(this.MOD_MUTE, mute, (data.p.d ? data.p.d : this.MUTEDURATION.NONE));
-            }
-            break;
-
-            case this.MOD_STAFF: {
-                const promotions = mapper.mapPromotions(data.p);
-
-                if (promotions.length === 2) {
-                    const host = this.getUserById(this.getHostID());
-
-                    for (let i = promotions.length - 1; i >= 0; i--) {
-                        if (promotions[i].id == host.id) {
-                            host.role = promotions.splice(i, 1)[0].role;
-
-                            if (this.removeCachedUserById(host.id))
-                                this.cacheUser(host);
-
-                            this.state.room.meta.hostID = promotions[0].id;
-                            this.state.room.meta.hostName = promotions[0].username;
-
-                            break;
-                        }
-                    }
-                }
-
-                for (let i = this.state.room.users.length - 1; i >= 0; i--) {
-                    if (this.state.room.users[i].id == promotions[0].id) {
-                        this.state.room.users[i].role = promotions[0].role;
-
-                        if (this.removeCachedUserById(this.state.room.users[i].id))
-                            this.cacheUser(this.state.room.users[i]);
-
-                        break;
-                    }
-                }
-
-                this.emit(this.MOD_STAFF, promotions);
-            }
-            break;
-
-            case this.MOD_SKIP:
-                this.emit(this.MOD_SKIP, mapper.mapModSkip(data.p));
-                break;
-
-            case this.SKIP:
-                this.emit(this.SKIP, data.p);
-                break;
-
-            case this.ROOM_NAME_UPDATE:
-                this.state.room.meta.name = utils.decode(data.p.n);
-                this.emit(this.ROOM_NAME_UPDATE, mapper.mapRoomNameUpdate(data.p));
-                break;
-
-            case this.ROOM_DESCRIPTION_UPDATE:
-                this.state.room.meta.description = utils.decode(data.p.d);
-                this.emit(this.ROOM_DESCRIPTION_UPDATE, mapper.mapRoomDescriptionUpdate(data.p));
-                break;
-
-            case this.ROOM_WELCOME_UPDATE:
-                this.state.room.meta.welcome = utils.decode(data.p.w);
-                this.emit(this.ROOM_WELCOME_UPDATE, mapper.mapRoomWelcomeUpdate(data.p));
-                break;
-
-            case this.ROOM_MIN_CHAT_LEVEL_UPDATE:
-                this.emit(this.ROOM_MIN_CHAT_LEVEL_UPDATE, mapper.mapChatLevelUpdate(data.p));
-                break;
-
-            case this.USER_LEAVE: {
-                let user = undefined;
-
-                // it was just a guest leaving, nothing more to do here
-                if (data.p === 0) {
-                    this.state.room.meta.guests--;
-                    this.emit(this.GUEST_LEAVE);
-                    break;
-                }
-
-                this.state.room.meta.population--;
-
-                for (let i = this.state.room.users.length - 1; i >= 0; i--) {
-                    if (this.state.room.users[i].id == data.p) {
-                        this.clearUserFromLists(data.p);
-                        user = this.state.room.users.splice(i, 1)[0];
-
-                        if (this.sleave)
-                            this.cacheUser(user);
-
-                        break;
-                    }
-                }
-
-                this.emit(this.USER_LEAVE, user);
-            }
-            break;
-
-            case this.USER_JOIN: {
-                const user = mapper.mapUser(data.p);
-
-                if (user.guest) {
-                    this.state.room.meta.guests++;
-
-                    this.emit(this.GUEST_JOIN);
-                } else {
-                    this.state.room.users.push(user);
-                    this.state.room.meta.population++;
-
-                    if (this.isFriend(user.id))
-                        this.emit(this.FRIEND_JOIN, user);
-                    else
-                        this.emit(this.USER_JOIN, user);
-                }
-            }
-            break;
-
-            case this.USER_UPDATE:
-                this.emit(this.USER_UPDATE, mapper.mapUserUpdate(data.p));
-                break;
-
-            case this.FRIEND_REQUEST: {
-                this.emit(this.FRIEND_REQUEST, utils.decode(data.p));
-            }
-            break;
-
-            case this.FRIEND_ACCEPT: {
-                this.emit(this.FRIEND_ACCEPT, utils.decode(data.p));
-            }
-            break;
-
-            case this.VOTE: {
-                const vote = mapper.pushVote(data.p);
-                if (!this._checkForPreviousVote(vote))
-                    this.emit(this.VOTE, vote);
-            }
-            break;
-
-            case this.CHAT_RATE_LIMIT:
-                this.emit(this.CHAT_RATE_LIMIT);
-                break;
-
-            case this.FLOOD_API:
-                this.emit(this.FLOOD_API);
-                break;
-
-            case this.FLOOD_CHAT:
-                this.emit(this.FLOOD_CHAT);
-                break;
-
-            case this.KILL_SESSION:
-                this.emit(this.KILL_SESSION, data.p);
-                break;
-
-            case this.PLUG_UPDATE:
-                this.emit(this.PLUG_UPDATE);
-                break;
-
-            case this.PLUG_MESSAGE:
-                this.emit(this.PLUG_MESSAGE, utils.decode(data.p));
-                break;
-
-            case this.MAINTENANCE_MODE:
-                this.emit(this.MAINTENANCE_MODE);
-                break;
-
-            case this.MAINTENANCE_MODE_ALERT:
-                this.emit(this.MAINTENANCE_MODE_ALERT);
-                break;
-
-            case this.BAN_IP:
-                this.emit(this.BAN_IP);
-                break;
-
-            case this.BAN:
-                this.emit(this.BAN, mapper.mapOwnBan(data.p));
-                break;
-
-            case this.NAME_CHANGED:
-                this.emit(this.NAME_CHANGED);
-                break;
-
-            default:
-                this._log(
-                    0,
-                    "An unknown action appeared!\nPlease report this to https://www.github.com/SooYou/plugged\nit's super effective!"
-                );
-                this._log(0, data);
-                break;
+        if (events.hasOwnProperty(data.a)) {
+            events[data.a].call(this, data);
+        } else {
+            this._log(
+                0,
+                "An unknown action appeared!\nPlease report this to https://www.github.com/SooYou/plugged\nit's super effective!"
+            );
+            this._log(0, data);
         }
     }
 
