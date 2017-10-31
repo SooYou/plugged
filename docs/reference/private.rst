@@ -237,6 +237,26 @@ _removeChatMessageByDelay
       :dt:`undefined`
 
 
+_removeChatMessage
+#########################
+
+   Delete a chat message. This is the core function of all chat deletion methods.
+   It takes a function (comparator) which decides whether a message should be deleted or
+   not.
+
+   **Parameters**:
+
+      * **compare**: :dt:`Function` comparing function to decide whether a message should
+      be deleted. The passed argument is the chat message object
+      * **cacheOnly**: :dt:`Boolean` if the message should only be deleted in cache
+      * **count**: :dt:`Number` how many messages should be removed before the function
+      quits. If not set, it will run through the whole chat cache.
+
+   **Return Value**:
+
+      :dt:`Number` amount of messages deleted
+
+
 _sendMessage
 ############
 

@@ -505,8 +505,7 @@ const createState = function(data = {}) {
     return {
         self: mapSelf(data.self),
         room: mapRoom(data.room),
-        usercache: data.usercache || [],
-        chatcache: data.chatcache || []
+        usercache: data.usercache || []
     };
 };
 

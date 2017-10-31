@@ -88,18 +88,22 @@ class Plugged extends EventEmitter {
         this._keepAlive = this._keepAlive.bind(this);
         this.state = mapper.createState(options.state);
         this.query = new Query();
-        this.chatQueue = [];
-        this.chatTimeout = 0;
+        this.chat = {
+            queue: [],
+            deletionQueue: [],
+            cache: [],
+            cacheSize: 256,
+            cached: false,
+            timeout: 0,
+        };
         this.verbosity = options.verbosity || 0;
         this.cleanCacheInterval = -1;
-        this.chatcachesize = 256;
         this.heartbeatRate = 20;
         this.lastHeartbeat = 0;
         this.keepAliveID = -1;
         this.sock = null;
         this.auth = null;
         this.sleave = false;                    /* userleave cache toggle */
-        this.ccache = false;                    /* chatcache toggle */
 
         this.BANREASON = {
             VIOLATING_COMMUNITY_RULES:  1,
@@ -316,12 +320,23 @@ class Plugged extends EventEmitter {
      * @param {number=} lastMessage UNIX time stamp in ms when the last message was sent
      */
     _processChatQueue(lastMessage = 0) {
-        if (this.chatQueue.length > 0) {
-            if (lastMessage + this.chatTimeout <= Date.now()) {
-                const msg = this.chatQueue.shift();
+        if (this.chat.queue.length > 0) {
+            if (lastMessage + this.chat.timeout <= Date.now()) {
+                const msg = this.chat.queue.shift();
+
+                if (msg.deleteTimeout > 0) {
+                    this.chat.deletionQueue.push({
+                        msg: msg.message,
+                        cid: -1
+                    });
+                }
+
                 if (!this._sendMessage("chat", msg.message)) {
-                    this.chatQueue.unshift(msg);
+                    this.chat.queue.unshift(msg);
                     this._log(1, "message was put back into the queue");
+
+                    if (msg.deleteTimeout > 0)
+                        this.chat.deletionQueue.pop();
 
                     return;
                 } else {
@@ -333,14 +348,14 @@ class Plugged extends EventEmitter {
                         );
                     }
 
-                    if (this.chatTimeout < CHAT_TIMEOUT_MAX)
-                        this.chatTimeout += CHAT_TIMEOUT_INC;
+                    if (this.chat.timeout < CHAT_TIMEOUT_MAX)
+                        this.chat.timeout += CHAT_TIMEOUT_INC;
                 }
             }
 
-            setTimeout(this._processChatQueue.bind(this), this.chatTimeout, Date.now());
+            setTimeout(this._processChatQueue.bind(this), this.chat.timeout, Date.now());
         } else {
-            this.chatTimeout = 0;
+            this.chat.timeout = 0;
         }
     }
 
@@ -351,19 +366,56 @@ class Plugged extends EventEmitter {
     _removeChatMessageByDelay(message) {
         if (typeof message !== "string") {
             this._log(2, `message \"${message}\" is not of type string`);
-
             return;
         }
 
-        for (let i = this.state.chatcache.length - 1; i >= 0; i--) {
-            if (this.state.chatcache[i].username !== this.state.self.username)
-                continue;
+        let deleted = this._removeChatMessage(msg => {
+            return msg.message === message;
+        }, false, 1);
 
-            if (this.state.chatcache[i].message === message) {
-                this.removeChatMessage(this.state.chatcache[i].cid);
-                break;
+        if (deleted > 0)
+            this._log(1, `delayed deletion of message \"${message}\"`);
+        else
+            this._log(1, `could not delete message \"${message}\"`);
+    }
+
+    /**
+     * @describe deletes chat messages biased on a compare function
+     * @param {function} compare returns cid of message to be deleted
+     * @param {string} identifier data to use for compare
+     * @param {boolean} cacheOnly [cacheOnly=false] clears only the cache when true
+     * @param {number=} count how many messages it should remove
+     * @returns {number} the amount of deleted messages
+     */
+    _removeChatMessage(compare, cacheOnly = false, count = -1) {
+        if (cacheOnly === this.CACHE.ONLY && !this.chat.cached) {
+            this._log(1, "cache only does only work with enabled chat cache");
+            return 0;
+        }
+
+        if (typeof compare !== "function") {
+            this._log(1, "compare parameter has to be of type function");
+            return 0;
+        }
+
+        let deletedMessages = 0;
+        let cid = null;
+
+        for (let i = this.chat.cache.length - 1; i >= 0; i--) {
+            cid = compare(this.chat.cache[i]);
+
+            if (cid) {
+                this.deleteMessage();
+                deletedMessages++;
+
+                // boolean comparison ends early when count is -1
+                // so it could be flatted to one if branch
+                if (count > -1 && (--count) == 0)
+                    break;
             }
         }
+
+        return deletedMessages;
     }
 
     /**
@@ -559,14 +611,14 @@ class Plugged extends EventEmitter {
      * @description clears the log
      */
     clearChatCache() {
-        this.state.chatcache = [];
+        this.chat.cache = [];
     }
 
     /**
      * @description clears the queue
      */
     clearChatQueue() {
-        this.chatQueue = [];
+        this.chat.queue = [];
     }
 
     /**
@@ -576,12 +628,17 @@ class Plugged extends EventEmitter {
      * @returns {string[]} list of all their messages
      */
     getChatByUsername(username) {
+        if (!this.chat.cached) {
+            this._log(1, "chat is not cached, nothing found!");
+            return [];
+        }
+
         const messages = [];
         username = username.toLowerCase();
 
-        for (let i = this.state.chatcache.length - 1; i >= 0; i--) {
-            if (this.state.chatcache[i].username.toLowerCase() === username)
-                messages.push(this.state.chatcache[i]);
+        for (let i = this.chat.cache.length - 1; i >= 0; i--) {
+            if (this.chat.cache[i].username.toLowerCase() === username)
+                messages.push(this.chat.cache[i]);
         }
 
         return messages;
@@ -592,42 +649,61 @@ class Plugged extends EventEmitter {
      * @returns {string[]} time sorted array of all chat messages
      */
     getChat() {
-        return this.state.chatcache;
+        return this.chat.cache;
     }
 
     /**
      * @description removes all messages of a user
      * @param {string} username name of a user
      * @param {boolean} [cacheOnly=false] clears only the cache when true
+     * @returns {boolean} true when messages have been deleted, false if none were found
      */
     removeChatMessagesByUser(username, cacheOnly = false) {
+        if (!username) {
+            this._log(1, "username has to be defined");
+            return false;
+        }
+
+        if (typeof username !== "string") {
+            this._log(1, "username needs to be a string");
+            return false;
+        }
+
         username = username.toLowerCase();
 
-        for (let i = this.state.chatcache.length - 1; i >= 0; i--) {
-            if (this.state.chatcache[i].username.toLowerCase() === username) {
-                if (!cacheOnly)
-                    this.deleteMessage(this.state.chatcache[i].cid);
+        let deletedMessages = this._removeChatMessage(msg => {
+            return msg.username.toLowerCase() === username;
+        }, cacheOnly);
 
-                this.state.chatcache.splice(i, 1);
-            }
-        }
+        this._log(3, `deleted ${deletedMessages} messages from user ${username}`);
+
+        return deletedMessages > 0 ? true : false;
     }
 
     /**
      * @description removes a message
      * @param {string} cid unique message ID
      * @param {boolean} [cacheOnly=false] clears only the log when true
+     * @returns {boolean} true when messages have been deleted, false if none were found
      */
     removeChatMessage(cid, cacheOnly = false) {
-        for (let i = this.state.chatcache.length - 1; i >= 0; i--) {
-            if (this.state.chatcache[i].cid === cid) {
-                if (!cacheOnly)
-                    this.deleteMessage(this.state.chatcache[i].cid);
-
-                this.state.chatcache.splice(i, 1);
-                break;
-            }
+        if (!cid) {
+            this._log(1, "chat id has to be defined");
+            return false;
         }
+
+        if (typeof cid !== "string") {
+            this._log(1, "chat id has to be of type string");
+            return false;
+        }
+
+        let deletedMessages = this._removeChatMessage(msg => {
+            return msg.cid === cid;
+        }, cacheOnly, 1);
+
+        this._log(3, `deleted ${deletedMessages} messages from user ${username}`);
+
+        return deletedMessages > 0 ? true : false;
     }
 
     /**
@@ -651,7 +727,7 @@ class Plugged extends EventEmitter {
      * @param {boolean} enable
      */
     cacheChat(enable) {
-        return (this.ccache = enable);
+        return (this.chat.cache = enable);
     }
 
     /**
@@ -659,7 +735,7 @@ class Plugged extends EventEmitter {
      * @returns {boolean} indicating status
      */
     isChatCached() {
-        return this.ccache;
+        return this.chat.cache;
     }
 
     /**
@@ -669,16 +745,16 @@ class Plugged extends EventEmitter {
      */
     setChatCacheSize(size) {
         if (typeof size === "number" && size >= 0)
-            return this.chatcachesize = size;
+            return this.chat.cacheSize = size;
         else
-            return this.chatcachesize;
+            return this.chat.cacheSize;
     }
 
     /**
      * @returns the chat cache size
      */
     getChatCacheSize() {
-        return this.chatcachesize;
+        return this.chat.cacheSize;
     }
 
     /**
@@ -803,7 +879,8 @@ class Plugged extends EventEmitter {
     /**
      * @description sends a chat message
      * @param {string} message message to send
-     * @param {number=} deleteTimeout delay in ms until message is deleted
+     * @param {number=} deleteTimeout delay in ms until message is deleted.
+     * NOTE: a delay above 2 seconds is recommended.
      * @throws {Error} message must be of type string
      * @throws {Error} deleteTimeout must be of type number
      * @throws {Error} message processor must return an array of strings
@@ -827,13 +904,13 @@ class Plugged extends EventEmitter {
             throw new Error("messageprocessor does not return an array of strings!");
 
         for (let i = 0, l = message.length; i < l; i++) {
-            this.chatQueue.push({
+            this.chat.queue.push({
                 message: message[i],
                 timeout: deleteTimeout
             });
         }
 
-        if (this.chatTimeout === 0)
+        if (this.chat.timeout === 0)
             this._processChatQueue();
 
         return message;

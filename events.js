@@ -51,11 +51,22 @@ const banIP = function(data) {
 const chat = function(data) {
     const chat = mapper.mapChat(data.p);
 
-    if (this.ccache) {
-        this.state.chatcache.push(chat);
+    if (this.chat.cached) {
+        this.chat.cache.push(chat);
 
-        if (this.state.chatcache.length > this.chatcachesize)
-            this.state.chatcache.shift();
+        if (this.chat.cache.length > this.chat.cacheSize)
+            this.chat.cache.shift();
+    }
+
+    const deletionQueueLength = this.chat.deletionQueue.length;
+
+    if (deletionQueueLength > 0) {
+        for (let i = deletionQueueLength; i >= 0; i--) {
+            if (this.chat.deletionQueue[i].msg === chat.message) {
+                this.chat.deletionQueue[i].cid = chat.cid;
+                break;
+            }
+        }
     }
 
     if (chat.message.indexOf('@' + this.state.self.username) > -1)
@@ -69,7 +80,7 @@ const chat = function(data) {
 const chatDelete = function(data) {
     const chat = mapper.mapChatDelete(data.p);
 
-    if (this.ccache)
+    if (this.chat.cached)
         this.removeChatMessage(chat.cid, true);
 
     this.emit(this.CHAT_DELETE, chat);

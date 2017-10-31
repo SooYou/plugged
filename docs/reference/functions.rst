@@ -81,8 +81,8 @@ Functions
    * getVotes_.
    * getGrabs_.
    * cacheUser_.
-   * removeCachedUserByID_.
-   * removeCachedUserByName_.
+   * removeCachedUserById_.
+   * removeCachedUserByUsername_.
    * getStaffOnline_.
    * getStaffOnlineByRole_.
    * getStaffByRole_.
@@ -157,7 +157,7 @@ Functions
    * meh_.
    * favoriteRoom_.
    * deleteNotification_.
-   * removeFriends_.
+   * removeFriend_.
    * getInventory_.
    * getProducts_.
    * getTransactions_.
@@ -1093,7 +1093,7 @@ cacheUser
       :dt:`Boolean` true when saved.
 
 
-removeCachedUserByID
+removeCachedUserById
 ####################
 
    Removes a User from cache.
@@ -1107,7 +1107,7 @@ removeCachedUserByID
       :dt:`Boolean` true when the user was found and removed.
 
 
-removeCachedUserByName
+removeCachedUserByUsername
 ######################
 
    Removes a User from cache.
@@ -2555,7 +2555,7 @@ favoriteRoom
       * :dt:`undefined`
 
 
-removeFriends
+removeFriend
 #############
 
    Removes a user as a friend.
@@ -2626,7 +2626,7 @@ removeChatMessage
 
    **Return Value**:
 
-      :dt:`undefined`
+      :dt:`Boolean` whether the message was deleted
 
 
 removeChatMessageByUser
@@ -2641,7 +2641,7 @@ removeChatMessageByUser
 
    **Return Value**:
 
-      :dt:`undefined`
+      :dt:`Boolean` whether the messages were deleted
 
 
 watchUserCache
