@@ -20,6 +20,9 @@ CHANGELOG
     * refactored login
     * refactored keepAlive as well to better suit everyone's needs
     * refactored log
+    * refactored _wsaprocessor and renamed to _eventProcessor
+    * refactored chat into an object
+    * refactored the removeChatMessage* functions
 
     + a new documentation (This should solve a lot of starter issues)
     + the previous model was added into the documentation
@@ -32,8 +35,13 @@ CHANGELOG
     + added getVerbosity function in action of refactoring log
     + added waitlistBan event
     + added sendSOS method
+    + added _removeChatMessage
+    + added setMaxTimeout
+    + added getMaxTimeout
+    + added _clearHeartbeat
 
     - removed logger from the package since it served its purpose
     - removed JOINED_ROOM and PLUG_ERROR were removed, you have to use a callback now
     - removed LOGIN_SUCCESSFULL, LOGOUT_SUCCESSFULL, LOGIN_ERROR and LOGOUT_ERROR
     - removed the previous waitlist from the waitlist event
+    - removed insertMedia function

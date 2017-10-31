@@ -42,6 +42,8 @@ Functions
    * getJar_.
    * setHeartbeatRate_.
    * getHeartbeatRate_.
+   * setMaxTimeout_.
+   * getMaxTimeout_.
    * defaultMessageProc_.
    * setMessageProcessor_.
    * sendChat_.
@@ -472,6 +474,34 @@ getHeartbeatRate
    **Return Value**:
 
       :dt:`Number` time in between heartbeats in seconds.
+
+
+setMaxTimeout
+################
+
+   Sets the maximum connection timeout in seconds.
+
+   **Parameters**:
+
+      :dt:`Number` time until the connection is lost.
+
+   **Return Value**:
+
+      :dt:`undefined`
+
+
+getMaxTimeout
+################
+
+   Gets the maximum connection timeout in seconds.
+
+   **Parameters**:
+
+      :dt:`undefined`
+
+   **Return Value**:
+
+      :dt:`Number` time until the connection is lost in seconds.
 
 
 defaultMessageProc

@@ -96,11 +96,14 @@ class Plugged extends EventEmitter {
             cached: false,
             timeout: 0,
         };
+        this.heartbeat = {
+            rate: 20,
+            timeout: 60,
+            last: 0,
+            id: -1
+        };
         this.verbosity = options.verbosity || 0;
         this.cleanCacheInterval = -1;
-        this.heartbeatRate = 20;
-        this.lastHeartbeat = 0;
-        this.keepAliveID = -1;
         this.sock = null;
         this.auth = null;
         this.sleave = false;                    /* userleave cache toggle */
@@ -269,20 +272,19 @@ class Plugged extends EventEmitter {
      * This will happen 3 times before the CONN_PART event will be fired
      */
     _keepAlive() {
-        const repeat = 4;
-        if (Date.now() - this.lastHeartbeat >= this.heartbeatRate * 1000 * repeat) {
+        if (Date.now() - this.heartbeat.last >= this.heartbeat.timeout * 1000) {
             // TODO: change style of messages
-            this._log(1, `haven't received a heartbeat from host for more than ${this.heartbeatRate * repeat} seconds, is it on fire?`);
+            this._log(1, `haven't received a heartbeat from host for more than ${this.heartbeat.timeout} seconds, is it on fire?`);
             // save meta information of the room since clearState erases all data
             const meta = this.getRoomMeta();
             this._clearState();
             this.emit(this.CONN_PART, meta);
         } else {
-            clearTimeout(this.keepAliveID);
-            this.keepAliveID = setTimeout(this._keepAlive, this.heartbeatRate * 1000);
+            clearTimeout(this.heartbeat.id);
+            this.heartbeat.id = setTimeout(this._keepAlive, this.heartbeat.rate * 1000);
 
-            if (Date.now() - this.lastHeartbeat >= this.heartbeatRate * 1000)
-                this.emit(this.CONN_WARNING, (Date.now() - this.lastHeartbeat) / 1000);
+            if (Date.now() - this.heartbeat.last >= this.heartbeat.rate * 1000)
+                this.emit(this.CONN_WARNING, (Date.now() - this.heartbeat.last) / 1000);
         }
     }
 
@@ -290,9 +292,9 @@ class Plugged extends EventEmitter {
      * @description updates the heartbeat
      */
     _heartbeat() {
-        this.lastHeartbeat = Date.now();
-        clearTimeout(this.keepAliveID);
-        this.keepAliveID = setTimeout(this._keepAlive, this.heartbeatRate * 1000);
+        this.heartbeat.last = Date.now();
+        clearTimeout(this.heartbeat.id);
+        this.heartbeat.id = setTimeout(this._keepAlive, this.heartbeat.rate * 1000);
     }
 
     /**
@@ -449,18 +451,26 @@ class Plugged extends EventEmitter {
         this.clearUserCache();
         this.clearChatQueue();
         this.clearChatCache();
+        this._clearHeartbeat();
         this.query.flushQueue();
         this.state = mapper.createState();
-
-        clearTimeout(this.keepAliveID);
-        this.keepAliveID = -1;
 
         this.sock.close();
         this.sock.removeAllListeners();
 
         this.sock = null;
         this.auth = null;
-        this.lastHeartbeat = 0;
+    }
+
+    /**
+     * @description clears the heartbeat state
+     */
+    _clearHeartbeat() {
+        if (this.heartbeat.id !== -1)
+            clearTimeout(this.heartbeat.id);
+
+        this.heartbeat.id = -1;
+        this.heartbeat.last = 0;
     }
 
     /**
@@ -550,10 +560,7 @@ class Plugged extends EventEmitter {
         this.sock.on("close", () => {
             this._log(3, "sock closed");
             // make sure to clean up if the socket has been closed forcibly
-            if (this.lastHeartbeat - Date.now() < this.heartbeatRate * 4 && this.keepAliveID !== -1) {
-                this.lastHeartbeat = 0;
-                this._keepAlive();
-            }
+            this._clearHeartbeat();
 
             this._log(3, "sock closed");
             this.emit(this.SOCK_CLOSED);
@@ -834,7 +841,7 @@ class Plugged extends EventEmitter {
         if (time <= 0)
             throw new Error("time has to be greater zero");
 
-        this.heartbeatRate = time;
+        this.heartbeat.rate = time;
     }
 
     /**
@@ -842,7 +849,31 @@ class Plugged extends EventEmitter {
      * @returns {number} time in between heartbeats in seconds
      */
     getHeartbeatRate() {
-        return this.heartbeatRate;
+        return this.heartbeat.rate;
+    }
+
+    /**
+     * @description sets the maximum connection timeout
+     * @param {number} time until connection is lost
+     * @throws {Error} if time is not of type number
+     * @throws {Error} if number is not greater than zero
+     */
+    setMaxTimeout(time) {
+        if (typeof time !== "number")
+            throw new Error("time has to be of type number");
+
+        if (time <= 0)
+            throw new Error("time has to be greater zero");
+
+        this.heartbeat.timeout = time;
+    }
+
+    /**
+     * @description gets the maximum time until the connection is lost
+     * @returns {number} maximum time until the connection is lost in seconds
+     */
+    getMaxTimeout() {
+        return this.heartbeat.timeout;
     }
 
     /**

@@ -43,6 +43,20 @@ _clearState
       :dt:`undefined`
 
 
+_clearHeartbeat
+###########
+
+   Resets the heartbeat state.
+
+   **Parameters**:
+
+      * :dt:`undefined`
+
+   **Return Value**:
+
+      :dt:`undefined`
+
+
 _cleanUserCache
 ###############
 
