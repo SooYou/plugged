@@ -3,7 +3,7 @@ const types = require("./types");
 const util = require("util");
 
 const QUERY_TIMEOUT_INC = 200;
-const QUERY_TIMEOUT_MAX = 2200;
+const QUERY_TIMEOUT_MAX = 1600;
 
 const processEntry = function(query, entry) {
     request(entry.options, (err, res, body) => {
@@ -74,6 +74,7 @@ class Query {
         this.jar = null;
         this.queue = [];
         this.offset = 0;
+        this.id = -1;
         this.encoding = "utf8";
         this.accept = "application/json, text/javascript; q=0.1, */*; q=0.5";
         this.contentType = "application/json";
@@ -88,6 +89,9 @@ class Query {
      * @param {int} lastRequest - time since last request
      */
     _process(lastRequest = 0) {
+        if (this.id !== -1)
+            return;
+
         if (this.queue.length > 0) {
             if (lastRequest + this.offset <= Date.now()) {
                 processEntry(this, this.queue.shift());
@@ -98,7 +102,14 @@ class Query {
 
             setTimeout(this._process, this.offset, Date.now());
         } else {
-            this.offset = 0;
+            this.id = setTimeout(() => {
+                this.id = -1;
+
+                if (this.queue.length > 0)
+                    this._process();
+                else
+                    this.offset = 0;
+            }, 400);
         }
     }
 
