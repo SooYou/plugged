@@ -71,16 +71,17 @@ class Query {
      * Create a new instance of Query
      */
     constructor() {
-        this.jar = null;
+        this.options = {
+            jar: null,
+            json: true,
+            encoding: "utf8",
+            contentType: "application/json",
+            accept: "application/json, text/javascript; q=0.1, */*; q=0.5"
+        };
         this.queue = [];
         this.offset = 0;
         this.id = -1;
-        this.encoding = "utf8";
-        this.accept = "application/json, text/javascript; q=0.1, */*; q=0.5";
-        this.contentType = "application/json";
-        this.json = true;
         this._process = this._process.bind(this);
-
     }
 
     /**
@@ -118,14 +119,14 @@ class Query {
      * @param {string} type - determines the encoding type to be used. Defaults to "utf8"
      */
     setEncoding(type = "utf8") {
-        this.encoding = type;
+        this.options.encoding = type;
     }
 
     /**
      * @returns {string} returns the current encoding settings
      */
     getEncoding() {
-        return this.encoding;
+        return this.options.encoding;
     }
 
     /**
@@ -134,43 +135,43 @@ class Query {
      * @param {object} storage - allows for a custom cookie store to be used like FileCookieStore
      */
     setJar(jar, storage = null) {
-        this.jar = jar || request.jar(storage);
+        this.options.jar = jar || request.jar(storage);
     }
 
     /**
      * @returns {object} jar - the currently used jar
      */
     getJar() {
-        return this.jar;
+        return this.options.jar;
     }
 
     /**
      * @param {string} accept data type for response to accept
      */
     setAccept(accept) {
-        this.accept = accept;
+        this.options.accept = accept;
     }
 
     /**
      * @returns {string} data type for response to accept
      */
     getAccept() {
-        return this.accept;
+        return this.options.accept;
     }
 
     /**
      * @param {string} type of content to accept
      */
     setContentType(type) {
-        this.json = type.includes("application/json");
-        this.contentType = type;
+        this.options.json = type.includes("application/json");
+        this.options.contentType = type;
     }
 
     /**
      * @returns {string} type of content to accept
      */
     getContentType() {
-        return this.contentType;
+        return this.options.contentType;
     }
 
     /**
@@ -203,14 +204,14 @@ class Query {
             options: {
                 url: url,
                 method: verb,
-                jar: this.jar,
-                encoding: this.encoding,
+                jar: this.options.jar,
+                encoding: this.options.encoding,
                 body: data,
-                json: this.json,
+                json: this.options.json,
                 headers: {
                     "User-Agent": "Plugged/3.0",
-                    "Accept": this.accept,
-                    "Content-Type": this.contentType
+                    "Accept": this.options.accept,
+                    "Content-Type": this.options.contentType
                 }
             }
         };
