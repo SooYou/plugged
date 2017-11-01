@@ -86,7 +86,7 @@ class Query {
     /**
      * process the next entry in the queue
      * @private
-     * @param {int} lastRequest - time since last request
+     * @param {number} lastRequest - time since last request
      */
     _process(lastRequest = 0) {
         if (this.id !== -1)
