@@ -23,6 +23,9 @@ CHANGELOG
     * refactored _wsaprocessor and renamed to _eventProcessor
     * refactored chat into an object
     * refactored the removeChatMessage* functions
+    * refactored query to hold all options in an object
+    * refactored chat to hold all related data in an object
+    * fixed timing bug with query and chat
 
     + a new documentation (This should solve a lot of starter issues)
     + the previous model was added into the documentation
