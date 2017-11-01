@@ -95,6 +95,7 @@ class Plugged extends EventEmitter {
             cacheSize: 256,
             cached: false,
             timeout: 0,
+            id: -1
         };
         this.heartbeat = {
             rate: 20,
@@ -322,6 +323,9 @@ class Plugged extends EventEmitter {
      * @param {number=} lastMessage UNIX time stamp in ms when the last message was sent
      */
     _processChatQueue(lastMessage = 0) {
+        if (this.chat.id !== -1)
+            return;
+
         if (this.chat.queue.length > 0) {
             if (lastMessage + this.chat.timeout <= Date.now()) {
                 const msg = this.chat.queue.shift();
@@ -357,7 +361,14 @@ class Plugged extends EventEmitter {
 
             setTimeout(this._processChatQueue.bind(this), this.chat.timeout, Date.now());
         } else {
-            this.chat.timeout = 0;
+            this.chat.id = setTimeout(() => {
+                this.chat.id = -1;
+
+                if (this.chat.queue.length > 0)
+                    this._processChatQueue();
+                else
+                    this.chat.timeout = 0;
+            }, 200);
         }
     }
 
