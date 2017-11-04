@@ -1557,7 +1557,7 @@ class Plugged extends EventEmitter {
 
     /**
      * @description gets staff online
-     * @returns {object[]} staff currently online
+     * @returns {object[]} staff currently online, see user object
      */
     getStaffOnline() {
         const staff = [];
@@ -1570,11 +1570,10 @@ class Plugged extends EventEmitter {
         return staff;
     }
 
-    // TODO: same as above
     /**
      * @description gets staff by role
      * @param {enum} role staff by role
-     * @returns {object[]} staff currently online with role specified
+     * @returns {object[]} staff currently online with role specified, see user object
      */
     getStaffOnlineByRole(role) {
         const staff = [];
