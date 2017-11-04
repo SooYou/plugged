@@ -1125,6 +1125,7 @@ class Plugged extends EventEmitter {
             return this.guest(slug, callback);
         }
 
+        // TODO: clean up callback
         this.joinRoom(slug, function _joinedRoom(err) {
             if (!err) {
                 this.getRoomStats(function(err, stats) {
@@ -1136,7 +1137,7 @@ class Plugged extends EventEmitter {
                         this.clearChatCache();
                         this.query.flushQueue();
 
-                        this.state.room = mapper.mapRoom(stats);
+                        this.state.room = stats;
                         this.state.self.role = stats.role;
                         callback(null, this.state.room);
                     } else {
@@ -1208,7 +1209,6 @@ class Plugged extends EventEmitter {
         return null;
     }
 
-    // TODO: decide if it is really a good idea to return undefined here
     /**
      * @description gets user by role
      * @param {number} ID user ID
@@ -1231,16 +1231,15 @@ class Plugged extends EventEmitter {
         return this.state.room.users;
     }
 
-    // TODO: add further explanation
     /**
-     * @description gets account object
+     * @description gets account object. For further information,
+     * see Self object in documentation
      * @returns {object} account
      */
     getSelf() {
         return this.state.self;
     }
 
-    // TODO: might as well remove the boolean return value
     /**
      * @description sets a personal setting
      * @param {string} key setting name
@@ -1467,7 +1466,6 @@ class Plugged extends EventEmitter {
         return this.state.room.booth.shouldCycle;
     }
 
-    // TODO: rename withUserObject, it sounds just plain stupid
     /**
      * @description gets all votes
      * @param {boolean} withUserObject replaces IDs with User objects
@@ -1557,7 +1555,6 @@ class Plugged extends EventEmitter {
         return false;
     }
 
-    // TODO: check if user object or IDs
     /**
      * @description gets staff online
      * @returns {object[]} staff currently online
