@@ -110,7 +110,7 @@ const mapUser = function(data = {}) {
     };
 };
 
-const mapUsers = function(data = {}) {
+const mapUsers = function(data = []) {
     const arr = [];
 
     for(let i = data.length-1; i >= 0; i--)
