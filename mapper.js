@@ -319,15 +319,10 @@ const mapTransaction = function(data = {}) {
     };
 };
 
-const mapExtendedRoom = function(data = {}) {
+const mapFlatRoom = function(data = {}) {
     return {
         cid: data.cid || "",
-        dj: (typeof data.dj === "string" ?
-                utils.decode(data.dj) :
-                    typeof data.dj === "object" ?
-                    mapUser(data.dj) :
-                    ""
-            ),
+        dj: utils.decode(data.dj) || "",
         favorite: data.favorite || false,
         format: parseInt(data.format, 10) || 1,
         guests: data.guests || 0,
@@ -569,7 +564,7 @@ exports.mapPromotions = mapPromotions;
 exports.mapModRemove = mapModRemove;
 exports.mapUserUpdate = mapUserUpdate;
 exports.mapChatDelete = mapChatDelete;
-exports.mapExtendedRoom = mapExtendedRoom;
+exports.mapFlatRoom = mapFlatRoom;
 exports.mapHistoryEntry = mapHistoryEntry;
 exports.mapPlaylistCycle = mapPlaylistCycle;
 exports.mapFriendRequest = mapFriendRequest;
