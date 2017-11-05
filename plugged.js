@@ -1667,7 +1667,7 @@ class Plugged extends EventEmitter {
         callback = (typeof callback === "function" ? callback.bind(this) : undefined);
         this.query.query("GET", endpoints["ROOMS"] + `?q=${query}&page=${page}&limit=${limit}`, function _sanitizeRooms(err, rooms) {
             callback && callback(err, (!err && rooms ? rooms.map(function(room) {
-                return mapper.mapExtendedRoom(room);
+                return mapper.mapFlatRoom(room);
             }) : []));
         });
     }
@@ -2491,9 +2491,8 @@ class Plugged extends EventEmitter {
         callback = (typeof callback === "function" ? callback.bind(this) : undefined);
         this.query.query("GET", endpoints["FAVORITEROOM"], function(err, rooms) {
             if (!err) {
-                // TODO: figure out what I meant back in the days.
                 callback && callback(err, (!err && rooms ? rooms.map(function(room) {
-                    return mapper.mapExtendedRoom(room);
+                    return mapper.mapFlatRoom(room);
                 }) : []));
             } else {
                 callback && callback(err);
