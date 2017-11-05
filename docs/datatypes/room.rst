@@ -26,7 +26,6 @@ Model
       "booth": Booth,
       "grabs": [],
       "meta": Meta,
-      "mutes": [],
       "playback": Playback,
       "role": -1,
       "users": [],
@@ -39,7 +38,7 @@ Detail
 
 **booth**
    Booth of the room.
-   
+
    **Type**: :doc:`Booth</datatypes/booth>` |br|
    **Default Value**: ``see Booth model``
 
@@ -56,26 +55,18 @@ Detail
 
    **Type**: :dt:`[Number]` |br|
    **Default Value**: ``[]``
-   
+
 
 **meta**
    Metadata of room.
-   
+
    **Type**: :doc:`Meta</datatypes/meta>` |br|
    **Default Value**: ``see Meta model``
 
 
-**mutes**
-   All users that are currently muted.
-   String being the user ID and Number the time in seconds.
-
-   **Type**: :doc:`[Mute]</datatypes/mute>` |br|
-   **Default Value**: ``[]``
-
-
 **meta**
    Playback info of room.
-   
+
    **Type**: :doc:`Playback</datatypes/playback>` |br|
    **Default Value**: ``see Playback model``
 
@@ -89,7 +80,7 @@ Detail
 
 **users**
    List of all listeners.
-   
+
    **Type**: :doc:`[User]</datatypes/user>` |br|
    **Default Value**: ``[]``
 
@@ -102,7 +93,7 @@ Detail
 
       The vote is represent by two numbers, -1 and 1, with 1 being woot and -1
       meh
-   
-   
+
+
    **Type**: :doc:`[Vote]</datatypes/vote>` |br|
    **Default Value**: ``[]``
