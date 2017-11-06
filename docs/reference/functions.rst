@@ -220,7 +220,7 @@ deleteNotification
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -266,7 +266,7 @@ getInventory
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **inventory**: :doc:`[Inventory]</datatypes/inventory>`
 
    **Return Value**:
@@ -287,7 +287,7 @@ getProducts
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **products**: :doc:`[Product]</datatypes/product>`
 
    **Return Value**:
@@ -306,7 +306,7 @@ getTransactions
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **transactions**: :doc:`[Transaction]</datatypes/transaction>`
 
    **Return Value**:
@@ -601,7 +601,8 @@ login
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
+      * **self**: :doc:`[Self]</datatypes/modelself>`
 
    **Return Value**:
 
@@ -620,7 +621,8 @@ guest
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
+      * **stats**: :doc:`[Room]</datatypes/room>`
 
    **Return Value**:
 
@@ -639,7 +641,8 @@ connect
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
+      * **stats**: :doc:`[Room]</datatypes/room>`
 
    **Return Value**:
 
@@ -731,11 +734,11 @@ setSetting
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      :dt:`Boolean` true when save was successful.
+      :dt:`Boolean` true when save went to server.
 
 
 getSetting
@@ -1191,7 +1194,7 @@ getStaffByRole
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **staff**: :doc:`[User]</datatypes/user>`
 
    **Return Value**:
@@ -1210,7 +1213,7 @@ getNews
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **news**: :doc:`[News]</datatypes/news>`
 
    **Return Value**:
@@ -1229,7 +1232,7 @@ getAuthToken
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **token**: :dt:`String` auth token.
 
    **Return Value**:
@@ -1248,7 +1251,7 @@ getRoomStats
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **room**: :doc:`Room</datatypes/room>`
 
    **Return Value**:
@@ -1269,8 +1272,8 @@ findRooms
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
-      * **rooms**: :doc:`[Room]</datatypes/room>`
+      * **err**: :dt:`Object` possible error returned.
+      * **rooms**: :doc:`[FlatRoom]</datatypes/flatroom>`
 
    **Return Value**:
 
@@ -1290,8 +1293,8 @@ getRoomList
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
-      * **rooms**: :doc:`[Room]</datatypes/room>`
+      * **err**: :dt:`Object` possible error returned.
+      * **rooms**: :doc:`[FlatRoom]</datatypes/flatroom>`
 
    **Return Value**:
 
@@ -1309,7 +1312,7 @@ getStaff
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **staff**: :doc:`[User]</datatypes/user>`
 
    **Return Value**:
@@ -1329,7 +1332,7 @@ getUser
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **user**: :doc:`User</datatypes/user>`
 
    **Return Value**:
@@ -1350,7 +1353,7 @@ getRoomHistory
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **history**: :doc:`[History]</datatypes/history>`
 
    **Return Value**:
@@ -1370,7 +1373,7 @@ validateRoomName
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **slug**: :dt:`String` url conform representation of room name.
 
    **Return Value**:
@@ -1390,7 +1393,7 @@ validateUsername
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **slug**: :dt:`String` url conform representation of name.
 
 
@@ -1410,7 +1413,7 @@ getMutes
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **mutes**: :doc:`[Mute]</datatypes/mute>`
 
    **Return Value**:
@@ -1429,7 +1432,7 @@ getBans
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **bans**: :doc:`[Ban]</datatypes/ban>`
 
    **Return Value**:
@@ -1448,7 +1451,7 @@ saveSettings
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -1468,7 +1471,7 @@ setLock
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -1487,7 +1490,7 @@ setCycle
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -1505,7 +1508,7 @@ resetPassword
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -1524,7 +1527,7 @@ requestUsers
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **users**: :doc:`[User]</datatypes/user>`
 
    **Return Value**:
@@ -1544,7 +1547,7 @@ joinRoom
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -1562,7 +1565,7 @@ joinWaitlist
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -1581,7 +1584,7 @@ addToWaitlist
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -1601,7 +1604,7 @@ addPlaylist
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **playlist**: :doc:`Playlist</datatypes/playlist>`
 
    **Return Value**:
@@ -1621,7 +1624,7 @@ grab
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **playlist**: :doc:`Playlist</datatypes/playlist>`
 
    **Return Value**:
@@ -1641,7 +1644,7 @@ skipDJ
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -1662,7 +1665,7 @@ moveDJ
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -1682,7 +1685,7 @@ createRoom
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **room**: :doc:`NewRoom</datatypes/newroom>` info of new room.
 
    **Return Value**:
@@ -1706,7 +1709,7 @@ sendSOS
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -1727,7 +1730,7 @@ updateRoomInfo
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -1746,7 +1749,7 @@ setMinChatLevel
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -1767,7 +1770,7 @@ banUser
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -1792,7 +1795,7 @@ banBooth
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -1811,7 +1814,7 @@ deleteBanBooth
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -1832,7 +1835,7 @@ muteUser
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -1852,7 +1855,7 @@ addStaff
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -1871,7 +1874,7 @@ ignoreUser
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **ignored**: :doc:`Ignore</datatypes/ignore>` ignored user.
 
    **Return Value**:
@@ -1891,7 +1894,7 @@ deletePlaylist
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -1910,7 +1913,7 @@ removeIgnore
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **unignored**: :doc:`Ignore</datatypes/ignore>` unignored
         user.
 
@@ -1931,7 +1934,7 @@ removeStaff
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -1950,7 +1953,7 @@ removeDJ
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -1968,7 +1971,7 @@ leaveWaitlist
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -1987,7 +1990,7 @@ unbanUser
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -2008,7 +2011,7 @@ unmuteUser
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -2027,7 +2030,7 @@ deleteMessage
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -2045,7 +2048,7 @@ logout
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -2063,7 +2066,7 @@ requestSelf
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **self**: :doc:`[Self]</datatypes/modelself>`
 
    **Return Value**:
@@ -2084,7 +2087,7 @@ getMyHistory
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **history**: :doc:`[History]</datatypes/history>`
 
    **Return Value**:
@@ -2103,7 +2106,7 @@ getFriends
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **friends**: :doc:`[User]</datatypes/user>`
 
    **Return Value**:
@@ -2122,7 +2125,7 @@ getFriendRequests
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **requests**: :doc:`[Invitation]</datatypes/invitation>`
 
    **Return Value**:
@@ -2142,7 +2145,7 @@ findPlaylist
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **playlist**: :doc:`[Playlist]</datatypes/playlist>`
 
    **Return Value**:
@@ -2162,7 +2165,7 @@ findMedia
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **media**: :doc:`[Media]</datatypes/media>`
 
    **Return Value**:
@@ -2183,7 +2186,7 @@ findMediaPlaylist
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **media**: :doc:`[Media]</datatypes/media>`
 
    **Return Value**:
@@ -2203,7 +2206,7 @@ getPlaylist
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **media**: :doc:`[Media]</datatypes/media>`
 
    **Return Value**:
@@ -2222,7 +2225,7 @@ getPlaylists
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **playlists**: :doc:`[Playlist]</datatypes/playlist>`
 
    **Return Value**:
@@ -2241,7 +2244,7 @@ getIgnores
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **users**: :doc:`[Ignore]</datatypes/ignore>` ignored users.
 
    **Return Value**:
@@ -2260,7 +2263,7 @@ getFavoriteRooms
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **rooms**: :doc:`[Room]</datatypes/room>` favorited rooms.
 
    **Return Value**:
@@ -2280,7 +2283,7 @@ setProfileMessage
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -2300,7 +2303,7 @@ renamePlaylist
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -2319,7 +2322,7 @@ setAvatar
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -2338,7 +2341,7 @@ setBadge
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -2357,7 +2360,7 @@ setLanguage
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -2376,7 +2379,7 @@ rejectFriendRequest
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -2395,7 +2398,7 @@ activatePlaylist
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **activated**: :dt:`String` ID of activated playlist.
 
    **Return Value**:
@@ -2417,7 +2420,7 @@ moveMedia
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **media**: :doc:`[Media]</datatypes/media>` order after move.
 
    **Return Value**:
@@ -2440,7 +2443,7 @@ updateMedia
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **update**: :doc:`[Update]</datatypes/mediaupdate>`
 
    **Return Value**:
@@ -2460,7 +2463,7 @@ shufflePlaylist
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **media**: :doc:`[Media]</datatypes/media>` order after shuffle.
 
    **Return Value**:
@@ -2480,7 +2483,7 @@ addFriend
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -2500,7 +2503,7 @@ deleteMedia
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **media**: :doc:`[Media]</datatypes/media>` in playlist after deletion.
 
    **Return Value**:
@@ -2522,7 +2525,7 @@ addMedia
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **mediaAdd**: :doc:`MediaAdd</datatypes/mediaadd>`
 
    **Return Value**:
@@ -2541,7 +2544,7 @@ woot
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -2559,7 +2562,7 @@ meh
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -2578,7 +2581,7 @@ favoriteRoom
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -2597,7 +2600,7 @@ removeFriend
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -2616,7 +2619,7 @@ purchaseUsername
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **item**: :doc:`Purchase</datatypes/purchase>`
 
    **Return Value**:
@@ -2636,7 +2639,7 @@ purchaseItem
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      * **err**: :dt:`Object` possible error returned.
       * **item**: :doc:`Purchase</datatypes/purchase>`
 
    **Return Value**:
