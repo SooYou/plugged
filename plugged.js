@@ -274,7 +274,6 @@ class Plugged extends EventEmitter {
      */
     _keepAlive() {
         if (Date.now() - this.heartbeat.last >= this.heartbeat.timeout * 1000) {
-            // TODO: change style of messages
             this._log(1, `haven't received a heartbeat from host for more than ${this.heartbeat.timeout} seconds, is it on fire?`);
             // save meta information of the room since clearState erases all data
             const meta = this.getRoomMeta();
@@ -456,21 +455,26 @@ class Plugged extends EventEmitter {
 
     /**
      * @description clears all state related data to the default and closes the socket connection
+     * @param {boolean} softClear - only clears caches and queues when true, otherwise resets whole state
      */
-    _clearState() {
-        this.watchUserCache(false);
+    _clearState(softClear = false) {
         this.clearUserCache();
         this.clearChatQueue();
         this.clearChatCache();
         this._clearHeartbeat();
         this.query.flushQueue();
-        this.state = mapper.createState();
 
-        this.sock.close();
-        this.sock.removeAllListeners();
+        if (!softClear) {
+            this.state = mapper.createState();
+            this.watchUserCache(false);
+            this.auth = null;
 
-        this.sock = null;
-        this.auth = null;
+            if (this.sock) {
+                this.sock.close();
+                this.sock.removeAllListeners();
+                this.sock = null;
+            }
+        }
     }
 
     /**
@@ -525,6 +529,7 @@ class Plugged extends EventEmitter {
                     this._log(0, "retrying now...");
                     this._login(credentials, callback, tries++);
                 } else {
+                    this._clearState();
                     this._log(0, [
                         "failed to log in with \"",
                         (credentials.email || credentials.userID),
@@ -1065,7 +1070,6 @@ class Plugged extends EventEmitter {
         }
     }
 
-    // TODO: streamline errors
     /**
      * @description logs into a room as a guest
      * @param {string} room room slug
@@ -1073,20 +1077,22 @@ class Plugged extends EventEmitter {
      */
     guest(room, callback) {
         if (this.sock) {
+            let err = null;
+
             if (this.sock.readyState === WebSocket.OPEN)
-                this._log(0, "you seem to be logged in already");
+                err = new Error("you seem to be logged in already");
             else
-                this._log(0, "the socket is already instantiated");
-            return;
+                err = new Error("the socket is already instantiated");
+            return callback && callback(err);
         }
 
         this._log(1, `Joining room \"${room}\" as a guest...`);
         this.query.query("GET", baseURL + '/' + room, function _guestRoom(err, data) {
             // get auth token directly from the page
             const idx = data.indexOf("_jm=\"") + 5;
-            const auth = data.substr(idx, data.indexOf('"', idx) - idx);
+            const auth = data.substr(idx, data.indexOf('"', idx));
 
-            if (auth.length === 172) {
+            if (auth.endsWith("==")) {
                 this.auth = auth;
 
                 this.state.self = mapper.mapSelf({
@@ -1097,13 +1103,17 @@ class Plugged extends EventEmitter {
                 this._connectSocket();
                 this.getRoomStats(function(err, stats) {
                     if (!err) {
+                        this._clearState(true);
+                        this.state.room = mapper.mapRoom(stats);
                         callback && callback(null, stats);
                     } else {
+                        this._clearState();
+                        this.state.room = mapper.mapRoom();
                         callback && callback(err);
                     }
                 });
             } else {
-                const err = new Error("couldn't join room \"" + room + "\" as a guest")
+                const err = new Error("couldn't join room \"" + room + "\" as a guest, auth token was incorrect");
                 callback && callback(err);
             }
         }.bind(this), false, true);
@@ -1125,33 +1135,26 @@ class Plugged extends EventEmitter {
             return this.guest(slug, callback);
         }
 
-        // TODO: clean up callback
         this.joinRoom(slug, function _joinedRoom(err) {
-            if (!err) {
-                this.getRoomStats(function(err, stats) {
-
-                    if (!err) {
-                        //clear all room related data
-                        this.clearUserCache();
-                        this.clearChatQueue();
-                        this.clearChatCache();
-                        this.query.flushQueue();
-
-                        this.state.room = stats;
-                        this.state.self.role = stats.role;
-                        callback(null, this.state.room);
-                    } else {
-                        this.state.room = mapper.mapRoom();
-                        this.state.self.role = USERROLE.NONE;
-                        callback(err);
-                    }
-                });
-
-            } else {
-                this.state.room = mapper.mapRoom();
-                this.state.self.role = USERROLE.NONE;
-                callback(err);
+            if (err) {
+                // do nothing and stay in the current room
+                return callback && callback(err);
             }
+
+            //clear all room related data
+            this._clearState(true);
+
+            this.getRoomStats(function(err, stats) {
+                if (err) {
+                    this.state.room = mapper.mapRoom();
+                    this.state.self.role = USERROLE.NONE;
+                    return callback && callback(err);
+                }
+
+                this.state.room = stats;
+                this.state.self.role = stats.role;
+                callback(null, this.state.room);
+            });
         });
     }
 
@@ -1254,7 +1257,7 @@ class Plugged extends EventEmitter {
             this.saveSettings(callback);
             return true;
         }
-        callback && callback(null, false);
+        callback && callback(null);
         return false;
     }
 
@@ -2422,7 +2425,6 @@ class Plugged extends EventEmitter {
             const result = [];
             let regex = null;
 
-            // TODO: I believe this is flawed
             try {
                 if (query instanceof RegExp) {
                     regex = query;
