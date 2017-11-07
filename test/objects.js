@@ -170,22 +170,18 @@ const testSelf = (parse, self) => {
 
 const testMute = (parse, mute) => {
     expect(mute).to.contain.all.keys([
-        "author",
-        "title",
-        "image",
-        "cid",
-        "duration",
-        "format",
-        "id"
+        "expires",
+        "moderator",
+        "moderatorID",
+        "reason",
+        "username"
     ]);
 
-    expect(mute.author).to.be.a("string");
-    expect(mute.title).to.be.a("string");
-    expect(mute.image).to.be.a("string");
-    expect(mute.cid).to.be.a("string");
-    expect(mute.duration).to.be.a("number");
-    expect(mute.format).to.be.a("number");
-    expect(mute.id).to.be.a("number");
+    expect(mute.expires).to.be.a("string");
+    expect(mute.moderator).to.be.a("string");
+    expect(mute.moderatorID).to.be.a("number");
+    expect(mute.reason).to.be.a("number");
+    expect(mute.username).to.be.a("string");
 };
 
 const testGifted = (parse, gift) => {
