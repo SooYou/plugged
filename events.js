@@ -27,15 +27,22 @@ const advance = function(data) {
             previous.score.negative++;
     }
 
-    this.state.room.booth.dj = data.p.c;
-    this.state.room.booth.waitlist = data.p.d;
+    this.state.room.booth = mapper.mapBooth({
+        currentDJ: data.p.c,
+        waitlist: data.p.d,
+        isLocked: this.state.room.booth.isLocked,
+        shouldCycle: this.state.room.booth.shouldCycle
+    });
+
     this.state.room.grabs = [];
     this.state.room.votes = [];
 
-    this.state.room.playback.media = mapper.mapMedia(data.p.m);
-    this.state.room.playback.historyID = data.p.h;
-    this.state.room.playback.playlistID = data.p.p;
-    this.state.room.playback.startTime = utils.convertPlugTimeToDate(data.p.t);
+    this.state.room.playback = mapper.mapPlayback({
+        media: data.p.m,
+        historyID: data.p.h,
+        playlistID: data.p.p,
+        startTime: data.p.t
+    });
 
     this.emit(this.ADVANCE, this.state.room.booth, this.state.room.playback, previous);
 }
