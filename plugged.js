@@ -461,7 +461,6 @@ class Plugged extends EventEmitter {
         this.clearUserCache();
         this.clearChatQueue();
         this.clearChatCache();
-        this._clearHeartbeat();
         this.query.flushQueue();
 
         if (!softClear) {
@@ -470,6 +469,7 @@ class Plugged extends EventEmitter {
             this.auth = null;
 
             if (this.sock) {
+                this._clearHeartbeat();
                 this.sock.close();
                 this.sock.removeAllListeners();
                 this.sock = null;
