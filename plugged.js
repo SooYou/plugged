@@ -1522,7 +1522,7 @@ class Plugged extends EventEmitter {
      * @returns {boolean} true when saved, false otherwise
      */
     cacheUser(user) {
-        if (typeof user === "object" && typeof this.getUserById(user.id, this.CACHE.ONLY) === null) {
+        if (typeof user === "object" && this.getUserById(user.id, this.CACHE.ONLY) === null) {
             this.state.usercache.push({ user: user, timestamp: Date.now() });
             return true;
         }
