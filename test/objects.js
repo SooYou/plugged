@@ -177,7 +177,7 @@ const testMute = (parse, mute) => {
         "username"
     ]);
 
-    expect(mute.expires).to.be.a("string");
+    expect(mute.expires).to.be.a("number");
     expect(mute.moderator).to.be.a("string");
     expect(mute.moderatorID).to.be.a("number");
     expect(mute.reason).to.be.a("number");
