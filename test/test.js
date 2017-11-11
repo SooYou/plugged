@@ -8,6 +8,15 @@ const testLogin = (isTravis ? {
     "parse": true
 } : require("./test.json"));
 
+// id needed for ban test
+let _id = null;
+// playlist id
+let _playlist = null;
+let _media = null;
+let _room = null;
+let _store = null;
+
+
 const Plugged = require("../plugged");
 const Query = require("../query");
 const types = require("../types");
@@ -26,20 +35,40 @@ const client = new Plugged({
     }
 });
 
-var _playlists;
-var _playlist;
-var _message;
-var _store;
-var _media;
-var _user;
-var _room;
+client.cacheChat(true);
+client.cacheUser(true);
 
-function execTest() {
-    return isTravis ? describe.skip : describe;
+// gets all users that are not you
+function getUsers() {
+    const users = client.getUsers();
+    const filtered = [];
+
+    for(let i = 0, l = users.length; i < l; i++) {
+        if(users[i].role < client.getSelf().role) {
+            filtered.push(users[i]);
+        }
+    }
+
+    return filtered;
 }
 
-function isObjectTest() {
-    return !testLogin.parse ? describe.skip : describe;
+function extendedTestCheck(requiredUsers = 0, done) {
+    const users = getUsers();
+
+    if (!users || users.length < requiredUsers) {
+        console.log(`could not run test since it requires ${requiredUsers} \
+        ${requiredUsers > 1 ? "users" : "user"} for this to pass. skipping.`);
+        if (done)
+            done();
+
+        return false;
+    }
+
+    return true;
+}
+
+function skipIfTravis(travis) {
+    return travis ? describe.skip : describe;
 }
 
 describe("Check basic functions", () => {
@@ -265,10 +294,13 @@ describe("Joining a room", () => {
 });
 
 describe("Chat", () => {
+    // used to keep a reference so we can delete it in another test
+    let _message;
+
     describe("#sendChat", () => {
         it("should send a message with the text 'test'", done => {
 
-            var func = (msg) => {
+            const func = (msg) => {
                 expect(msg).to.be.an("object");
 
                 if(!testLogin.parse) {
@@ -313,7 +345,7 @@ describe("Chat", () => {
 
     describe("#deleteChat", () => {
         it("should delete a message", done => {
-            var funcDel = (msg) => {
+            const funcDel = (msg) => {
                 expect(msg).to.be.an("object");
 
                 if(!testLogin.parse) {
@@ -389,13 +421,14 @@ describe("REST", () => {
         });
     });
 
-    execTest()("#findRooms", () => {
+    describe("#findRooms", () => {
         it("should retrieve an array of room objects filtered by a keyword", done => {
-            client.findRooms("kpop", 0, 2, (err, rooms) => {
+            client.findRooms("", 0, 1, (err, rooms) => {
                 expect(err).to.be.equal(null);
                 expect(rooms).to.be.an("array");
+                expect(rooms.length).to.be.equal(1);
 
-                if(rooms.length > 0) {
+                if (rooms.length > 0) {
                     expect(rooms[0]).to.be.an("object");
                     objects.testExtendedRoom(testLogin.parse, rooms[0]);
                 }
@@ -410,17 +443,20 @@ describe("REST", () => {
             client.getRoomList(0, 10, (err, rooms) => {
                 expect(err).to.be.equal(null);
                 expect(rooms).to.be.an("array");
-                expect(rooms.length).to.equal(10);
-                expect(rooms[0]).to.be.an("object");
+                // server does not always return 10 rooms
+                expect(rooms.length).to.be.greaterThan(0);
 
-                objects.testExtendedRoom(testLogin.parse, rooms[0]);
+                if(rooms.length > 0) {
+                    expect(rooms[0]).to.be.an("object");
+                    objects.testExtendedRoom(testLogin.parse, rooms[0]);
+                }
 
                 done();
             });
         });
     });
 
-    execTest()("#getStaff", () => {
+    describe("#getStaff", () => {
         it("should retrieve all users online or not with a role > 0", done => {
             client.getStaff((err, staff) => {
                 expect(err).to.be.equal(null);
@@ -435,18 +471,14 @@ describe("REST", () => {
         });
     });
 
-    execTest()("#getUser", () => {
+    skipIfTravis(isTravis)("#getUser", () => {
         it("should retrieve the user object for a user", done => {
-            const users = client.getUsers();
+            if (!extendedTestCheck(1, done))
+                return;
 
-            for(var i = 0, l = users.length; i < l; i++) {
-                if(users[i].role < client.getSelf().role) {
-                    _user = users[i];
-                    break;
-                }
-            }
+            let user = getUsers()[0];
 
-            client.getUser(_user.id, (err, user) => {
+            client.getUser(user.id, (err, user) => {
                 expect(err).to.be.equal(null);
                 expect(user).to.be.an("object");
                 objects.testUser(testLogin.parse, user);
@@ -511,9 +543,14 @@ describe("REST", () => {
         });
     });
 
-    execTest()("#addToWaitlist", () => {
+    skipIfTravis(isTravis)("#addToWaitlist", () => {
         it("should add a user by their ID to the waitlist", done => {
-            client.addToWaitlist(_user.id, (err) => {
+            if (!extendedTestCheck(1, done))
+                return;
+
+            const user = getUsers()[0];
+
+            client.addToWaitlist(user.id, err => {
 
                 if(err) {
                     if(err.code === 403)
@@ -525,15 +562,15 @@ describe("REST", () => {
         });
     });
 
-    execTest()("#meh", () => {
+    skipIfTravis(isTravis)("#meh", () => {
         it("should meh a song", done => {
-            client.mehdone;
+            client.meh(done);
         });
     });
 
-    execTest()("#woot", () => {
+    skipIfTravis(isTravis)("#woot", () => {
         it("should woot a song", done => {
-            client.wootdone;
+            client.woot(done);
         });
     });
 
@@ -547,21 +584,26 @@ describe("REST", () => {
 
                 if(!err)
                     _playlist = playlist.id;
+                else
+                    console.log("couldn't assign playlist, all functions which require a playlist won't be tested");
 
                 done();
             });
         });
     });
 
-    execTest()("#grab", () => {
+    skipIfTravis(isTravis)("#grab", () => {
         it("should grab a song", done => {
-            client.grab(_playlist, done);
+            if (_playlist)
+                client.grab(_playlist, done);
+            else
+                console.log("playlist not set, skipping grab");
         });
     });
 
     describe("#addMedia", () => {
         it("a media file from youtube and soundcloud", done => {
-            var ytObj = {
+            const ytObj = {
                 "title": "Nightstep - Army Of Two",
                 "id": "6DSOGA9HQM4",
                 "thumbnails": {
@@ -571,33 +613,39 @@ describe("REST", () => {
                 }
             };
 
-            var sndObj = {
+            const sndObj = {
                 "title": "Smosh - Legend of Zelda rap",
                 "id": 30271545,
                 "duration": 213475,
                 "artwork_url": "https://i1.sndcdn.com/artworks-000015183915-7m8l9z-large.jpg"
             };
 
-            client.addMedia(_playlist, [ytObj, sndObj], true, done);
+            if (_playlist)
+                client.addMedia(_playlist, [ytObj, sndObj], true, done);
+            else
+                console.log("playlist not set, skipping addMedia");
         });
     });
 
-    execTest()("#skipDJ", () => {
+    skipIfTravis(isTravis)("#skipDJ", () => {
         it("should skip the current DJ", done => {
-            client.skipDJ(testLogin.parse ? client.getBooth().currentDJ : client.getDJ().id, done);
+            client.skipDJ(testLogin.parse ? client.getBooth().dj : client.getBooth().currentDJ, done);
         });
     });
 
-    execTest()("#moveDJ", () => {
+    skipIfTravis(isTravis)("#moveDJ", () => {
         it("should move a DJ to a new position in the waitlist", done => {
-            var waitlist = client.getWaitlist();
+            if (!extendedTestCheck(2, done))
+                return;
+
+            let waitlist = client.getWaitlist();
             client.moveDJ(waitlist[waitlist.length - 1], 0, done);
         });
     });
 
     describe("#createRoom", () => {
         it("should create a new room with a timestamp as the name", done => {
-            var date = Date.now().toString();
+            const date = Date.now().toString();
             client.createRoom(date, true, (err, room) => {
                 if(err) {
                     if(err.code === 403)
@@ -624,8 +672,8 @@ describe("REST", () => {
 
     describe("#updateRoomInfo", () => {
         it("should update the room description and welcome message", done => {
-            client.updateRoomInfo("testName", "testDesc", "testWelcome", (err) => {
-                var meta = client.getRoomMeta();
+            client.updateRoomInfo("testName", "testDesc", "testWelcome", err => {
+                const meta = client.getRoomMeta();
 
                 expect(meta.description).to.be.equal("testDesc");
                 expect(meta.welcome).to.be.equal("testWelcome");
@@ -634,17 +682,26 @@ describe("REST", () => {
         });
     });
 
-    execTest()("#muteUser", () => {
+    skipIfTravis(isTravis)("#muteUser", () => {
         it("should mute a user", done => {
-            client.muteUser(_user.id, client.MUTEDURATION.SHORT, client.BANREASON.VIOLATING_COMMUNITY_RULES, (err) => {
+            if (!extendedTestCheck(1, done))
+                return;
 
-                if(err) {
-                    if(err.code === 403)
-                        expect(err.message).to.equal("This user cannot be muted");
-                }
+            const user = getUsers()[0];
 
-                done();
-            });
+            if (user) {
+                client.muteUser(user.id, client.MUTEDURATION.SHORT, client.BANREASON.VIOLATING_COMMUNITY_RULES, err => {
+
+                    if(err) {
+                        if(err.code === 403)
+                            expect(err.message).to.equal("This user cannot be muted");
+                    } else {
+                        expect(err).to.equal(null);
+                    }
+
+                    done();
+                });
+            }
         });
     });
 
@@ -671,15 +728,23 @@ describe("REST", () => {
         });
     });
 
-    execTest()("#addStaff", () => {
+    skipIfTravis(isTravis)("#addStaff", () => {
         it("should add a user as staff", done => {
-            client.addStaff(_user.id, client.USERROLE.BOUNCER, done);
+            if (!extendedTestCheck(1, done))
+                return;
+
+            const user = getUsers()[0];
+            client.addStaff(user.id, client.USERROLE.BOUNCER, done);
         });
     });
 
-    execTest()("#ignoreUser", () => {
+    skipIfTravis(isTravis)("#ignoreUser", () => {
         it("should ignore a user", done => {
-            client.ignoreUser(_user.id, done);
+            if (!extendedTestCheck(1, done))
+                return;
+
+            const user = getUsers()[0];
+            client.ignoreUser(user.id, done);
         });
     });
 
@@ -705,9 +770,14 @@ describe("REST", () => {
         });
     });
 
-    execTest()("#removeIgnore", () => {
+    skipIfTravis(isTravis)("#removeIgnore", () => {
         it("should remove the previously ignored user", done => {
-            client.removeIgnore(_user.id, (err, ignore) => {
+            if (!extendedTestCheck(1, done))
+                return;
+
+            const user = getUsers()[0];
+
+            client.removeIgnore(user.id, (err, ignore) => {
                 expect(err).to.be.equal(null);
 
                 expect(ignore).to.be.an("object");
@@ -724,9 +794,14 @@ describe("REST", () => {
         });
     });
 
-    execTest()("#removeStaff", () => {
+    skipIfTravis(isTravis)("#removeStaff", () => {
         it("should remove the previously added staff member", done => {
-            client.removeStaff(_user.id, (err) => {
+            if (!extendedTestCheck(1, done))
+                return;
+
+            const user = getUsers()[0];
+
+            client.removeStaff(user.id, err => {
 
                 if(err) {
                     if(err.code === 403)
@@ -738,36 +813,39 @@ describe("REST", () => {
         });
     });
 
-    execTest()("#removeDJ", () => {
+    skipIfTravis(isTravis)("#removeDJ", () => {
         it("should remove a DJ from the waitlist", done => {
-            var user = client.getWaitlist()[0];
-            client.removeDJ(user, (err) => {
+            if (!extendedTestCheck(1, done))
+                return;
+
+            const users = getUsers();
+
+            client.removeDJ(users[0].id, err => {
                 expect(err).to.be.equal(null);
-
-                client.addToWaitlist(user, done);
-            });
-        });
-    });
-
-    describe("#leaveWaitlist", () => {
-        it("should leave the waitlist", done => {
-            client.leaveWaitlist((err, wl) => {
-                expect(err).to.be.equal(null);
-
                 done();
             });
         });
     });
 
-    execTest()("#unmuteUser", () => {
+    skipIfTravis(isTravis)("#unmuteUser", () => {
         it("should unmute the previously muted user", done => {
-            client.unmuteUser(_user.id, done);
+            if (!extendedTestCheck(1, done))
+                return;
+
+            const user = getUsers()[0];
+            client.unmuteUser(user.id, done);
         });
     });
 
-    execTest()("#banUser", () => {
+    skipIfTravis(isTravis)("#banUser", () => {
         it("should ban a user", done => {
-            client.banUser(_user.id, client.BANDURATION.SHORT, client.BANREASON.VIOLATING_COMMUNITY_RULES, (err) => {
+            if (!extendedTestCheck(1, done))
+                return;
+
+            _id = getUsers()[0].id;
+            expect(_id).to.be.a("number");
+
+            client.banUser(_id, client.BANDURATION.SHORT, client.BANREASON.VIOLATING_COMMUNITY_RULES, err => {
 
                 if(err) {
                     if(err.code === 403)
@@ -775,13 +853,13 @@ describe("REST", () => {
                 }
 
                 done();
-            })
+            });
         });
     });
 
-    execTest()("#unbanUser", () => {
+    skipIfTravis(isTravis)("#unbanUser", () => {
         it("should unban the previously banned user", done => {
-            client.unbanUser(_user.id, done);
+            client.unbanUser(_id, done);
         });
     });
 
@@ -824,20 +902,6 @@ describe("REST", () => {
         });
     });
 
-    describe("#getFriendRequests", () => {
-        it("should request all friend requests from the server", done => {
-            client.getFriendRequests((err, requests) => {
-                expect(err).to.be.equal(null);
-                expect(requests).to.be.an("array");
-
-                if(requests.length > 0)
-                    objects.testFriendRequest(testLogin.parse, requests[0]);
-
-                done();
-            });
-        });
-    });
-
     describe("#findPlaylist", () => {
         it("should search for playlists by their name", done => {
             client.findPlaylist("a", (err, playlists) => {
@@ -854,31 +918,21 @@ describe("REST", () => {
 
     describe("#findMediaPlaylist", () => {
         it("should search for media in a playlist filtered by a keyword", done => {
-            client.findMediaPlaylist(_playlist, "a", (err, media) => {
-                expect(err).to.be.equal(null);
-                expect(media).to.be.an("array");
+            if (_playlist) {
+                client.findMediaPlaylist(_playlist, "a", (err, media) => {
+                    expect(err).to.be.equal(null);
+                    expect(media).to.be.an("array");
 
-                if(media.length > 0) {
-                    objects.testMedia(testLogin.parse, media[0]);
-                    _media = media[0];
-                }
+                    if(media.length > 0) {
+                        objects.testMedia(testLogin.parse, media[0]);
+                        _media = media[0];
+                    }
 
-                done();
-            });
-        });
-    });
-
-    describe("#getPlaylist", () => {
-        it("should return a playlist", done => {
-            client.getPlaylist(_playlist, (err, playlist) => {
-                expect(err).to.be.equal(null);
-                expect(playlist).to.be.an("array");
-
-                if(playlist.length > 0)
-                    objects.testMedia(testLogin.parse, playlist[0]);
-
-                done();
-            });
+                    done();
+                });
+            } else {
+                console.log("playlist not set, skipping findMediaPlaylist");
+            }
         });
     });
 
@@ -888,13 +942,29 @@ describe("REST", () => {
                 expect(err).to.be.equal(null);
                 expect(playlists).to.be.an("array");
 
-                if(playlists.length > 0) {
+                if (playlists.length > 0)
                     objects.testPlaylist(testLogin.parse, playlists[0]);
-                    _playlists = playlists;
-                }
 
                 done();
             });
+        });
+    });
+
+    describe("#getPlaylist", () => {
+        it("should return a playlist", done => {
+            if(_playlist) {
+                client.getPlaylist(_playlist, (err, playlist) => {
+                    expect(err).to.be.equal(null);
+                    expect(playlist).to.be.an("array");
+
+                    if(playlist.length > 0)
+                        objects.testMedia(testLogin.parse, playlist[0]);
+
+                    done();
+                });
+            } else {
+                console.log("playlist not set, skipping getPlaylist");
+            }
         });
     });
 
@@ -922,7 +992,10 @@ describe("REST", () => {
 
     describe("#renamePlaylist", () => {
         it("should rename a playlist", done => {
-            client.renamePlaylist(_playlist, "testName", done);
+            if (_playlist)
+                client.renamePlaylist(_playlist, "testName", done);
+            else
+                console.log("playlist not set, skipping grab");
         });
     });
 
@@ -932,9 +1005,9 @@ describe("REST", () => {
         });
     });
 
-    execTest("#setBadge", () => {
+    skipIfTravis(isTravis)("#setBadge", () => {
         it("should set the badge of itself to bt-g", done => {
-            client.setBadge(testLogin.badge, done);
+            client.setBadge("bt-g", done);
         });
     });
 
@@ -944,23 +1017,72 @@ describe("REST", () => {
         });
     });
 
-    describe("#rejectFriendRequest", () => {
-        it("should reject a friend request", done => {
-            client.rejectFriendRequest(329048, (err) => {
+    {
+        let _request = null;
+
+        skipIfTravis(isTravis)("#getFriendRequests", () => {
+            it("should request all friend requests from the server", done => {
+                client.getFriendRequests((err, requests) => {
+                    expect(err).to.be.equal(null);
+                    expect(requests).to.be.an("array");
+
+                    if(requests.length > 0) {
+                        _request = requests[0].id;
+                        objects.testFriendRequest(testLogin.parse, requests[0]);
+                    }
+
+                    done();
+                });
+            });
+        });
+
+        skipIfTravis(isTravis)("#rejectFriendRequest", () => {
+            it("should reject a friend request", done => {
+                if (_request !== null) {
+                    client.rejectFriendRequest(_request, err => {
+                        expect(err).to.be.equal(null);
+                        // plug doesn't reallyID check if stated ID ever sent you a request
+                        // so we will just check if this endpoint is still available
+
+                        done();
+                    });
+                } else {
+                    console.log("no friend requests to reject");
+                    done();
+                }
+            });
+        });
+    }
+
+    describe("#activatePlaylist", () => {
+        it("should activate a playlist", done => {
+            if (_playlist) {
+                client.activatePlaylist(_playlist, (err, status) => {
+                    expect(err).to.be.equal(null);
+                    expect(status).to.be.an("number");
+
+                    done();
+                });
+            } else {
+                console.log("playlist not set, skipping activatePlaylist");
+            }
+        });
+    });
+
+    describe("#joinWaitlist", () => {
+        it("should join the waitlist", done => {
+            client.joinWaitlist((err, waitlist) => {
                 expect(err).to.be.equal(null);
-                // plug doesn't reallyID check if stated ID ever sent you a request
-                // so we will just check if this endpoint is still available
 
                 done();
             });
         });
     });
 
-    describe("#activatePlaylist", () => {
-        it("should activate a playlist", done => {
-            client.activatePlaylist(_playlist, (err, status) => {
+    describe("#leaveWaitlist", () => {
+        it("should leave the waitlist", done => {
+            client.leaveWaitlist((err, waitlist) => {
                 expect(err).to.be.equal(null);
-                expect(status).to.be.an("number");
 
                 done();
             });
@@ -969,63 +1091,86 @@ describe("REST", () => {
 
     describe("#moveMedia", () => {
         it("should move a media entry to another position", done => {
-            client.moveMedia(_playlist, [_media.id], _media.id, (err, playlist) => {
+            if (_playlist) {
+                client.moveMedia(_playlist, [_media.id], _media.id, (err, playlist) => {
 
-                if(err) {
-                    if(err.code === 400)
-                        expect(err.message).to.equal("ids is required");
-                } else {
-                    objects.testMedia(testLogin.parse, playlist[0]);
-                }
+                    if(err) {
+                        if(err.code === 400)
+                            expect(err.message).to.equal("ids is required");
+                    } else {
+                        objects.testMedia(testLogin.parse, playlist[0]);
+                    }
 
-                done();
-            });
+                    done();
+                });
+            } else {
+                console.log("playlist not set, skipping moveMedia");
+            }
         });
     });
 
     describe("#updateMedia", () => {
         it("should update the media title and author with testTitle and testAuthor", done => {
-            client.updateMedia(_playlist, _media.id, "testAuthor", "testTitle", done);
+            if (_playlist)
+                client.updateMedia(_playlist, _media.id, "testAuthor", "testTitle", done);
+            else
+                console.log("playlist not set, skipping updateMedia");
         });
     });
 
     describe("#shufflePlaylist", () => {
         it("should shuffle a playlist", done => {
-            client.shufflePlaylist(_playlist, (err, playlist) => {
-                expect(err).to.be.equal(null);
-                expect(playlist).to.be.an("array");
+            if (_playlist) {
+                client.shufflePlaylist(_playlist, (err, playlist) => {
+                    expect(err).to.be.equal(null);
+                    expect(playlist).to.be.an("array");
 
-                if(playlist.length > 0)
-                    objects.testMedia(testLogin.parse, playlist[0]);
+                    if(playlist.length > 0)
+                        objects.testMedia(testLogin.parse, playlist[0]);
 
-                done();
-            });
+                    done();
+                });
+            } else {
+                console.log("playlist not set, skipping shufflePlaylist");
+            }
         });
     });
 
-    execTest()("#addFriend", () => {
+    skipIfTravis(isTravis)("#addFriend", () => {
         it("should add a user as a friend", done => {
-            client.addFriend(_user.id, done);
+            const user = client.getUsers()[0];
+
+            if (user)
+                client.addFriend(user.id, done);
+            else
+                client._log(0, "could not test addFriend since user was not found in room");
         });
     });
 
     describe("#deleteMedia", () => {
         it("should delete a media object from a playlist", done => {
-            client.deleteMedia(_playlist, [_media.id], (err, media) => {
-                expect(err).to.be.equal(null);
-                expect(media).to.be.an("array");
+            if (_playlist) {
+                client.deleteMedia(_playlist, [_media.id], (err, media) => {
+                    expect(err).to.be.equal(null);
+                    expect(media).to.be.an("array");
 
-                if(media.length > 0)
-                    objects.testMedia(testLogin.parse, media[0]);
+                    if(media.length > 0)
+                        objects.testMedia(testLogin.parse, media[0]);
 
-                done();
-            });
+                    done();
+                });
+            } else {
+                console.log("playlist not set, skipping deleteMedia");
+            }
         });
     });
 
     describe("#deletePlaylist", () => {
         it("should delete a playlist", done => {
-            client.deletePlaylist(_playlist, done);
+            if (_playlist)
+                client.deletePlaylist(_playlist, done);
+            else
+                console.log("playlist not set, skipping deletePlaylist");
         });
     });
 
@@ -1037,7 +1182,7 @@ describe("REST", () => {
 
     describe("#deleteNotification", () => {
         it("should delete a notification or error if no notification is available", done => {
-            client.deleteNotification(329048, (err) => {
+            client.deleteNotification(329048, err => {
                 expect(err).to.be.equal(null);
                 // again plug doesn't tell us if that was successful or not
                 // so we just check for the endpoint
@@ -1047,9 +1192,14 @@ describe("REST", () => {
         });
     });
 
-    execTest()("#removeFriend", () => {
+    skipIfTravis(isTravis)("#removeFriend", () => {
         it("should remove a user as a friend", done => {
-            client.removeFriend(_user.id, done);
+            const user = client.getUsers()[0];
+
+            if (user)
+                client.removeFriend(user.id, done);
+            else
+                client._log(0, "could not test removeFriend since user was not found in room");
         });
     });
 
@@ -1170,7 +1320,7 @@ describe("REST", () => {
     });
 });
 
-isObjectTest()("Local", () => {
+describe("Local", () => {
 
     describe("#getJar", () => {
         it("should return the jar used for http requests", () => {
@@ -1180,16 +1330,17 @@ isObjectTest()("Local", () => {
 
     describe("#setJar", () => {
         it("should set the jar that is used for http requests", () => {
-            var jar = client.getJar();
+            const jar = client.getJar();
             client.setJar(jar);
             expect(client.getJar()).to.equal(jar);
         });
     });
 
-    execTest()("#getChatByUser", () => {
+    skipIfTravis(isTravis)("#getChatByUsername", () => {
         it("should get the messages written by a user", () => {
-            _user = client.getUsers()[0];
-            var messages = client.getChatByUser(_user.username);
+            const user = client.getSelf();
+
+            let messages = client.getChatByUsername(user.username);
 
             expect(messages).to.be.an("array");
 
@@ -1218,10 +1369,10 @@ isObjectTest()("Local", () => {
         });
     });
 
-    execTest()("#removeChatMessage", () => {
+    skipIfTravis(isTravis)("#removeChatMessage", () => {
         it("should remove a chat message", () => {
-            var chat = client.getChat();
-            var length = chat.length;
+            let chat = client.getChat();
+            let length = chat.length;
 
             if(chat.length > 0) {
                 client.removeChatMessage(chat[0].cid, false);
@@ -1230,10 +1381,17 @@ isObjectTest()("Local", () => {
         });
     });
 
-    execTest()("#removeChatMessagesByUser", () => {
+    skipIfTravis(isTravis)("#removeChatMessagesByUser", () => {
         it("should delete all messages of a user", () => {
-            client.removeChatMessagesByUser(_user.username, true);
-            expect(client.getChatByUser(_user.username)).to.be.an("array").and.have.length(0);
+            client.sendChat("test");
+            const user = client.getSelf();
+
+            if (user) {
+                client.removeChatMessagesByUser(user.username, true);
+                expect(client.getChatByUsername(user.username)).to.be.an("array").and.have.length(0);
+            } else {
+                client._log("could not test removeChatMessagesByUser since user was not found in room");
+            }
         });
     });
 
@@ -1271,19 +1429,25 @@ isObjectTest()("Local", () => {
         });
     });
 
-    execTest()("#clearUserFromLists", () => {
+    skipIfTravis(isTravis)("#clearUserFromLists", () => {
         it("should clear the user from the vote and grab list", () => {
-            client.clearUserFromLists(_user.id);
-            var done = true;
+            const user = client.getUsers()[0];
 
-            for(var i = 0, l = client.state.room.votes.length; i < l; i++) {
-                if(_user.id == client.state.room.votes[i]) {
-                    done = false;
-                    break;
+            if (user) {
+                client.clearUserFromLists(user.id);
+                let done = true;
+
+                for(let i = 0, l = client.state.room.votes.length; i < l; i++) {
+                    if(user.id == client.state.room.votes[i]) {
+                        done = false;
+                        break;
+                    }
                 }
-            }
 
-            expectdone.to.equal(true);
+                expect(done).to.equal(true);
+            } else {
+                client._log(0, "could not test clearUserFromLists since no user was found in room");
+            }
         });
     });
 
@@ -1300,33 +1464,36 @@ isObjectTest()("Local", () => {
 
     describe("#getRoom", () => {
         it("should get the current room's stats", () => {
-            var room = client.getRoom();
+            const room = client.getRoom();
 
             objects.testRoom(testLogin.parse, room);
         });
     });
 
-    execTest()("#getUserByName", () => {
+    skipIfTravis(isTravis)("#getUserByName", () => {
         it("should get a user by name", () => {
-            objects.testUser(testLogin.parse, client.getUserByName(_user.username));
+            const user = client.getUsers()[0];
+            objects.testUser(testLogin.parse, client.getUserByName(user.username));
         });
     });
 
-    execTest()("#getUserById", () => {
+    skipIfTravis(isTravis)("#getUserById", () => {
         it("should get a user by their ID", () => {
-            objects.testUser(testLogin.parse, client.getUserById(_user.id));
+            const user = client.getUsers()[0];
+            objects.testUser(testLogin.parse, client.getUserById(user.id));
         });
     });
 
-    execTest()("#getUserRole", () => {
+    skipIfTravis(isTravis)("#getUserRole", () => {
         it("should get a user's role", () => {
-            expect(client.getUserRole(_user.id)).to.equal(_user.role);
+            const user = client.getUsers()[0];
+            expect(client.getUserRole(user.id)).to.equal(user.role);
         });
     });
 
     describe("#getUsers", () => {
         it("should get all users that are currently in the room", () => {
-            var users = client.getUsers();
+            const users = client.getUsers();
 
             expect(users).to.be.an("array");
 
@@ -1343,8 +1510,8 @@ isObjectTest()("Local", () => {
 
     describe("#setSetting", () => {
         it("should change a setting and save it", done => {
-            var chatImages = client.getSetting("chatImages");
-            client.setSetting("chatImages", !chatImages, (err) => {
+            const chatImages = client.getSetting("chatImages");
+            client.setSetting("chatImages", !chatImages, err => {
                 expect(err).to.be.equal(null);
                 expect(chatImages).to.not.equal(client.getSetting("chatImages"));
                 done();
@@ -1358,22 +1525,26 @@ isObjectTest()("Local", () => {
         });
     });
 
-    execTest()("#isFriend", () => {
+    skipIfTravis(isTravis)("#isFriend", () => {
         it("should indicate whether a user is a friend or not", () => {
-            expect(client.isFriend(_user.id)).to.be.a("boolean");
+            if (!extendedTestCheck(1))
+                return;
+
+            const user = getUsers()[0];
+            expect(client.isFriend(user.id)).to.be.a("boolean");
         });
     });
 
-    execTest()("#getDJ", () => {
+    skipIfTravis(isTravis)("#getDJ", () => {
         it("should get the current DJ playing", () => {
-            var dj = client.getDJ();
+            const dj = client.getDJ();
 
             if(dj)
                 objects.testUser(testLogin.parse, dj);
         });
     });
 
-    execTest()("#getMedia", () => {
+    skipIfTravis(isTravis)("#getMedia", () => {
         it("should return the current media object", () => {
             objects.testMedia(testLogin.parse, client.getMedia());
         });
@@ -1412,9 +1583,10 @@ isObjectTest()("Local", () => {
         });
     });
 
-    execTest()("#checkGlobalRole", () => {
+    skipIfTravis(isTravis)("#checkGlobalRole", () => {
         it("should give back the global role of a user", () => {
-            expect(client.checkGlobalRole(_user.gRole)).to.be.a("number");
+            const user = client.getUsers()[0];
+            expect(client.checkGlobalRole(user.gRole)).to.be.a("number");
         });
     });
 
@@ -1563,22 +1735,50 @@ isObjectTest()("Local", () => {
         });
     });
 
-    execTest()("#cacheUser", () => {
+    skipIfTravis(isTravis)("#cacheUser", () => {
         it("should cache a user", () => {
-            expect(client.cacheUser(_user)).to.be.a("boolean").and.equal(true);
+            if (!extendedTestCheck(1))
+                return;
+
+            const user = getUsers()[0];
+            const cache = client.getUserById(user.id, client.CACHE.ONLY);
+
+            if (cache) {
+                expect(cache.id).to.be.equal(user.id);
+                expect(client.cacheUser(user)).to.be.a("boolean").and.equal(false);
+            } else {
+                expect(client.cacheUser(user)).to.be.a("boolean").and.equal(true);
+            }
         });
     });
 
-    execTest()("#removeCachedUserByID", () => {
+    skipIfTravis(isTravis)("#removeCachedUserById", () => {
         it("should remove a cached user by their ID", () => {
-            expect(client.removeCachedUserByID(_user.id)).to.be.a("boolean").and.equal(true);
+            if (!extendedTestCheck(1))
+                return;
+
+            const user = getUsers()[0];
+            const cache = client.getUserById(user.id, client.CACHE.ONLY);
+
+            if (cache)
+                expect(client.cacheUser(user)).to.be.a("boolean").and.equal(true);
+
+            expect(client.removeCachedUserById(user.id)).to.be.a("boolean").and.equal(true);
         });
     });
 
-    execTest()("#removeCachedUserByName", () => {
+    skipIfTravis(isTravis)("#removeCachedUserByUsername", () => {
         it("should remove a cached user by their Name", () => {
-            client.cacheUser(_user);
-            expect(client.removeCachedUserByName(_user.username)).to.be.a("boolean").and.equal(true);
+            if (!extendedTestCheck(1))
+                return;
+
+            const user = getUsers()[0];
+            const cache = client.getUserById(user.id, client.CACHE.ONLY);
+
+            if (!cache)
+                expect(client.cacheUser(user)).to.be.a("boolean").and.equal(true);
+
+            expect(client.removeCachedUserByUsername(user.username)).to.be.a("boolean").and.equal(true);
         });
     });
 
