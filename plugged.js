@@ -509,7 +509,10 @@ class Plugged extends EventEmitter {
     _loggedIn(callback) {
         this._connectSocket();
         this._log(1, "logged in");
-        this.requestSelf(callback);
+        this.requestSelf((err, self) => {
+            this.state.room.self = self;
+            callback && callback(err, self);
+        });
     }
 
     /**
@@ -2294,15 +2297,15 @@ class Plugged extends EventEmitter {
 
         this.query.query("GET", endpoints["USERSTATS"] + "me", function _requestedSelf(err, data) {
             if (!err && data) {
-                self.state.self = mapper.mapSelf(data);
+                data = mapper.mapSelf(data);
 
-                self.getFriends(function(err, data) {
-                    if (!err && data) {
-                        for (let i = 0, l = data.length; i < l; i++)
-                            self.state.self.friends.push(data[i].id);
+                self.getFriends(function(err, friends) {
+                    if (!err && friends) {
+                        for (let i = 0, l = friends.length; i < l; i++)
+                            data.friends.push(friends[i].id);
                     }
 
-                    callback && callback(err, self.state.self);
+                    callback && callback(err, data);
                 });
             } else {
                 callback && callback(err);
