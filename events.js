@@ -93,7 +93,7 @@ const chatDelete = function(data) {
     this.emit(this.CHAT_DELETE, chat);
 }
 
-const chatRateLimit = function(data) {
+const rateLimit = function(data) {
     this.emit(this.CHAT_RATE_LIMIT);
 }
 
@@ -163,11 +163,11 @@ const modAddDJ = function(data) {
     this.emit(this.MOD_ADD_DJ, mapper.mapModAddDJ(data.p));
 }
 
-const maintenanceMode = function(data) {
+const plugMaintenance = function(data) {
     this.emit(this.MAINTENANCE_MODE);
 }
 
-const maintenanceModeAlert = function(data) {
+const plugMaintenanceAlert = function(data) {
     this.emit(this.MAINTENANCE_MODE_ALERT);
 }
 
@@ -348,7 +348,7 @@ exports.ban = ban;
 exports.banIP = banIP;
 exports.chat = chat;
 exports.chatDelete = chatDelete;
-exports.chatRateLimit = chatRateLimit;
+exports.rateLimit = rateLimit;
 exports.floodAPI = floodAPI;
 exports.floodChat = floodChat;
 exports.gifted = gifted;
@@ -362,8 +362,8 @@ exports.grab = grab;
 exports.killSession = killSession;
 exports.levelUp = levelUp;
 exports.modAddDJ = modAddDJ;
-exports.maintenanceMode = maintenanceMode;
-exports.maintenanceModeAlert = maintenanceModeAlert;
+exports.plugMaintenance = plugMaintenance;
+exports.plugMaintenanceAlert = plugMaintenanceAlert;
 exports.modBan = modBan;
 exports.modMoveDJ = modMoveDJ;
 exports.modMute = modMute;
