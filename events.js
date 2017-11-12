@@ -337,7 +337,7 @@ const vote = function(data) {
         this.emit(this.VOTE, vote);
 }
 
-const waitlistUpdate = function(data) {
+const djListUpdate = function(data) {
     this.emit(this.WAITLIST_UPDATE, data.p);
     this.state.room.booth.waitlist = data.p;
 }
@@ -353,6 +353,7 @@ exports.floodAPI = floodAPI;
 exports.floodChat = floodChat;
 exports.gifted = gifted;
 exports.djListCycle = djListCycle;
+exports.djListUpdate = djListUpdate;
 exports.djListLocked = djListLocked;
 exports.earn = earn;
 exports.friendRequest = friendRequest;
@@ -384,4 +385,3 @@ exports.userJoin = userJoin;
 exports.userLeave = userLeave;
 exports.userUpdate = userUpdate;
 exports.vote = vote;
-exports.waitlistUpdate = waitlistUpdate;
