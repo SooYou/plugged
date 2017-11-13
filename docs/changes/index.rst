@@ -25,7 +25,9 @@ CHANGELOG
     * refactored the removeChatMessage* functions
     * refactored query to hold all options in an object
     * refactored chat to hold all related data in an object
+    * refactored all tests to adapt to the new code
     * fixed timing bug with query and chat
+    * fixed bug in requestSelf
 
     + a new documentation (This should solve a lot of starter issues)
     + the previous model was added into the documentation
