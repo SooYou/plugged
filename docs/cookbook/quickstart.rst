@@ -89,13 +89,13 @@ following lines:
 
 .. code-block:: JavaScript
 
-    class Bot extends Plugged {
+    class OurSuperAwesomeBot extends Plugged {
         constructor(options={}) {
             super(options);
         }
     }
 
-    module.exports = Bot;
+    module.exports = OurSuperAwesomeBot;
 
 
 Now that we got this set, I'll explain some things. What we did here is to
@@ -108,13 +108,13 @@ startup settings to Plugged as shown :doc:`here</datatypes/index>` .
 The last line is just us using CommonJS to export our class so we can pull it
 in with require later.
 
-Next we should flesh out our Bot class so that it is able to greet people.
+Next we should flesh out our bot class so that it is able to greet people.
 For that we need something to make it say something and, as we all know, What
 is better for that than a function? Time to extend our class!
 
 .. code-block:: JavaScript
 
-    class Bot extends Plugged {
+    class OurSuperAwesomeBot extends Plugged {
         constructor(options={}) {
             super(options);
         }
@@ -184,7 +184,7 @@ The :doc:`login</reference/login>` function logs us with our credentials into
 plug, after that we're able to join rooms and use other non room related
 functions.
 
-Next we need to wire everything to the respective events. Plugged
+Next we need to wire everything to the respective event. Plugged
 uses **a lot** of events. I am not kidding. There's plenty of actions that erupt
 as events, but that's a topic for another time, so we'll just need one event
 which is:
@@ -199,14 +199,14 @@ Using events is as simple as using the functions *on* and *once*
     const bot = new OurSuperAwesomeBot();
 
     // NEW CODE HERE
-    const loggedIn = function(err, room) {
+    const loggedIn = function(err, self) {
         if (!err)
             bot.connect("exampleroom", joinedRoom); // change exampleroom into your room of choice
         else
             console.log(err);
     };
 
-    const joinedRoom = function(err, me) {
+    const joinedRoom = function(err, room) {
         if (!err) {
             console.log("connected to room!");
             bot.on("USER_JOIN", user => bot.greet(user));
