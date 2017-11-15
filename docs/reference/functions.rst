@@ -23,149 +23,6 @@ hitting up the cookbook.
 Functions
 ----------
 
-   * clearUserCache_.
-   * clearChatCache_.
-   * clearChatQueue_.
-   * getChatByUsername_.
-   * getChat_.
-   * removeChatMessageByUser_.
-   * removeChatMessage_.
-   * watchUserCache_.
-   * cacheChat_.
-   * isChatCached_.
-   * setChatCacheSize_.
-   * getChatCacheSize_.
-   * cacheUserOnLeave_.
-   * isUserCachedOnLeave_.
-   * clearUserFromLists_.
-   * setJar_.
-   * getJar_.
-   * setHeartbeatRate_.
-   * getHeartbeatRate_.
-   * setMaxTimeout_.
-   * getMaxTimeout_.
-   * defaultMessageProc_.
-   * setMessageProcessor_.
-   * sendChat_.
-   * invokeLogger_.
-   * login_.
-   * guest_.
-   * connect_.
-   * getUserById_.
-   * getUserByName_.
-   * getUserRole_.
-   * getUsers_.
-   * getSelf_.
-   * setSetting_.
-   * getSetting_.
-   * getSettings_.
-   * isFriend_.
-   * getDJ_.
-   * getMedia_.
-   * getStartTime_.
-   * getBooth_.
-   * getRoom_.
-   * getRoomMeta_.
-   * getFX_.
-   * checkGlobalRole_.
-   * getHostName_.
-   * getHostID_.
-   * getPopulation_.
-   * getGuests_.
-   * getMinChatLevel_.
-   * isFavorite_.
-   * getDescription_.
-   * getWelcomeMessage_.
-   * getSlug_.
-   * getWaitlist_.
-   * isWaitlistLocked_.
-   * doesWaitlistCycle_.
-   * getVotes_.
-   * getGrabs_.
-   * cacheUser_.
-   * removeCachedUserById_.
-   * removeCachedUserByUsername_.
-   * getStaffOnline_.
-   * getStaffOnlineByRole_.
-   * getStaffByRole_.
-   * getNews_.
-   * getAuthToken_.
-   * getRoomStats_.
-   * findRooms_.
-   * getRoomList_.
-   * getStaff_.
-   * getUser_.
-   * getRoomHistory_.
-   * validateRoomName_.
-   * validateUsername_.
-   * getMutes_.
-   * getBans_.
-   * saveSettings_.
-   * setLock_.
-   * setCycle_.
-   * resetPassword_.
-   * requestUsers_.
-   * joinRoom_.
-   * joinWaitlist_.
-   * addToWaitlist_.
-   * addPlaylist_.
-   * grab_.
-   * skipDJ_.
-   * moveDJ_.
-   * createRoom_.
-   * sendSOS_.
-   * updateRoomInfo_.
-   * setMinChatLevel_.
-   * banUser_.
-   * banBooth_.
-   * deleteBanBooth_.
-   * muteUser_.
-   * addStaff_.
-   * ignoreUser_.
-   * deletePlaylist_.
-   * removeIgnore_.
-   * removeStaff_.
-   * removeDJ_.
-   * leaveWaitlist_.
-   * unbanUser_.
-   * unmuteUser_.
-   * deleteMessage_.
-   * logout_.
-   * requestSelf_.
-   * getMyHistory_.
-   * getFriends_.
-   * getFriendRequests_.
-   * findPlaylist_.
-   * findMedia_.
-   * findMediaPlaylist_.
-   * getPlaylist_.
-   * getPlaylists_.
-   * getIgnores_.
-   * getFavoriteRooms_.
-   * setProfileMessage_.
-   * renamePlaylist_.
-   * setAvatar_.
-   * setBadge_.
-   * setLanguage_.
-   * rejectFriendRequest_.
-   * activatePlaylist_.
-   * moveMedia_.
-   * updateMedia_.
-   * shufflePlaylist_.
-   * addFriend_.
-   * deleteMedia_.
-   * addMedia_.
-   * woot_.
-   * meh_.
-   * favoriteRoom_.
-   * deleteNotification_.
-   * removeFriend_.
-   * getInventory_.
-   * getProducts_.
-   * getTransactions_.
-   * purchaseUsername_.
-
-
 clearChatCache
 ##############
 
@@ -215,16 +72,17 @@ deleteNotification
 
    **Parameters**:
 
-      * **id**: :dt:`Number` notification ID.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`Number` notification ID.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 getChat
@@ -262,16 +120,17 @@ getInventory
 
    **Parameters**:
 
-      * **callback**: :dt:`function` called on retrieval.
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **inventory**: :doc:`[Inventory]</datatypes/inventory>`
+      **err**: :dt:`Object` possible error returned.
+
+      **inventory**: :doc:`[Inventory]</datatypes/inventory>`
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 getProducts
@@ -281,18 +140,21 @@ getProducts
 
    **Parameters**:
 
-      * **type**: :dt:`String` type of product.
-      * **category**: :dt:`String` category of product.
-      * **callback**: :dt:`function` called on retrieval.
+      **type**: :dt:`String` type of product.
+
+      **category**: :dt:`String` category of product.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **products**: :doc:`[Product]</datatypes/product>`
+      **err**: :dt:`Object` possible error returned.
+
+      **products**: :doc:`[Product]</datatypes/product>`
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 getTransactions
@@ -302,16 +164,17 @@ getTransactions
 
    **Parameters**:
 
-      * **callback**: :dt:`function` called on retrieval.
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **transactions**: :doc:`[Transaction]</datatypes/transaction>`
+      **err**: :dt:`Object` possible error returned.
+
+      **transactions**: :doc:`[Transaction]</datatypes/transaction>`
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 cacheChat
@@ -422,6 +285,7 @@ setJar
    **Parameters**:
 
       **jar**: :dt:`Object` cookie jar to use.
+
       **storage**: :dt:`Object` (optional) can create a cookie jar.
 
       .. note::
@@ -533,6 +397,8 @@ setMessageProcessor
       :dt:`Boolean` true when function was set.
 
 
+.. _send-chat:
+
 sendChat
 ########
 
@@ -541,6 +407,7 @@ sendChat
    **Parameters**:
 
       **message**: :dt:`String` message message to send.
+
       **deleteTimeout**: :dt:`Number` delay in ms until message is deleted.
 
    **Return Value**:
@@ -588,6 +455,8 @@ getVerbosity
       :dt:`Number` verbosity.
 
 
+.. _login:
+
 login
 #####
 
@@ -596,13 +465,16 @@ login
    **Parameters**:
 
       **credentials**: :dt:`Object` formatted loging info, see Options.
+
       **authToken**: :dt:`Object` last session token.
+
       **callback**: :dt:`Function` called after logging in.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **self**: :doc:`[Self]</datatypes/modelself>`
+      **err**: :dt:`Object` possible error returned.
+
+      **self**: :doc:`[Self]</datatypes/modelself>`
 
    **Return Value**:
 
@@ -617,17 +489,21 @@ guest
    **Parameters**:
 
       **room**: :dt:`String` room slug.
+
       **callback**: :dt:`String` called after entering the room.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **stats**: :doc:`[Room]</datatypes/room>`
+      **err**: :dt:`Object` possible error returned.
+
+      **stats**: :doc:`[Room]</datatypes/room>`
 
    **Return Value**:
 
       :dt:`undefined`
 
+
+.. _connect:
 
 connect
 #######
@@ -637,12 +513,14 @@ connect
    **Parameters**:
 
       **slug**: :dt:`String` room name.
+
       **callback**: :dt:`Function` called after entering the room.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **stats**: :doc:`[Room]</datatypes/room>`
+      **err**: :dt:`Object` possible error returned.
+
+      **stats**: :doc:`[Room]</datatypes/room>`
 
    **Return Value**:
 
@@ -657,6 +535,7 @@ getUserById
    **Parameters**:
 
       **id**: :dt:`Number` user's ID.
+
       **cache**: :doc:`CACHE</datatypes/cache>`
 
    **Return Value**:
@@ -672,6 +551,7 @@ getUserByName
    **Parameters**:
 
       **username**: :dt:`String`
+
       **cache**: :dt:`Enum`
 
    **Return Value**:
@@ -729,12 +609,14 @@ setSetting
    **Parameters**:
 
       **key**: :dt:`String` key setting name.
+
       **value**: :dt:`*` value to set.
+
       **callback**: :dt:`function` called when data was saved.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
@@ -1141,7 +1023,7 @@ removeCachedUserById
 
 
 removeCachedUserByUsername
-######################
+##########################
 
    Removes a User from cache.
 
@@ -1189,17 +1071,19 @@ getStaffByRole
 
    **Parameters**:
 
-      * **role**: :dt:`Enum` staff by role.
-      * **callback**: :dt:`function` called on retrieval.
+      **role**: :dt:`Enum` staff by role.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **staff**: :doc:`[User]</datatypes/user>`
+      **err**: :dt:`Object` possible error returned.
+
+      **staff**: :doc:`[User]</datatypes/user>`
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 getNews
@@ -1209,16 +1093,17 @@ getNews
 
    **Parameters**:
 
-      * **callback**: :dt:`function` called on retrieval.
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **news**: :doc:`[News]</datatypes/news>`
+      **err**: :dt:`Object` possible error returned.
+
+      **news**: :doc:`[News]</datatypes/news>`
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 getAuthToken
@@ -1228,16 +1113,17 @@ getAuthToken
 
    **Parameters**:
 
-      * **callback**: :dt:`function` called on retrieval.
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **token**: :dt:`String` auth token.
+      **err**: :dt:`Object` possible error returned.
+
+      **token**: :dt:`String` auth token.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 getRoomStats
@@ -1247,16 +1133,17 @@ getRoomStats
 
    **Parameters**:
 
-      * **callback**: :dt:`function` called on retrieval.
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **room**: :doc:`Room</datatypes/room>`
+      **err**: :dt:`Object` possible error returned.
+
+      **room**: :doc:`Room</datatypes/room>`
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 findRooms
@@ -1266,18 +1153,21 @@ findRooms
 
    **Parameters**:
 
-      * **page**: :dt:`Number` zero based index.
-      * **limit**: :dt:`Number` amount of rooms per page.
-      * **callback**: :dt:`function` called on retrieval.
+      **page**: :dt:`Number` zero based index.
+
+      **limit**: :dt:`Number` amount of rooms per page.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **rooms**: :doc:`[FlatRoom]</datatypes/flatroom>`
+      **err**: :dt:`Object` possible error returned.
+
+      **rooms**: :doc:`[FlatRoom]</datatypes/flatroom>`
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 getRoomList
@@ -1287,18 +1177,21 @@ getRoomList
 
    **Parameters**:
 
-      * **page**: :dt:`Number` zero based index.
-      * **limit**: :dt:`Number` amount of rooms per page.
-      * **callback**: :dt:`function` called on retrieval.
+      **page**: :dt:`Number` zero based index.
+
+      **limit**: :dt:`Number` amount of rooms per page.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **rooms**: :doc:`[FlatRoom]</datatypes/flatroom>`
+      **err**: :dt:`Object` possible error returned.
+
+      **rooms**: :doc:`[FlatRoom]</datatypes/flatroom>`
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 getStaff
@@ -1308,16 +1201,17 @@ getStaff
 
    **Parameters**:
 
-      * **callback**: :dt:`function` called on retrieval.
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **staff**: :doc:`[User]</datatypes/user>`
+      **err**: :dt:`Object` possible error returned.
+
+      **staff**: :doc:`[User]</datatypes/user>`
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 getUser
@@ -1327,17 +1221,19 @@ getUser
 
    **Parameters**:
 
-      * **id**: :dt:`Number` user's ID.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`Number` user's ID.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **user**: :doc:`User</datatypes/user>`
+      **err**: :dt:`Object` possible error returned.
+
+      **user**: :doc:`User</datatypes/user>`
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 .. _get-room-history:
@@ -1349,16 +1245,17 @@ getRoomHistory
 
    **Parameters**:
 
-      * **callback**: :dt:`function` called on retrieval.
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **history**: :doc:`[History]</datatypes/history>`
+      **err**: :dt:`Object` possible error returned.
+
+      **history**: :doc:`[History]</datatypes/history>`
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 validateRoomName
@@ -1368,17 +1265,19 @@ validateRoomName
 
    **Parameters**:
 
-      * **name**: :dt:`String` name to be validated.
-      * **callback**: :dt:`function` called on retrieval.
+      **name**: :dt:`String` name to be validated.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **slug**: :dt:`String` url conform representation of room name.
+      **err**: :dt:`Object` possible error returned.
+
+      **slug**: :dt:`String` url conform representation of room name.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 validateUsername
@@ -1388,18 +1287,20 @@ validateUsername
 
    **Parameters**:
 
-      * **name**: :dt:`String` name to be validated.
-      * **callback**: :dt:`function` called on retrieval.
+      **name**: :dt:`String` name to be validated.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **slug**: :dt:`String` url conform representation of name.
+      **err**: :dt:`Object` possible error returned.
+
+      **slug**: :dt:`String` url conform representation of name.
 
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 getMutes
@@ -1409,16 +1310,17 @@ getMutes
 
    **Parameters**:
 
-      * **callback**: :dt:`function` called on retrieval.
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **mutes**: :doc:`[Mute]</datatypes/mute>`
+      **err**: :dt:`Object` possible error returned.
+
+      **mutes**: :doc:`[Mute]</datatypes/mute>`
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 getBans
@@ -1428,16 +1330,17 @@ getBans
 
    **Parameters**:
 
-      * **callback**: :dt:`function` called on retrieval.
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **bans**: :doc:`[Ban]</datatypes/ban>`
+      **err**: :dt:`Object` possible error returned.
+
+      **bans**: :doc:`[Ban]</datatypes/ban>`
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 saveSettings
@@ -1447,15 +1350,15 @@ saveSettings
 
    **Parameters**:
 
-      * **callback**: :dt:`function` called on retrieval.
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 setLock
@@ -1465,17 +1368,19 @@ setLock
 
    **Parameters**:
 
-      * **lock**: :dt:`Boolean` should waitlist be locked?
-      * **removeAllDJs**: :dt:`Boolean` remove all users in waitlist?
-      * **callback**: :dt:`function` called on retrieval.
+      **lock**: :dt:`Boolean` should waitlist be locked?
+
+      **removeAllDJs**: :dt:`Boolean` remove all users in waitlist?
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 setCycle
@@ -1485,16 +1390,17 @@ setCycle
 
    **Parameters**:
 
-      * **shouldCycle**: :dt:`Boolean` should waitlist cycle?
-      * **callback**: :dt:`function` called on retrieval.
+      **shouldCycle**: :dt:`Boolean` should waitlist cycle?
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 resetPassword
@@ -1504,15 +1410,15 @@ resetPassword
 
    **Parameters**:
 
-      * **callback**: :dt:`function` called on retrieval.
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 requestUsers
@@ -1522,17 +1428,19 @@ requestUsers
 
    **Parameters**:
 
-      * **ids**: :dt:`[Number]` user IDs.
-      * **callback**: :dt:`function` called on retrieval.
+      **ids**: :dt:`[Number]` user IDs.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **users**: :doc:`[User]</datatypes/user>`
+      **err**: :dt:`Object` possible error returned.
+
+      **users**: :doc:`[User]</datatypes/user>`
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 joinRoom
@@ -1542,16 +1450,17 @@ joinRoom
 
    **Parameters**:
 
-      * **slug**: :dt:`String` room name.
-      * **callback**: :dt:`function` called on retrieval.
+      **slug**: :dt:`String` room name.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 joinWaitlist
@@ -1561,15 +1470,15 @@ joinWaitlist
 
    **Parameters**:
 
-      * **callback**: :dt:`function` called on retrieval.
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 addToWaitlist
@@ -1579,16 +1488,17 @@ addToWaitlist
 
    **Parameters**:
 
-      * **id**: :dt:`Number` user's ID.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`Number` user's ID.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 addPlaylist
@@ -1598,18 +1508,21 @@ addPlaylist
 
    **Parameters**:
 
-      * **name**: :dt:`String` playlist name.
-      * **media**: :dt:`[Object]` media to add.
-      * **callback**: :dt:`function` called on retrieval.
+      **name**: :dt:`String` playlist name.
+
+      **media**: :dt:`[Object]` media to add.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **playlist**: :doc:`Playlist</datatypes/playlist>`
+      **err**: :dt:`Object` possible error returned.
+
+      **playlist**: :doc:`Playlist</datatypes/playlist>`
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 grab
@@ -1619,17 +1532,19 @@ grab
 
    **Parameters**:
 
-      * **id**: :dt:`Number` playlist ID.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`Number` playlist ID.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **playlist**: :doc:`Playlist</datatypes/playlist>`
+      **err**: :dt:`Object` possible error returned.
+
+      **playlist**: :doc:`Playlist</datatypes/playlist>`
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 skipDJ
@@ -1639,16 +1554,17 @@ skipDJ
 
    **Parameters**:
 
-      * **id**: :dt:`Number` user's ID.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`Number` user's ID.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 moveDJ
@@ -1658,18 +1574,20 @@ moveDJ
 
    **Parameters**:
 
-      * **id**: :dt:`Number` user's ID.
-      * **position**: :dt:`Number` zero based index with zero being the first
+      **id**: :dt:`Number` user's ID.
+
+      **position**: :dt:`Number` zero based index with zero being the first
         position.
-      * **callback**: :dt:`function` called on retrieval.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 createRoom
@@ -1679,18 +1597,21 @@ createRoom
 
    **Parameters**:
 
-      * **name**: :dt:`String` room name.
-      * **unlisted**: :dt:`Boolean` makes room private.
-      * **callback**: :dt:`function` called on retrieval.
+      **name**: :dt:`String` room name.
+
+      **unlisted**: :dt:`Boolean` makes room private.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **room**: :doc:`NewRoom</datatypes/newroom>` info of new room.
+      **err**: :dt:`Object` possible error returned.
+
+      **room**: :doc:`NewRoom</datatypes/newroom>` info of new room.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 sendSOS
@@ -1705,15 +1626,15 @@ sendSOS
 
    **Parameters**:
 
-      * **message**: :dt:`String` message send to moderators.
+      **message**: :dt:`String` message send to moderators.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 updateRoomInfo
@@ -1723,18 +1644,21 @@ updateRoomInfo
 
    **Parameters**:
 
-      * **name**: :dt:`String` room name.
-      * **description**: :dt:`String` room description.
-      * **welcome**: :dt:`String` welcome message shown on entrance.
-      * **callback**: :dt:`function` called on retrieval.
+      **name**: :dt:`String` room name.
+
+      **description**: :dt:`String` room description.
+
+      **welcome**: :dt:`String` welcome message shown on entrance.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 setMinChatLevel
@@ -1744,16 +1668,17 @@ setMinChatLevel
 
    **Parameters**:
 
-      * **level**: :dt:`Number` level required to chat.
-      * **callback**: :dt:`function` called on retrieval.
+      **level**: :dt:`Number` level required to chat.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 banUser
@@ -1763,18 +1688,21 @@ banUser
 
    **Parameters**:
 
-      * **id**: :dt:`Number` user's ID.
-      * **time**: :dt:`Enum` duration of ban.
-      * **reason**: :dt:`Enum` reason of ban.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`Number` user's ID.
+
+      **time**: :dt:`Enum` duration of ban.
+
+      **reason**: :dt:`Enum` reason of ban.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 banBooth
@@ -1788,18 +1716,21 @@ banBooth
 
    **Parameters**:
 
-      * **id**: :dt:`Number` user's ID.
-      * **time**: :dt:`Enum` duration of ban.
-      * **reason**: :dt:`Enum` reason of ban.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`Number` user's ID.
+
+      **time**: :dt:`Enum` duration of ban.
+
+      **reason**: :dt:`Enum` reason of ban.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 deleteBanBooth
@@ -1809,16 +1740,17 @@ deleteBanBooth
 
    **Parameters**:
 
-      * **id**: :dt:`Number` user's ID.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`Number` user's ID.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 muteUser
@@ -1828,18 +1760,21 @@ muteUser
 
    **Parameters**:
 
-      * **id**: :dt:`Number` user's ID.
-      * **time**: :dt:`Enum` duration of mute.
-      * **reason**: :dt:`Enum` reason of mute.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`Number` user's ID.
+
+      **time**: :dt:`Enum` duration of mute.
+
+      **reason**: :dt:`Enum` reason of mute.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 addStaff
@@ -1849,17 +1784,19 @@ addStaff
 
    **Parameters**:
 
-      * **id**: :dt:`Number` user's ID.
-      * **role**: :dt:`Enum` role to give.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`Number` user's ID.
+
+      **role**: :dt:`Enum` role to give.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 ignoreUser
@@ -1869,17 +1806,19 @@ ignoreUser
 
    **Parameters**:
 
-      * **id**: :dt:`Number` user's ID.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`Number` user's ID.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **ignored**: :doc:`Ignore</datatypes/ignore>` ignored user.
+      **err**: :dt:`Object` possible error returned.
+
+      **ignored**: :doc:`Ignore</datatypes/ignore>` ignored user.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 deletePlaylist
@@ -1889,16 +1828,17 @@ deletePlaylist
 
    **Parameters**:
 
-      * **id**: :dt:`Number` playlist to delete.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`Number` playlist to delete.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 removeIgnore
@@ -1908,18 +1848,20 @@ removeIgnore
 
    **Parameters**:
 
-      * **id**: :dt:`Number` user's ID.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`Number` user's ID.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **unignored**: :doc:`Ignore</datatypes/ignore>` unignored
+      **err**: :dt:`Object` possible error returned.
+
+      **unignored**: :doc:`Ignore</datatypes/ignore>` unignored
         user.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 removeStaff
@@ -1929,16 +1871,17 @@ removeStaff
 
    **Parameters**:
 
-      * **id**: :dt:`Number` user's ID.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`Number` user's ID.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 removeDJ
@@ -1948,16 +1891,17 @@ removeDJ
 
    **Parameters**:
 
-      * **id**: :dt:`Number` user's ID.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`Number` user's ID.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 leaveWaitlist
@@ -1967,15 +1911,15 @@ leaveWaitlist
 
    **Parameters**:
 
-      * **callback**: :dt:`function` called on retrieval.
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 unbanUser
@@ -1985,16 +1929,17 @@ unbanUser
 
    **Parameters**:
 
-      * **id**: :dt:`Number` user's ID.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`Number` user's ID.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 .. _unmute-user:
@@ -2006,16 +1951,17 @@ unmuteUser
 
    **Parameters**:
 
-      * **id**: :dt:`Number` user's ID.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`Number` user's ID.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 deleteMessage
@@ -2025,16 +1971,17 @@ deleteMessage
 
    **Parameters**:
 
-      * **cid**: :dt:`Number` message ID.
-      * **callback**: :dt:`function` called on retrieval.
+      **cid**: :dt:`Number` message ID.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 logout
@@ -2044,15 +1991,15 @@ logout
 
    **Parameters**:
 
-      * **callback**: :dt:`function` called on retrieval.
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 requestSelf
@@ -2062,16 +2009,17 @@ requestSelf
 
    **Parameters**:
 
-      * **callback**: :dt:`function` called on retrieval.
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **self**: :doc:`[Self]</datatypes/modelself>`
+      **err**: :dt:`Object` possible error returned.
+
+      **self**: :doc:`[Self]</datatypes/modelself>`
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 .. _get-my-history:
@@ -2083,16 +2031,17 @@ getMyHistory
 
    **Parameters**:
 
-      * **callback**: :dt:`function` called on retrieval.
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **history**: :doc:`[History]</datatypes/history>`
+      **err**: :dt:`Object` possible error returned.
+
+      **history**: :doc:`[History]</datatypes/history>`
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 getFriends
@@ -2102,16 +2051,17 @@ getFriends
 
    **Parameters**:
 
-      * **callback**: :dt:`function` called on retrieval.
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **friends**: :doc:`[User]</datatypes/user>`
+      **err**: :dt:`Object` possible error returned.
+
+      **friends**: :doc:`[User]</datatypes/user>`
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 getFriendRequests
@@ -2121,16 +2071,17 @@ getFriendRequests
 
    **Parameters**:
 
-      * **callback**: :dt:`function` called on retrieval.
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **requests**: :doc:`[Invitation]</datatypes/invitation>`
+      **err**: :dt:`Object` possible error returned.
+
+      **requests**: :doc:`[Invitation]</datatypes/invitation>`
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 findPlaylist
@@ -2140,17 +2091,19 @@ findPlaylist
 
    **Parameters**:
 
-      * **query**: :dt:`String` keywords to look for.
-      * **callback**: :dt:`function` called on retrieval.
+      **query**: :dt:`String` keywords to look for.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **playlist**: :doc:`[Playlist]</datatypes/playlist>`
+      **err**: :dt:`Object` possible error returned.
+
+      **playlist**: :doc:`[Playlist]</datatypes/playlist>`
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 findMedia
@@ -2160,17 +2113,19 @@ findMedia
 
    **Parameters**:
 
-      * **query**: :dt:`String` keywords to look for.
-      * **callback**: :dt:`function` called on retrieval.
+      **query**: :dt:`String` keywords to look for.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **media**: :doc:`[Media]</datatypes/media>`
+      **err**: :dt:`Object` possible error returned.
+
+      **media**: :doc:`[Media]</datatypes/media>`
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 findMediaPlaylist
@@ -2180,18 +2135,21 @@ findMediaPlaylist
 
    **Parameters**:
 
-      * **id**: :dt:`Number` playlist to use for search.
-      * **query**: :dt:`String` keywords to look for.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`Number` playlist to use for search.
+
+      **query**: :dt:`String` keywords to look for.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **media**: :doc:`[Media]</datatypes/media>`
+      **err**: :dt:`Object` possible error returned.
+
+      **media**: :doc:`[Media]</datatypes/media>`
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 getPlaylist
@@ -2201,17 +2159,19 @@ getPlaylist
 
    **Parameters**:
 
-      * **id**: :dt:`Number` playlist to retrieve.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`Number` playlist to retrieve.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **media**: :doc:`[Media]</datatypes/media>`
+      **err**: :dt:`Object` possible error returned.
+
+      **media**: :doc:`[Media]</datatypes/media>`
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 getPlaylists
@@ -2221,16 +2181,17 @@ getPlaylists
 
    **Parameters**:
 
-      * **callback**: :dt:`function` called on retrieval.
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **playlists**: :doc:`[Playlist]</datatypes/playlist>`
+      **err**: :dt:`Object` possible error returned.
+
+      **playlists**: :doc:`[Playlist]</datatypes/playlist>`
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 getIgnores
@@ -2240,16 +2201,17 @@ getIgnores
 
    **Parameters**:
 
-      * **callback**: :dt:`function` called on retrieval.
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **users**: :doc:`[Ignore]</datatypes/ignore>` ignored users.
+      **err**: :dt:`Object` possible error returned.
+
+      **users**: :doc:`[Ignore]</datatypes/ignore>` ignored users.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 getFavoriteRooms
@@ -2259,16 +2221,17 @@ getFavoriteRooms
 
    **Parameters**:
 
-      * **callback**: :dt:`function` called on retrieval.
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **rooms**: :doc:`[Room]</datatypes/room>` favorited rooms.
+      **err**: :dt:`Object` possible error returned.
+
+      **rooms**: :doc:`[Room]</datatypes/room>` favorited rooms.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 setProfileMessage
@@ -2278,16 +2241,17 @@ setProfileMessage
 
    **Parameters**:
 
-      * **message**: :dt:`String` profile message.
-      * **callback**: :dt:`function` called on retrieval.
+      **message**: :dt:`String` profile message.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 renamePlaylist
@@ -2297,17 +2261,19 @@ renamePlaylist
 
    **Parameters**:
 
-      * **id**: :dt:`String` playlist to rename.
-      * **name**: :dt:`String` new name.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`String` playlist to rename.
+
+      **name**: :dt:`String` new name.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 setAvatar
@@ -2317,16 +2283,17 @@ setAvatar
 
    **Parameters**:
 
-      * **id**: :dt:`String` avatar to set.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`String` avatar to set.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 setBadge
@@ -2336,16 +2303,17 @@ setBadge
 
    **Parameters**:
 
-      * **id**: :dt:`String` badge to set.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`String` badge to set.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 setLanguage
@@ -2355,16 +2323,17 @@ setLanguage
 
    **Parameters**:
 
-      * **language**: :dt:`String` ISO 3166-2 country code.
-      * **callback**: :dt:`function` called on retrieval.
+      **language**: :dt:`String` ISO 3166-2 country code.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 rejectFriendRequest
@@ -2374,16 +2343,17 @@ rejectFriendRequest
 
    **Parameters**:
 
-      * **id**: :dt:`Number` user to reject.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`Number` user to reject.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 activatePlaylist
@@ -2393,17 +2363,19 @@ activatePlaylist
 
    **Parameters**:
 
-      * **id**: :dt:`Number` playlist to set.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`Number` playlist to set.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **activated**: :dt:`String` ID of activated playlist.
+      **err**: :dt:`Object` possible error returned.
+
+      **activated**: :dt:`String` ID of activated playlist.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 moveMedia
@@ -2413,19 +2385,23 @@ moveMedia
 
    **Parameters**:
 
-      * **id**: :dt:`Number` playlist in which the media resides.
-      * **media**: :dt:`[Number]` media to move.
-      * **beforeID**: :dt:`Number` where to insert the media at.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`Number` playlist in which the media resides.
+
+      **media**: :dt:`[Number]` media to move.
+
+      **beforeID**: :dt:`Number` where to insert the media at.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **media**: :doc:`[Media]</datatypes/media>` order after move.
+      **err**: :dt:`Object` possible error returned.
+
+      **media**: :doc:`[Media]</datatypes/media>` order after move.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 updateMedia
@@ -2435,20 +2411,25 @@ updateMedia
 
    **Parameters**:
 
-      * **id**: :dt:`Number` playlist in which the media resides.
-      * **mediaID**: :dt:`Number` media to edit.
-      * **author**: :dt:`String` media author like artist.
-      * **title**: :dt:`String` media title like song title.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`Number` playlist in which the media resides.
+
+      **mediaID**: :dt:`Number` media to edit.
+
+      **author**: :dt:`String` media author like artist.
+
+      **title**: :dt:`String` media title like song title.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **update**: :doc:`[Update]</datatypes/mediaupdate>`
+      **err**: :dt:`Object` possible error returned.
+
+      **update**: :doc:`[Update]</datatypes/mediaupdate>`
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 shufflePlaylist
@@ -2458,17 +2439,19 @@ shufflePlaylist
 
    **Parameters**:
 
-      * **id**: :dt:`Number` playlist to shuffle.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`Number` playlist to shuffle.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **media**: :doc:`[Media]</datatypes/media>` order after shuffle.
+      **err**: :dt:`Object` possible error returned.
+
+      **media**: :doc:`[Media]</datatypes/media>` order after shuffle.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 addFriend
@@ -2478,16 +2461,17 @@ addFriend
 
    **Parameters**:
 
-      * **id**: :dt:`Number` user to add as friend.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`Number` user to add as friend.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 deleteMedia
@@ -2497,18 +2481,21 @@ deleteMedia
 
    **Parameters**:
 
-      * **id**: :dt:`Number` playlist in which the media resides.
-      * **mediaIDs**: :dt:`[Number]` media to delete.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`Number` playlist in which the media resides.
+
+      **mediaIDs**: :dt:`[Number]` media to delete.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **media**: :doc:`[Media]</datatypes/media>` in playlist after deletion.
+      **err**: :dt:`Object` possible error returned.
+
+      **media**: :doc:`[Media]</datatypes/media>` in playlist after deletion.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 addMedia
@@ -2518,19 +2505,23 @@ addMedia
 
    **Parameters**:
 
-      * **id**: :dt:`Number` playlist to add the media to.
-      * **media**: :dt:`[Object]` media objects to add.
-      * **append**: :dt:`Boolean` append media to the end.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`Number` playlist to add the media to.
+
+      **media**: :dt:`[Object]` media objects to add.
+
+      **append**: :dt:`Boolean` append media to the end.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **mediaAdd**: :doc:`MediaAdd</datatypes/mediaadd>`
+      **err**: :dt:`Object` possible error returned.
+
+      **mediaAdd**: :doc:`MediaAdd</datatypes/mediaadd>`
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 woot
@@ -2540,15 +2531,15 @@ woot
 
    **Parameters**:
 
-      * **callback**: :dt:`function` called on retrieval.
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 meh
@@ -2558,15 +2549,15 @@ meh
 
    **Parameters**:
 
-      * **callback**: :dt:`function` called on retrieval.
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 favoriteRoom
@@ -2576,16 +2567,17 @@ favoriteRoom
 
    **Parameters**:
 
-      * **id**: :dt:`Number` room ID.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`Number` room ID.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 removeFriend
@@ -2595,16 +2587,17 @@ removeFriend
 
    **Parameters**:
 
-      * **id**: :dt:`Number` user ID.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`Number` user ID.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
+      **err**: :dt:`Object` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 purchaseUsername
@@ -2614,17 +2607,19 @@ purchaseUsername
 
    **Parameters**:
 
-      * **username**: :dt:`String` name to purchase.
-      * **callback**: :dt:`function` called on retrieval.
+      **username**: :dt:`String` name to purchase.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **item**: :doc:`Purchase</datatypes/purchase>`
+      **err**: :dt:`Object` possible error returned.
+
+      **item**: :doc:`Purchase</datatypes/purchase>`
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 purchaseItem
@@ -2634,17 +2629,19 @@ purchaseItem
 
    **Parameters**:
 
-      * **id**: :dt:`String` item to purchase.
-      * **callback**: :dt:`function` called on retrieval.
+      **id**: :dt:`String` item to purchase.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`Object` possible error returned.
-      * **item**: :doc:`Purchase</datatypes/purchase>`
+      **err**: :dt:`Object` possible error returned.
+
+      **item**: :doc:`Purchase</datatypes/purchase>`
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 removeChatMessage
@@ -2655,6 +2652,7 @@ removeChatMessage
    **Parameters**:
 
       **cid**: :dt:`String` unique message ID.
+
       **cacheOnly**: :dt:`Boolean` clears only the cache when true.
 
    **Return Value**:
@@ -2670,6 +2668,7 @@ removeChatMessageByUser
    **Parameters**:
 
       **username**: :dt:`String` name of a user.
+
       **cacheOnly**: :dt:`Boolean` clears only the cache when true.
 
    **Return Value**:

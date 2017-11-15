@@ -126,12 +126,12 @@ is better for that than a function? Time to extend our class!
     }
 
 
-The greet function will accept a :doc:`user</datatypes/user>` object as
+The greet function will accept a :doc:`User</datatypes/user>` object as
 parameter. We will use this to identicate the user we want to greet.
 
-The next line uses the :doc:`sendChat</reference/sendChat>` function to send
+The next line uses the :ref:`send-chat` function to send
 a message in chat. As parameter, we define a template string in which we use the
-user object to identify who we want to greet. While the *${*...*}* is syntax
+user object to identify who we want to greet. While the *${* ... *}* is syntax
 relevant to implement a variable in a template string, the @ is not. It is just
 there to make plug notify the user about our message.
 
@@ -163,7 +163,7 @@ the following code:
     const bot = new OurSuperAwesomeBot();
 
     /**
-    * NOTE: you need to change the email and password to your own,
+    * note: you need to change the email and password to your own,
     * it has to be a second account.
     * Otherwise you won't see the message in the end!
     */
@@ -180,7 +180,7 @@ line creates a new instance of our super awesome bot class.
 Since we created a new instance of our bot we are now able to use its
 functionality which will help us solve one of our problems directly.
 
-The :doc:`login</reference/login>` function logs us with our credentials into
+The :ref:`login` function logs us with our credentials into
 plug, after that we're able to join rooms and use other non room related
 functions.
 
@@ -189,7 +189,7 @@ uses **a lot** of events. I am not kidding. There's plenty of actions that erupt
 as events, but that's a topic for another time, so we'll just need one event
 which is:
 
-* :doc:`USER_JOIN</events/USER_JOIN>`
+* :ref:`user-join`
 
 Using events is as simple as using the functions *on* and *once*
 
@@ -223,13 +223,13 @@ Using events is as simple as using the functions *on* and *once*
 
 
 To explain the last part, what we did here is to add a callback to the login function,
-which allows us to connect to the room we want to with :doc:`connect</reference/connect>`.
+which allows us to connect to the room we want to with :ref:`connect`.
 The parameter we gave it is the name of the room we want to connect to.
 
 In the callback of connect we once again log an output to the console so we know we are
 actually connected to our room. The last new part includes the registration
-of the our greet function on the *USER_JOIN* event, which passes a
-:doc:`user</datatypes/user>` object to the function.
+of the our greet function on the :ref:`user-join` event, which passes a
+:doc:`User</datatypes/user>` object to the function.
 
 And we're done! Yep, that's it! Time to let it run and see how it does.
 Save your files and open a commandline window, now type
@@ -241,7 +241,7 @@ Save your files and open a commandline window, now type
 
 
 this will start up our bot, next up is to go to the room you passed in as a
-parameter on :doc:`connect</reference/connect>` and you should see your bot
+parameter on :ref:`connect` and you should see your bot
 greeting you by your username!
 
 Congratulations, you just wrote your first bot for plug.dj!
@@ -252,7 +252,7 @@ Where to go from here
 
 I hope I could fire you a bit up for your own steps into this and get all tingly
 for a project. In case you haven't had any ideas yet, you should check out the
-:doc:`notable mentions</guide/notablementions>` page. It contains some of the
+:doc:`notable mentions</cookbook/notablementions>` page. It contains some of the
 projects that use Plugged. Also there's the possibility for you to check out
 the :doc:`cookbook</cookbook/index>` which contains examples for various use
 cases as well as best practices for Plugged.

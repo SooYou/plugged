@@ -16,59 +16,6 @@ hitting up the cookbook.
 Events
 -------
 
-   * CONN_ERROR_.
-   * CONN_PART_.
-   * CONN_SUCCESS_.
-   * CONN_WARNING_.
-   * SOCK_CLOSE_.
-   * SOCK_ERROR_.
-   * SOCK_OPEN_.
-   * BAN_.
-   * CHAT_.
-   * VOTE_.
-   * GRAB_.
-   * EARN_.
-   * BAN_.
-   * CHAT_.
-   * VOTE_.
-   * EARN_.
-   * SKIP_.
-   * BAN_IP_.
-   * NOTIFY_.
-   * GIFTED_.
-   * MOD_BAN_.
-   * MOD_WAITLIST_BAN_.
-   * ADVANCE_.
-   * LEVEL_UP_.
-   * MOD_SKIP_.
-   * MOD_MUTE_.
-   * MOD_STAFF_.
-   * USER_JOIN_.
-   * FLOOD_API_.
-   * MOD_ADD_DJ_.
-   * GUEST_JOIN_.
-   * USER_LEAVE_.
-   * FLOOD_CHAT_.
-   * MOD_MOVE_DJ_.
-   * GUEST_LEAVE_.
-   * USER_UPDATE_.
-   * CHAT_DELETE_.
-   * FRIEND_JOIN_.
-   * PLUG_UPDATE_.
-   * CHAT_COMMAND_.
-   * CHAT_RATE_LIMIT_.
-   * DJ_LIST_CYCLE_.
-   * PLAYLIST_CYCLE_.
-   * FRIEND_REQUEST_.
-   * FRIEND_ACCEPT_.
-   * WAITLIST_UPDATE_.
-   * ROOM_NAME_UPDATE_.
-   * MAINTENANCE_MODE_.
-   * ROOM_WELCOME_UPDATE_.
-   * MAINTENANCE_MODE_ALERT_.
-   * ROOM_DESCRIPTION_UPDATE_.
-   * ROOM_MIN_CHAT_LEVEL_UPDATE_.
-
 
 ACK
 ##########
@@ -89,7 +36,7 @@ ADVANCE
 
       **booth**: :doc:`Booth</datatypes/booth>`
 
-      **playback**: :doc:`Playback</datatypes/playback>
+      **playback**: :doc:`Playback</datatypes/playback>`
 
       **previous**: :doc:`Previous</datatypes/previous>`
 
@@ -154,16 +101,6 @@ CHAT_RATE_LIMIT
       :dt:`undefined`
 
 
-CONN_ERROR
-##########
-
-   Emitted on failure of etablishing a connection to plug.
-
-   **Parameters**:
-
-      :dt:`undefined`
-
-
 CONN_PART
 #########
 
@@ -172,16 +109,6 @@ CONN_PART
    **Parameters**:
 
       **meta**: :doc:`Meta</datatypes/meta>`
-
-
-CONN_SUCCESS
-############
-
-   Emitted on successfully etablishing a connection.
-
-   **Parameters**:
-
-      :dt:`undefined`
 
 
 CONN_WARNING
@@ -239,7 +166,7 @@ FLOOD_CHAT
 
    Emitted when you send too many chat messages at once.
 
-   .. note::
+   .. note:
 
    Plugged takes care of this as well as it does for FLOOD_API. In a
    default environment, this event will never fire.
@@ -372,7 +299,7 @@ MOD_BAN
 
 
 MOD_WAITLIST_BAN
-#######
+################
 
    Emitted when a mod bans a user from the booth.
 
@@ -400,6 +327,8 @@ MOD_MUTE
 
       **mute**: :doc:`Mute</datatypes/mute>`
 
+      **duration**: :doc:`MuteDuration</datatypes/muteduration>`
+
 
 MOD_SKIP
 ########
@@ -408,7 +337,7 @@ MOD_SKIP
 
    **Parameters**:
 
-      **skip**: :dt:`Object` Skip object containing information about the skip.
+      **skip**: :doc:`ModSkip</datatypes/modskip>`
 
 
 MOD_STAFF
@@ -416,7 +345,7 @@ MOD_STAFF
 
    Emitted when a user gets promoted
 
-   .. NOTE::
+   .. note:
 
    The promotion argument is always an array since it can happen that the staff
    level of two users is changed, namely when the host is giving his position to
@@ -425,7 +354,7 @@ MOD_STAFF
 
    **Parameters**:
 
-      **promotion**: :doc:`[Promotion]</datatypes/promotion>`
+      **promotions**: :doc:`[Promotion]</datatypes/promotion>`
 
 
 NOTIFY
@@ -436,7 +365,7 @@ NOTIFY
 
    **Parameters**:
 
-      **notification**: :doc:`[Notification]</datatypes/notification`
+      **notification**: :doc:`Notification</datatypes/notification>`
 
 
 PLAYLIST_CYCLE
@@ -510,7 +439,7 @@ SKIP
 
 
 SOCK_CLOSED
-##########
+###########
 
    Emitted when socket is closed
 
@@ -539,6 +468,8 @@ SOCK_OPEN
       :dt:`undefined`
 
 
+.. _user-join:
+
 USER_JOIN
 #########
 
@@ -566,7 +497,7 @@ USER_UPDATE
 
    **Parameters**:
 
-      **user**: :doc:`UserUpdate</datatypes/userupdate>` User object.
+      **user**: :doc:`UserUpdate</datatypes/userupdate>`
 
 
 VOTE

@@ -10,28 +10,51 @@ utilize it for your project.
    :titlesonly:
 
    ban
+   banduration
+   booth
+   boothbanduration
+   boothbanreason
+   cache
    chat
+   chatdelete
+   cycle
+   earn
+   flatroom
+   globalrole
    history
    ignore
    inventory
    invitation
-   modelself
    media
    mediaadd
    mediaupdate
    meta
+   minchatlevel
+   modadddj
+   modban
+   modelself
+   modmove
+   modskip
+   modwaitlistban
    mute
+   muteduration
    newroom
    news
    notification
    playback
    playlist
-   playlists
+   previous
    product
+   promotion
    purchase
    reason
+   role
    room
+   roomupdate
    score
+   settings
    state
    transaction
    user
+   userupdate
+   vote

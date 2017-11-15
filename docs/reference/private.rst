@@ -5,6 +5,9 @@ Private Functions
 .. role:: dt
    :class: datatype
 
+.. role:: ev
+   :class: event
+
 
 This document will help you understand what the private functions of plugged do
 so you can better understand what when happens, certainly not a must read but a
@@ -22,7 +25,7 @@ _checkForPreviousVote
 
    **Parameters**:
 
-      * **vote**: :doc:`Vote</datatypes/vote>` checks if a User's vote has changed
+      **vote**: :doc:`Vote</datatypes/vote>` checks if a User's vote has changed
 
    **Return Value**:
 
@@ -36,7 +39,7 @@ _clearState
 
    **Parameters**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
    **Return Value**:
 
@@ -44,13 +47,13 @@ _clearState
 
 
 _clearHeartbeat
-###########
+###############
 
    Resets the heartbeat state.
 
    **Parameters**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
    **Return Value**:
 
@@ -66,7 +69,7 @@ _cleanUserCache
 
    **Parameters**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
    **Return Value**:
 
@@ -80,13 +83,13 @@ _connectSocket
 
    **Parameters**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
    **Fires**:
 
-      * :ev:`SOCK_OPEN`
-      * :ev:`SOCK_CLOSED`
-      * :ev:`SOCK_ERROR`
+      :ev:`SOCK_OPEN`
+      :ev:`SOCK_CLOSED`
+      :ev:`SOCK_ERROR`
 
    **Return Value**:
 
@@ -100,8 +103,9 @@ _getAuthToken
 
    **Parameters**:
 
-      * **data**: :dt:`Object` placeholder
-      * **callback**: :dt:`Function`
+      **data**: :dt:`Object` placeholder
+
+      **callback**: :dt:`Function`
 
    **Return Value**:
 
@@ -109,7 +113,7 @@ _getAuthToken
 
 
 _getCSRF
-#######
+########
 
    Gets csrf token.
 
@@ -123,24 +127,27 @@ _getCSRF
 
    **Parameters**:
 
-      * **credentials**: :dt:`Object` login data to use.
-      * **callback**: :dt:`function` called on retrieval.
+      **credentials**: :dt:`Object` login data to use.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
-      * **credentials**: :dt:`Object` login data to use.
-      * **csrf**: :dt:`String` the token.
+      **err**: :dt:`String` possible error returned.
+
+      **credentials**: :dt:`Object` login data to use.
+
+      **csrf**: :dt:`String` the token.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 _keepAlive
-##############
+##########
 
-   Function that gets called by :ref:`_heartbeat</heartbeat>` to
+   Function that gets called by :ref:`heartbeat` to
    check if the connection to the server is still open. The check happens by a
    constant delta offset. If the server hasn't responded after 4 checks the
    connection will be reset by the client.
@@ -151,22 +158,25 @@ _keepAlive
 
    **Fires**:
 
-      * :ev:`CONN_WARNING` after every failed check
-      * :ev:`CONN_PART` after 6 consequent fails
+      :ev:`CONN_WARNING` after every failed check
+
+      :ev:`CONN_PART` after 6 consequent fails
 
    **Return Value**:
 
       :dt:`undefined`
 
 
+.. _heartbeat:
+
 _heartbeat
-##############
+##########
 
    Calls _keepAlive for consequent checks of an etablished server connection.
 
    **Parameters**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
    **Return Value**:
 
@@ -174,14 +184,15 @@ _heartbeat
 
 
 _log
-#########################
+####
 
    Internal logging function that calls the invoked logger.
 
    **Parameters**:
 
-      * :dt:`number` verbosity level of message |br|
-      * :dt:`string` message to be logged
+      :dt:`number` verbosity level of message
+
+      :dt:`string` message to be logged
 
    **Return Value**:
 
@@ -189,14 +200,14 @@ _log
 
 
 _loggedIn
-#########################
+#########
 
    Last step in the login chain, this finally sets up the WebSocket connection
    and sets the initial state.
 
    **Parameters**:
 
-      * :dt:`function` callback
+      :dt:`function` callback
 
    **Return Value**:
 
@@ -210,9 +221,11 @@ _login
 
    **Parameters**:
 
-      * **credentials** :dt:`Object` account information
-      * **callback** :dt:`Function` callback
-      * **tries** :dt:`Number` amount of unsuccessful tries
+      **credentials**: :dt:`Object` account information
+
+      **callback**: :dt:`Function` callback
+
+      **tries**: :dt:`Number` amount of unsuccessful tries
 
    **Return Value**:
 
@@ -229,7 +242,7 @@ _processChatQueue
 
    **Parameters**:
 
-      * **lastMessage**: :dt:`Number` unix time when last message was sent.
+      **lastMessage**: :dt:`Number` unix time when last message was sent.
 
    **Return Value**:
 
@@ -244,7 +257,7 @@ _removeChatMessageByDelay
 
    **Parameters**:
 
-      * **message**: :dt:`String` message to delete
+      **message**: :dt:`String` message to delete
 
    **Return Value**:
 
@@ -252,7 +265,7 @@ _removeChatMessageByDelay
 
 
 _removeChatMessage
-#########################
+##################
 
    Delete a chat message. This is the core function of all chat deletion methods.
    It takes a function (comparator) which decides whether a message should be deleted or
@@ -260,11 +273,13 @@ _removeChatMessage
 
    **Parameters**:
 
-      * **compare**: :dt:`Function` comparing function to decide whether a message should
-      be deleted. The passed argument is the chat message object
-      * **cacheOnly**: :dt:`Boolean` if the message should only be deleted in cache
-      * **count**: :dt:`Number` how many messages should be removed before the function
-      quits. If not set, it will run through the whole chat cache.
+      **compare**: :dt:`Function` comparing function to decide whether a message should
+        be deleted. The passed argument is the chat message object
+
+      **cacheOnly**: :dt:`Boolean` if the message should only be deleted in cache
+
+      **count**: :dt:`Number` how many messages should be removed before the function
+        quits. If not set, it will run through the whole chat cache.
 
    **Return Value**:
 
@@ -278,8 +293,9 @@ _sendMessage
 
    **Parameters**:
 
-      * **type**: :dt:`String` message type
-      * **data**: :dt:`String|Number` JSON encoded data
+      **type**: :dt:`String` message type
+
+      **data**: :dt:`String|Number` JSON encoded data
 
    **Return Value**:
 
@@ -287,35 +303,38 @@ _sendMessage
 
 
 _setLogin
-########
+#########
 
    Logs an account in.
 
    **Parameters**:
 
-      * **credentials**: :dt:`Object` login data to use.
-      * **csrf**: :dt:`String` cross site request forgery token.
-      * **callback**: :dt:`function` called on retrieval.
+      **credentials**: :dt:`Object` login data to use.
+
+      **csrf**: :dt:`String` cross site request forgery token.
+
+      **callback**: :dt:`function` called on retrieval.
 
    **callback**:
 
-      * **err**: :dt:`String` possible error returned.
+      **err**: :dt:`String` possible error returned.
 
    **Return Value**:
 
-      * :dt:`undefined`
+      :dt:`undefined`
 
 
 _eventProcessor
-#############
+###############
 
    It processes every message received by the
    WebSocket and turns them into events and data.
 
    **Parameters**:
 
-      * **msg** :dt:`String` JSON encoded message as String
-      * **flags** :dt:`Object` contains two Boolean options, binary and masked
+      **msg**: :dt:`String` JSON encoded message as String
+
+      **flags**: :dt:`Object` contains two Boolean options, binary and masked
 
    **Fires**:
 

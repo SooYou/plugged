@@ -9,7 +9,7 @@ emit.
 
 .. toctree::
    :maxdepth: 1
-   
+
    functions
    events
-
+   private

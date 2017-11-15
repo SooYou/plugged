@@ -60,7 +60,7 @@ Detail
 **dj**
    DJ in booth.
 
-   **Type**: :doc:`User</datatypes/user> |br|
+   **Type**: :doc:`User</datatypes/user>` |br|
    **Default Value**: ``see User model``
 
 **score**

@@ -2,6 +2,11 @@
 CHANGELOG
 =========
 
+.. toctree::
+   :maxdepth: 1
+
+   changes
+
 
 3.0.0
 -----
