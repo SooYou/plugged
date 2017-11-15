@@ -18,7 +18,7 @@ Thank you:
 
 
 And also a special thank you to you reading the documentation right now. I hope this
-project helps you solve the same problem that the community I was part of back then
+project helps you solve the same problem that the community, that I was part of back then,
 had as well, if not even more.
 
 ~Sooyou
