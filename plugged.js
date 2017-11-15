@@ -169,9 +169,7 @@ class Plugged extends EventEmitter {
         /*===== GENERAL EVENTS =====*/
         /* SOCKET RELATED */
         this.CONN_PART = "connPart";
-        this.CONN_ERROR = "connError";
         this.CONN_WARNING = "connWarning";
-        this.CONN_SUCCESS = "connSuccess";
 
         /* CORE SOCKET EVENTS */
         this.SOCK_OPEN = "sockOpen";
