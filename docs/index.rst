@@ -30,6 +30,9 @@ Plugged |version| documentation
 |               | :doc:`Contribute</contribute>` |br|                   |
 |               | Read this first if you want to contribute             |
 +---------------+-------------------------------------------------------+
+|               | :doc:`A Thank you message</thankyou>` |br|            |
+|               | A thank you message to all of you                     |
++---------------+-------------------------------------------------------+
 
 .. toctree::
    :hidden:
@@ -40,5 +43,4 @@ Plugged |version| documentation
    datatypes/index
    reference/index
    contribute
-
-   
+   thankyou
