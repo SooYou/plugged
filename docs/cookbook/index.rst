@@ -18,10 +18,11 @@ your project, all followed by ready to go code snippets for you to try and use.
    is welcome to contribute to the project and make it a better tool for
    everyone. Please consider reading the :doc:`contribution</contribute>` guide
    before contributing.
-   
+
    :underline:`thanks`!
 
 .. toctree::
    :maxdepth: 1
-   
+
    quickstart
+   notablementions
