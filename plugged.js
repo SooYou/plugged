@@ -871,7 +871,7 @@ class Plugged extends EventEmitter {
 
     /**
      * @description sets the maximum connection timeout
-     * @param {number} time until connection is lost
+     * @param {number} time in seconds until connection is lost
      * @throws {Error} if time is not of type number
      * @throws {Error} if number is not greater than zero
      */
@@ -886,7 +886,7 @@ class Plugged extends EventEmitter {
     }
 
     /**
-     * @description gets the maximum time until the connection is lost
+     * @description gets the maximum time in seconds until the connection is lost
      * @returns {number} maximum time until the connection is lost in seconds
      */
     getMaxTimeout() {
@@ -1073,10 +1073,10 @@ class Plugged extends EventEmitter {
 
     /**
      * @description logs into a room as a guest
-     * @param {string} room room slug
+     * @param {string} slug room name
      * @param {function} callback called after entering
      */
-    guest(room, callback) {
+    guest(slug, callback) {
         if (this.sock) {
             let err = null;
 
@@ -1087,8 +1087,8 @@ class Plugged extends EventEmitter {
             return callback && callback(err);
         }
 
-        this._log(1, `Joining room \"${room}\" as a guest...`);
-        this.query.query("GET", baseURL + '/' + room, function _guestRoom(err, data) {
+        this._log(1, `Joining room \"${slug}\" as a guest...`);
+        this.query.query("GET", baseURL + '/' + slug, function _guestRoom(err, data) {
             // get auth token directly from the page
             const idx = data.indexOf("_jm=\"") + 5;
             const auth = data.substr(idx, data.indexOf('"', idx));
@@ -1114,7 +1114,7 @@ class Plugged extends EventEmitter {
                     }
                 });
             } else {
-                const err = new Error("couldn't join room \"" + room + "\" as a guest, auth token was incorrect");
+                const err = new Error("couldn't join room \"" + slug + "\" as a guest, auth token was incorrect");
                 callback && callback(err);
             }
         }.bind(this), false, true);
