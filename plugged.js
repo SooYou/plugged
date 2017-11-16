@@ -1187,7 +1187,7 @@ class Plugged extends EventEmitter {
 
     /**
      * @description gets a user by their name
-     * @param {string} username
+     * @param {string} username user's
      * @param {object} cache choose cache option
      * @returns {object} user when found, null otherwise
      */

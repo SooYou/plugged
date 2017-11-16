@@ -96,7 +96,7 @@ getChat
 
    **Return Value**:
 
-      :dt:`[Object]` time sorted array of all chat messages.
+      :dt:`[Object]` :doc:`Chat<datatypes/chat>` time sorted array of all chat messages.
 
 
 getChatByUsername
@@ -110,7 +110,7 @@ getChatByUsername
 
    **Return Value**:
 
-      :dt:`[Object]` list of all their messages.
+      :dt:`[Object]` :doc:`Chat</datatypes/chat>` list of all their messages.
 
 
 getInventory
@@ -188,7 +188,7 @@ cacheChat
 
    **Return Value**:
 
-      :dt:`undefined`
+      :dt:`Boolean` value that is now set.
 
 
 isChatCached
@@ -347,7 +347,7 @@ setMaxTimeout
 
    **Parameters**:
 
-      :dt:`Number` time until the connection is lost.
+      :dt:`Number` time in seconds until the connection is lost.
 
    **Return Value**:
 
@@ -432,7 +432,7 @@ invokeLogger
 setVerbosity
 ############
 
-   Defines verbosity to use for logging.
+   Defines verbosity to use for logging. Lowest logging level is 0.
 
    **Parameters**:
 
@@ -468,7 +468,7 @@ login
 
       **authToken**: :dt:`Object` last session token.
 
-      **callback**: :dt:`Function` called after logging in.
+      **callback**: :dt:`function` called after logging in.
 
    **callback**:
 
@@ -488,7 +488,7 @@ guest
 
    **Parameters**:
 
-      **room**: :dt:`String` room slug.
+      **slug**: :dt:`String` room name.
 
       **callback**: :dt:`String` called after entering the room.
 
@@ -514,7 +514,7 @@ connect
 
       **slug**: :dt:`String` room name.
 
-      **callback**: :dt:`Function` called after entering the room.
+      **callback**: :dt:`function` called after entering the room.
 
    **callback**:
 
@@ -540,7 +540,7 @@ getUserById
 
    **Return Value**:
 
-      :dt:`Object` User object.
+      :dt:`Object` :doc:`User</datatypes/user>`
 
 
 getUserByName
@@ -550,13 +550,13 @@ getUserByName
 
    **Parameters**:
 
-      **username**: :dt:`String`
+      **username**: :dt:`String` user's name
 
-      **cache**: :dt:`Enum`
+      **cache**: :doc:`CACHE</datatypes/cache>`
 
    **Return Value**:
 
-      :dt:`Object` User object.
+      :dt:`Object` :doc:`User</datatypes/user>`
 
 
 getUserRole
@@ -584,7 +584,7 @@ getUsers
 
    **Return Value**:
 
-      :dt:`[Object]` all users.
+      :dt:`[Object]` :doc:`User</datatypes/user>` all users.
 
 
 getSelf
@@ -598,7 +598,7 @@ getSelf
 
    **Return Value**:
 
-      :dt:`Object` Account.
+      :dt:`Object` :doc:`Self</datatypes/modelself>` Account.
 
 
 setSetting
@@ -648,7 +648,7 @@ getSettings
 
    **Return Value**:
 
-      :dt:`Object` Settings object.
+      :dt:`Object` Settings' object.
 
 
 isFriend
@@ -676,7 +676,7 @@ getDJ
 
    **Return Value**:
 
-      :dt:`Object` User object.
+      :dt:`Object` :doc:`User</datatypes/user>`
 
 
 getMedia
@@ -690,7 +690,7 @@ getMedia
 
    **Return Value**:
 
-      :dt:`Object` Media object.
+      :dt:`Object` :doc:`Media</datatypes/media>`
 
 
 getStartTime
@@ -718,7 +718,7 @@ getBooth
 
    **Return Value**:
 
-      :dt:`Object` Booth object.
+      :dt:`Object` :doc:`Booth</datatypes/booth>`
 
 
 getRoom
@@ -732,7 +732,7 @@ getRoom
 
    **Return Value**:
 
-      :dt:`Object` Room object.
+      :dt:`Object` :doc:`Room</datatypes/room>`
 
 
 getRoomMeta
@@ -746,7 +746,7 @@ getRoomMeta
 
    **Return Value**:
 
-      :dt:`Object` Metadata.
+      :dt:`Object` :doc:`Metadata</datatypes/meta>`
 
 
 getRoomName
@@ -991,7 +991,8 @@ getGrabs
 
    **Return Value**:
 
-      :dt:`[Object]` number array when param is false, object array otherwise.
+      :dt:`[Number][Object]` :doc:`Grab</datatypes/grab>` number array when param is false, object
+      array otherwise.
 
 
 cacheUser
@@ -1001,11 +1002,11 @@ cacheUser
 
    **Parameters**:
 
-      **user**: :dt:`Object` User object.
+      **user**: :dt:`Object` :doc:`User</datatypes/user>`
 
    **Return Value**:
 
-      :dt:`Boolean` true when saved.
+      :dt:`Boolean` true when saved, false when user is already cached.
 
 
 removeCachedUserById
@@ -1047,7 +1048,7 @@ getStaffOnline
 
    **Return Value**:
 
-      :dt:`[Object]` Staff online.
+      :dt:`[Object]` :doc:`User<datatypes/user>` Staff online.
 
 
 getStaffOnlineByRole
@@ -1057,11 +1058,11 @@ getStaffOnlineByRole
 
    **Parameters**:
 
-      **role**: :dt:`Enum` staff by role.
+      **role**: :dt:`Number` :doc:`USERROLE<datatypes/role>` staff by role.
 
    **Return Value**:
 
-      :dt:`[Object]` staff currently online with role specified.
+      :dt:`[Object]` :doc:`User<datatypes/user>` staff currently online with role specified.
 
 
 getStaffByRole
@@ -1071,7 +1072,7 @@ getStaffByRole
 
    **Parameters**:
 
-      **role**: :dt:`Enum` staff by role.
+      **role**: :dt:`Number` :doc:`USERROLE<datatypes/role>` staff by role.
 
       **callback**: :dt:`function` called on retrieval.
 
@@ -1486,6 +1487,8 @@ addToWaitlist
 
    Adds a user to the waitlist.
 
+   This fires the :ref:`<waitlist-update>` event indirectly.
+
    **Parameters**:
 
       **id**: :dt:`Number` user's ID.
@@ -1510,7 +1513,7 @@ addPlaylist
 
       **name**: :dt:`String` playlist name.
 
-      **media**: :dt:`[Object]` media to add.
+      **media**: :dt:`[Object]` :doc:`Media<datatypes/media>` media to add.
 
       **callback**: :dt:`function` called on retrieval.
 
@@ -1642,6 +1645,8 @@ updateRoomInfo
 
    Updates the room info.
 
+   This fires the :ref:`<room-description-update>` event indirectly.
+
    **Parameters**:
 
       **name**: :dt:`String` room name.
@@ -1666,6 +1671,8 @@ setMinChatLevel
 
    Sets the room's minimum chat level.
 
+   This will raise the :ref:`<min-chat-level-update>` event.
+
    **Parameters**:
 
       **level**: :dt:`Number` level required to chat.
@@ -1686,13 +1693,15 @@ banUser
 
    Bans a user.
 
+   This will raise the :ref:`<user-leave>` and :ref:`<mod-ban>` event indirectly.
+
    **Parameters**:
 
       **id**: :dt:`Number` user's ID.
 
-      **time**: :dt:`Enum` duration of ban.
+      **time**: :dt:`Enum` :doc:`BANDURATION</datatypes/banduration>` duration of ban.
 
-      **reason**: :dt:`Enum` reason of ban.
+      **reason**: :dt:`Enum` :doc:`REASON</datatypes/reason>` reason of ban.
 
       **callback**: :dt:`function` called on retrieval.
 
@@ -1710,17 +1719,18 @@ banBooth
 
    Bans a user from the booth.
 
-   For time see :doc:`BOOTHBANDURATION</datatypes/boothbanduration>`
-
-   For reason see :doc:`BOOTHBANREASON</datatypes/boothbanreason>`
+   This will raise the :ref:`<waitlist-update>` as well as the :ref:`<advance>` event
+   indirectly.
 
    **Parameters**:
 
       **id**: :dt:`Number` user's ID.
 
-      **time**: :dt:`Enum` duration of ban.
+      **time**: :dt:`Enum` :doc:`BOOTHBANDURATION</datatypes/boothbanduration>` duration
+                of ban.
 
-      **reason**: :dt:`Enum` reason of ban.
+      **reason**: :dt:`Enum` :doc:`BOOTHBANREASON</datatypes/boothbanreason>` reason of
+                  ban.
 
       **callback**: :dt:`function` called on retrieval.
 
@@ -1762,9 +1772,9 @@ muteUser
 
       **id**: :dt:`Number` user's ID.
 
-      **time**: :dt:`Enum` duration of mute.
+      **time**: :dt:`Enum` :doc:`MUTEDURATION<datatypes/muteduration>` duration of mute.
 
-      **reason**: :dt:`Enum` reason of mute.
+      **reason**: :dt:`Enum` :doc:`REASON<datatypes/reason>` reason of mute.
 
       **callback**: :dt:`function` called on retrieval.
 
@@ -1782,11 +1792,13 @@ addStaff
 
    Adds a user to staff.
 
+   This will raise the :ref:`<user-update>` event.
+
    **Parameters**:
 
       **id**: :dt:`Number` user's ID.
 
-      **role**: :dt:`Enum` role to give.
+      **role**: :dt:`Enum` :doc:`USERROLE<datatypes/role>` role to give.
 
       **callback**: :dt:`function` called on retrieval.
 
@@ -1869,6 +1881,8 @@ removeStaff
 
    Removes a user from staff.
 
+   This will raise the :ref:`<user-update>` event.
+
    **Parameters**:
 
       **id**: :dt:`Number` user's ID.
@@ -1889,6 +1903,8 @@ removeDJ
 
    Removes a DJ.
 
+   This will raise the :ref:`<waitlist-update>` and :ref:`<advance>` event indirectly.
+
    **Parameters**:
 
       **id**: :dt:`Number` user's ID.
@@ -1908,6 +1924,8 @@ leaveWaitlist
 #############
 
    Leaves the waitlist.
+
+   This will raise the :ref:`<waitlist-update>` event indirectly.
 
    **Parameters**:
 
@@ -1968,6 +1986,8 @@ deleteMessage
 #############
 
    Deletes a message.
+
+   This will raise the :ref:`<chat-delete>` event.
 
    **Parameters**:
 
@@ -2227,7 +2247,7 @@ getFavoriteRooms
 
       **err**: :dt:`Object` possible error returned.
 
-      **rooms**: :doc:`[Room]</datatypes/room>` favorited rooms.
+      **rooms**: :doc:`[FlatRoom]</datatypes/flatroom>` favorited rooms.
 
    **Return Value**:
 
@@ -2680,6 +2700,8 @@ watchUserCache
 ##############
 
    Enables time based cleanup of cached users.
+
+   Default time is 5 minutes.
 
    **Parameters**:
 
