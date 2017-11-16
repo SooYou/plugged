@@ -96,7 +96,7 @@ getChat
 
    **Return Value**:
 
-      :dt:`[Object]` :doc:`Chat<datatypes/chat>` time sorted array of all chat messages.
+      :dt:`[Object]` :doc:`Chat</datatypes/chat>` time sorted array of all chat messages.
 
 
 getChatByUsername
@@ -991,8 +991,8 @@ getGrabs
 
    **Return Value**:
 
-      :dt:`[Number][Object]` :doc:`Grab</datatypes/grab>` number array when param is false, object
-      array otherwise.
+      :dt:`[Number][Object]` :doc:`User</datatypes/user>` number array when param is
+      false, object array otherwise.
 
 
 cacheUser
@@ -1048,7 +1048,7 @@ getStaffOnline
 
    **Return Value**:
 
-      :dt:`[Object]` :doc:`User<datatypes/user>` Staff online.
+      :dt:`[Object]` :doc:`User</datatypes/user>` Staff online.
 
 
 getStaffOnlineByRole
@@ -1058,11 +1058,11 @@ getStaffOnlineByRole
 
    **Parameters**:
 
-      **role**: :dt:`Number` :doc:`USERROLE<datatypes/role>` staff by role.
+      **role**: :dt:`Number` :doc:`USERROLE</datatypes/role>` staff by role.
 
    **Return Value**:
 
-      :dt:`[Object]` :doc:`User<datatypes/user>` staff currently online with role specified.
+      :dt:`[Object]` :doc:`User</datatypes/user>` staff currently online with role specified.
 
 
 getStaffByRole
@@ -1072,7 +1072,7 @@ getStaffByRole
 
    **Parameters**:
 
-      **role**: :dt:`Number` :doc:`USERROLE<datatypes/role>` staff by role.
+      **role**: :dt:`Number` :doc:`USERROLE</datatypes/role>` staff by role.
 
       **callback**: :dt:`function` called on retrieval.
 
@@ -1487,7 +1487,7 @@ addToWaitlist
 
    Adds a user to the waitlist.
 
-   This fires the :ref:`<waitlist-update>` event indirectly.
+   This fires the :ref:`waitlist-update` event indirectly.
 
    **Parameters**:
 
@@ -1513,7 +1513,7 @@ addPlaylist
 
       **name**: :dt:`String` playlist name.
 
-      **media**: :dt:`[Object]` :doc:`Media<datatypes/media>` media to add.
+      **media**: :dt:`[Object]` :doc:`Media</datatypes/media>` media to add.
 
       **callback**: :dt:`function` called on retrieval.
 
@@ -1645,7 +1645,7 @@ updateRoomInfo
 
    Updates the room info.
 
-   This fires the :ref:`<room-description-update>` event indirectly.
+   This fires the :ref:`room-description-update` event indirectly.
 
    **Parameters**:
 
@@ -1671,7 +1671,7 @@ setMinChatLevel
 
    Sets the room's minimum chat level.
 
-   This will raise the :ref:`<min-chat-level-update>` event.
+   This will raise the :ref:`min-chat-level-update` event.
 
    **Parameters**:
 
@@ -1693,7 +1693,7 @@ banUser
 
    Bans a user.
 
-   This will raise the :ref:`<user-leave>` and :ref:`<mod-ban>` event indirectly.
+   This will raise the :ref:`user-leave` and :ref:`mod-ban` event indirectly.
 
    **Parameters**:
 
@@ -1719,7 +1719,7 @@ banBooth
 
    Bans a user from the booth.
 
-   This will raise the :ref:`<waitlist-update>` as well as the :ref:`<advance>` event
+   This will raise the :ref:`waitlist-update` as well as the :ref:`advance` event
    indirectly.
 
    **Parameters**:
@@ -1772,9 +1772,9 @@ muteUser
 
       **id**: :dt:`Number` user's ID.
 
-      **time**: :dt:`Enum` :doc:`MUTEDURATION<datatypes/muteduration>` duration of mute.
+      **time**: :dt:`Enum` :doc:`MUTEDURATION</datatypes/muteduration>` duration of mute.
 
-      **reason**: :dt:`Enum` :doc:`REASON<datatypes/reason>` reason of mute.
+      **reason**: :dt:`Enum` :doc:`REASON</datatypes/reason>` reason of mute.
 
       **callback**: :dt:`function` called on retrieval.
 
@@ -1792,13 +1792,13 @@ addStaff
 
    Adds a user to staff.
 
-   This will raise the :ref:`<user-update>` event.
+   This will raise the :ref:`user-update` event.
 
    **Parameters**:
 
       **id**: :dt:`Number` user's ID.
 
-      **role**: :dt:`Enum` :doc:`USERROLE<datatypes/role>` role to give.
+      **role**: :dt:`Enum` :doc:`USERROLE</datatypes/role>` role to give.
 
       **callback**: :dt:`function` called on retrieval.
 
@@ -1881,7 +1881,7 @@ removeStaff
 
    Removes a user from staff.
 
-   This will raise the :ref:`<user-update>` event.
+   This will raise the :ref:`user-update` event.
 
    **Parameters**:
 
@@ -1903,7 +1903,7 @@ removeDJ
 
    Removes a DJ.
 
-   This will raise the :ref:`<waitlist-update>` and :ref:`<advance>` event indirectly.
+   This will raise the :ref:`waitlist-update` and :ref:`advance` event indirectly.
 
    **Parameters**:
 
@@ -1925,7 +1925,7 @@ leaveWaitlist
 
    Leaves the waitlist.
 
-   This will raise the :ref:`<waitlist-update>` event indirectly.
+   This will raise the :ref:`waitlist-update` event indirectly.
 
    **Parameters**:
 
@@ -1987,7 +1987,7 @@ deleteMessage
 
    Deletes a message.
 
-   This will raise the :ref:`<chat-delete>` event.
+   This will raise the :ref:`chat-delete` event.
 
    **Parameters**:
 

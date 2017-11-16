@@ -27,6 +27,8 @@ ACK
       :dt:`undefined`
 
 
+.. _advance:
+
 ADVANCE
 #######
 
@@ -70,6 +72,8 @@ CHAT
 
       **chat**: :doc:`Chat</datatypes/chat>`
 
+
+.. _chat-delete:
 
 CHAT_DELETE
 ###########
@@ -288,6 +292,8 @@ MOD_ADD_DJ
       **modadd**: :doc:`ModAddDJ</datatypes/modadddj>`
 
 
+.. _mod-ban:
+
 MOD_BAN
 #######
 
@@ -388,6 +394,8 @@ PLUG_UPDATE
       :dt:`undefined`
 
 
+.. _room-description-update:
+
 ROOM_DESCRIPTION_UPDATE
 #######################
 
@@ -397,6 +405,8 @@ ROOM_DESCRIPTION_UPDATE
 
       **update**: :doc:`RoomUpdate</datatypes/roomupdate>`
 
+
+.. _min-chat-level-update:
 
 ROOM_MIN_CHAT_LEVEL_UPDATE
 ##########################
@@ -480,6 +490,8 @@ USER_JOIN
       **user**: :doc:`User</datatypes/user>`
 
 
+.. _user-leave:
+
 USER_LEAVE
 ##########
 
@@ -489,6 +501,8 @@ USER_LEAVE
 
       **user**: :doc:`User</datatypes/user>`
 
+
+.. _user-update:
 
 USER_UPDATE
 ###########
@@ -509,6 +523,8 @@ VOTE
 
       **vote**: :doc:`Vote</datatypes/vote>`
 
+
+.. _waitlist-update:
 
 WAITLIST_UPDATE
 ###############

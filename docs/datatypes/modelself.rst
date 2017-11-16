@@ -70,7 +70,7 @@ Detail
 
 **avatarID**
    User's avatar, i.e. "animals01".
-   
+
    **Type**: :dt:`String` |br|
    **Default Value**: ``""``
 
@@ -84,14 +84,14 @@ Detail
 
 **blurb**
    Message shown on profile page.
-   
+
    **Type**: :dt:`String` |br|
    **Default Value**: ``""``
 
 
 **friends**
    Your friends.
-   
+
    **Type**: :dt:`[Number]` |br|
    **Default Value**: ``[]``
 
@@ -113,7 +113,7 @@ Detail
 **ignores**
    Ignored users.
 
-   **Type**: :doc:`[Ignored]</datatypes/ignored>` |br|
+   **Type**: :doc:`[Ignore]</datatypes/ignore>` |br|
    **Default Value**: ``[]``
 
 
@@ -134,7 +134,7 @@ Detail
 **language**
    Language used, represented by ISO 639-1 encoding. See:
    `Wikipedia <http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes/>`_
-   
+
    **Type**: :dt:`String` |br|
    **Default Value**: ``""``
 
@@ -208,7 +208,7 @@ Detail
 
    **Type**: :dt:`String` |br|
    **Default Value**: ``""``
-   
+
 
 **xp**
    Total experience points gained on plug
