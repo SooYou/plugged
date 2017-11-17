@@ -6,6 +6,7 @@ SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 PAPER         =
 BUILDDIR      = .build
+BASEDIR       = docs
 
 # Internal variables.
 PAPEROPT_a4     = -D latex_paper_size=a4
@@ -47,6 +48,19 @@ help:
 .PHONY: clean
 clean:
 	rm -rf $(BUILDDIR)/*
+
+.PHONY: pages
+gh-pages:
+	git checkout gh-pages
+	rm -rf ./*
+	git checkout master ./$(BASEDIR)
+	cd $(BASEDIR) && make html && mv -fv $(BUILDDIR)/html/* ../ && cd ..
+	rm -rf $(BASEDIR)
+	touch .nojekyll
+	git add .
+	git commit -m "Generated gh-pages for `git log master -1 --pretty=short --abbrev-commit`"
+	git push origin gh-pages
+	git checkout master
 
 .PHONY: html
 html:
