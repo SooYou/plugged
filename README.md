@@ -2,7 +2,6 @@
     <a href="#">
         <img src="docs/.static/img/logo.svg" alt="" width=128 height=128>
     </a>
-
     <h3 align="center">Plugged</h3>
     <hr>
     <p align="center">
