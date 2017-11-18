@@ -22,13 +22,13 @@ hiccups.
 
 To finish this tutorial you should have:
 
-    1. A working Computer
-    2. [Node](https://nodejs.org) installed in version 6.6+
-    3. a cmd you like to use
-    4. an editor, personally I recommend
-       [VS Code](https://code.visualstudio.com/)
-       or [SublimeText](https://www.sublimetext.com/)
-    5. 20 minutes
+1. A working Computer
+2. [Node](https://nodejs.org) installed in version 6.6+
+3. a cmd you like to use
+4. an editor, personally I recommend
+   [VS Code](https://code.visualstudio.com/)
+   or [SublimeText](https://www.sublimetext.com/)
+5. 20 minutes
 
 Once we got that checked, let's go on.
 
@@ -231,6 +231,9 @@ Versioning
 Plugged uses [SemVer](http://semver.org/) for versioning.
 
 We are currently at *3.0.0*
+
+[![](https://nodei.co/npm/plugged.png?downloadRank=true)](https://npmjs.com/package/plugged)
+
 
 Authors
 =======
