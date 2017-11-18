@@ -78,7 +78,7 @@ Now that you initialized the project we will need to pull in Plugged as a
 dependency. We can do this by entering:
 
 ```bash
-    npm install --save plugged
+    npm install --save --production plugged
 ```
 
 Next you should create a new file to create our bot in. In this example
@@ -138,6 +138,9 @@ That is all it takes to get a basic bot running with plugged!
 
 Running the tests
 =================
+
+Remember, when you installed plugged with the production flag set, you need to manually
+install chai and mocha!
 
 To run the tests all you need to do is type:
 
