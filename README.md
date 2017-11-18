@@ -117,7 +117,7 @@ const Plugged = require("plugged");
     const joinedRoom = function(err, room) {
         if (!err) {
             console.log("connected to room!");
-            bot.on("USER_JOIN", user => bot.greet(user));
+            bot.on(bot.USER_JOIN, user => bot.greet(user));
         } else {
             console.log(err);
         }
