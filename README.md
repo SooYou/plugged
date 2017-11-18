@@ -34,7 +34,7 @@ Getting started
 ===============
 plugged is relatively easy to use. Here is a simple guide to get you started quick!
 
-For a full tutorial on how to use plugged, please go to the [documentation page](https://sooyou.github.io/plugged/cookbook/quickstarts)
+For a full tutorial on how to use plugged, please go to the [documentation page](https://sooyou.github.io/plugged/cookbook/quickstart.html)
 
 It is a good idea to check out the [documentation](https://sooyou.github.io/plugged) as well. It can be super useful for
 your development! Otherwise there is still the [cookbook](https://sooyou.github.io/plugged/cookbook) but that is maybe something for after the
