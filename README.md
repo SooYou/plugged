@@ -148,7 +148,7 @@ look like the following:
 ```JSON
 {
     "email": "youraccount@example.example",
-    "password": "youpassword",
+    "password": "yourpassword",
     "room": "roomToJoin",
     "usernameToBuy": "",
     "parse": true
@@ -278,7 +278,7 @@ Versioning
 
 Plugged uses [SemVer](http://semver.org/) for versioning.
 
-We are currently at *3.0.1*
+We are currently at *3.0.2*
 
 [![](https://nodei.co/npm/plugged.png?downloadRank=true)](https://npmjs.com/package/plugged)
 
