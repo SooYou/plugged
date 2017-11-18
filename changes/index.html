@@ -1,0 +1,306 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>CHANGELOG &mdash; Plugged v3.0.0</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../_static/css/datatypes.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Plugged v3.0.0" href="../index.html"/>
+        <link rel="next" title="Changes" href="changes.html"/>
+        <link rel="prev" title="Plugged 3.0.0 documentation" href="../index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Plugged
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">CHANGELOG</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changes.html">Changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">3.0.0</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/index.html">Plugged 3.0.0 cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datatypes/index.html">Plugged 3.0.0 datamodels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/index.html">Plugged 3.0.0 reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Plugged 3.0.0 contribution guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../thankyou.html">Thank you</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Plugged</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>CHANGELOG</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/changes/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="changelog">
+<h1>CHANGELOG<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes</a></li>
+</ul>
+</div>
+<div class="section" id="id1">
+<h2>3.0.0<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li>use the latest, stable es6 features</li>
+<li>score now represents an actual model</li>
+<li>updated getCSRF to use the new API endpoint</li>
+<li>validateRoomName and validateUsername return the sanitized string now instead of an
+object</li>
+<li>added data checks to GRAB event</li>
+<li>added return value to clearUserFromLists</li>
+<li>cacheChat now returns boolean value indicating if it was set</li>
+<li>flattened the response of activatePlaylist to just return the playlist ID</li>
+<li>refactored all models to use unix time now</li>
+<li>refactored _connectSocket</li>
+<li>refactored login</li>
+<li>refactored keepAlive as well to better suit everyone’s needs</li>
+<li>refactored log</li>
+<li>refactored _wsaprocessor and renamed to _eventProcessor</li>
+<li>refactored chat into an object</li>
+<li>refactored the removeChatMessage* functions</li>
+<li>refactored query to hold all options in an object</li>
+<li>refactored chat to hold all related data in an object</li>
+<li>refactored all tests to adapt to the new code</li>
+<li>fixed timing bug with query and chat</li>
+<li>fixed bug in requestSelf</li>
+</ul>
+<ul class="simple">
+<li>a new documentation (This should solve a lot of starter issues)</li>
+<li>the previous model was added into the documentation</li>
+<li>mapped PlaylistCycle</li>
+<li>mapped LevelUp</li>
+<li>mapped Transaction</li>
+<li>added setHeartbeatRate function in action of refactoring keepAlive</li>
+<li>added getHeartbeatRate function in action of refactoring keepAlive</li>
+<li>added setVerbosity function in action of refactoring log</li>
+<li>added getVerbosity function in action of refactoring log</li>
+<li>added waitlistBan event</li>
+<li>added sendSOS method</li>
+<li>added _removeChatMessage</li>
+<li>added setMaxTimeout</li>
+<li>added getMaxTimeout</li>
+<li>added _clearHeartbeat</li>
+</ul>
+<ul class="simple">
+<li>removed logger from the package since it served its purpose</li>
+<li>removed JOINED_ROOM and PLUG_ERROR were removed, you have to use a callback now</li>
+<li>removed LOGIN_SUCCESSFULL, LOGOUT_SUCCESSFULL, LOGIN_ERROR and LOGOUT_ERROR</li>
+<li>removed the previous waitlist from the waitlist event</li>
+<li>removed insertMedia function</li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="changes.html" class="btn btn-neutral float-right" title="Changes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../index.html" class="btn btn-neutral" title="Plugged 3.0.0 documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Sooyou.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'3.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

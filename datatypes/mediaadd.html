@@ -1,0 +1,331 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>MediaAdd &mdash; Plugged v3.0.0</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../_static/css/datatypes.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Plugged v3.0.0" href="../index.html"/>
+        <link rel="up" title="Plugged 3.0.0 datamodels" href="index.html"/>
+        <link rel="next" title="MediaUpdate" href="mediaupdate.html"/>
+        <link rel="prev" title="Media" href="media.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Plugged
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../changes/index.html">CHANGELOG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/index.html">Plugged 3.0.0 cookbook</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Plugged 3.0.0 datamodels</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="ban.html">Ban</a></li>
+<li class="toctree-l2"><a class="reference internal" href="banduration.html">BANDURATION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="booth.html">Booth</a></li>
+<li class="toctree-l2"><a class="reference internal" href="boothbanduration.html">BOOTHBANDURATION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="boothbanreason.html">BOOTHBANREASON</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cache.html">CACHE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chat.html">Chat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chatdelete.html">ChatDelete</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cycle.html">Cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="earn.html">Earn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="flatroom.html">FlatRoom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="globalrole.html">GLOBALROLE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="history.html">History</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ignore.html">Ignore</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inventory.html">Inventory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="invitation.html">Invitation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="media.html">Media</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">MediaAdd</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#summary">Summary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#model">Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#detail">Detail</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mediaupdate.html">MediaUpdate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="meta.html">Meta</a></li>
+<li class="toctree-l2"><a class="reference internal" href="minchatlevel.html">MinChatLevel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modadddj.html">ModAddDJ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modban.html">ModBan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modelself.html">Self</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modmove.html">ModMove</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modskip.html">ModSkip</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modwaitlistban.html">ModWaitlistBan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mute.html">Mute</a></li>
+<li class="toctree-l2"><a class="reference internal" href="muteduration.html">MUTEDURATION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="newroom.html">NewRoom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="news.html">News</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notification.html">Notification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="playback.html">Playback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="playlist.html">Playlist</a></li>
+<li class="toctree-l2"><a class="reference internal" href="previous.html">Previous</a></li>
+<li class="toctree-l2"><a class="reference internal" href="product.html">Product</a></li>
+<li class="toctree-l2"><a class="reference internal" href="promotion.html">Promotion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="purchase.html">Purchase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reason.html">REASON</a></li>
+<li class="toctree-l2"><a class="reference internal" href="role.html">ROLE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="room.html">Room</a></li>
+<li class="toctree-l2"><a class="reference internal" href="roomupdate.html">RoomUpdate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="score.html">Score</a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html">Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="state.html">State</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transaction.html">Transactions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user.html">User</a></li>
+<li class="toctree-l2"><a class="reference internal" href="userupdate.html">Vote</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vote.html">Vote</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/index.html">Plugged 3.0.0 reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Plugged 3.0.0 contribution guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../thankyou.html">Thank you</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Plugged</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Plugged 3.0.0 datamodels</a> &raquo;</li>
+        
+      <li>MediaAdd</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/datatypes/mediaadd.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="mediaadd">
+<h1>MediaAdd<a class="headerlink" href="#mediaadd" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<p>Information about the playlist after adding media to it.</p>
+</div>
+<div class="section" id="model">
+<h2>Model<a class="headerlink" href="#model" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-Javascript"><div class="highlight"><pre><span class="p">{</span>
+   <span class="s2">&quot;count&quot;</span><span class="o">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+   <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="o">-</span><span class="mi">1</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="detail">
+<h2>Detail<a class="headerlink" href="#detail" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt><strong>count</strong></dt>
+<dd><p class="first">Amount of media objects in playlist after add.</p>
+<p class="last"><strong>Type</strong>: <span class="datatype">Number</span> <br />
+<strong>Default Value</strong>: <code class="docutils literal"><span class="pre">-1</span></code></p>
+</dd>
+<dt><strong>id</strong></dt>
+<dd><p class="first">Playlist ID.</p>
+<p class="last"><strong>Type</strong>: <span class="datatype">Number</span> <br />
+<strong>Default Value</strong>: <code class="docutils literal"><span class="pre">-1</span></code></p>
+</dd>
+</dl>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="mediaupdate.html" class="btn btn-neutral float-right" title="MediaUpdate" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="media.html" class="btn btn-neutral" title="Media" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Sooyou.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'3.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

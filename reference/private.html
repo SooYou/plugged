@@ -1,0 +1,612 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Private Functions &mdash; Plugged v3.0.0</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../_static/css/datatypes.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Plugged v3.0.0" href="../index.html"/>
+        <link rel="up" title="Plugged 3.0.0 reference" href="index.html"/>
+        <link rel="next" title="Plugged 3.0.0 contribution guide" href="../contribute.html"/>
+        <link rel="prev" title="Events" href="events.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Plugged
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../changes/index.html">CHANGELOG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/index.html">Plugged 3.0.0 cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datatypes/index.html">Plugged 3.0.0 datamodels</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Plugged 3.0.0 reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="events.html">Events</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Private Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#functions">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#checkforpreviousvote">_checkForPreviousVote</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clearstate">_clearState</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clearheartbeat">_clearHeartbeat</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cleanusercache">_cleanUserCache</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#connectsocket">_connectSocket</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getauthtoken">_getAuthToken</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getcsrf">_getCSRF</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#keepalive">_keepAlive</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#heartbeat">_heartbeat</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#log">_log</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#loggedin">_loggedIn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#login">_login</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#processchatqueue">_processChatQueue</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#removechatmessagebydelay">_removeChatMessageByDelay</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#removechatmessage">_removeChatMessage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sendmessage">_sendMessage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#setlogin">_setLogin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#eventprocessor">_eventProcessor</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Plugged 3.0.0 contribution guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../thankyou.html">Thank you</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Plugged</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Plugged 3.0.0 reference</a> &raquo;</li>
+        
+      <li>Private Functions</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/reference/private.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="private-functions">
+<h1>Private Functions<a class="headerlink" href="#private-functions" title="Permalink to this headline">¶</a></h1>
+<p>This document will help you understand what the private functions of plugged do
+so you can better understand what when happens, certainly not a must read but a
+nice to have.</p>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="checkforpreviousvote">
+<h3>_checkForPreviousVote<a class="headerlink" href="#checkforpreviousvote" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Checks if a vote has changed. This prevents the system from adding multiple
+votes to the state by a single user.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>vote</strong>: <a class="reference internal" href="../datatypes/vote.html"><span class="doc">Vote</span></a> checks if a User’s vote has changed</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Boolean</span> true when the vote hasn’t changed or is new, false otherwise</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="clearstate">
+<h3>_clearState<a class="headerlink" href="#clearstate" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Resets the internal state.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="clearheartbeat">
+<h3>_clearHeartbeat<a class="headerlink" href="#clearheartbeat" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Resets the heartbeat state.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="cleanusercache">
+<h3>_cleanUserCache<a class="headerlink" href="#cleanusercache" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Removes all expired users from cache. Every user is cached for 5 minutes
+before their object will be disposed from cache, this is triggering a
+cleanup.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="connectsocket">
+<h3>_connectSocket<a class="headerlink" href="#connectsocket" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Connects to the WebSocket.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Fires</strong>:</p>
+<blockquote>
+<div><span class="event">SOCK_OPEN</span>
+<span class="event">SOCK_CLOSED</span>
+<span class="event">SOCK_ERROR</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getauthtoken">
+<h3>_getAuthToken<a class="headerlink" href="#getauthtoken" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Retrieves auth token.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>data</strong>: <span class="datatype">Object</span> placeholder</p>
+<p><strong>callback</strong>: <span class="datatype">Function</span></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getcsrf">
+<h3>_getCSRF<a class="headerlink" href="#getcsrf" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets csrf token.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This is one form of a prevention for a Man in the Middle Attack
+(short MitM). This token is only relevant for login, after that you’ll not
+need it anymore which is the reason why this call is only successful
+before you logged in.</p>
+</div>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>credentials</strong>: <span class="datatype">Object</span> login data to use.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">String</span> possible error returned.</p>
+<p><strong>credentials</strong>: <span class="datatype">Object</span> login data to use.</p>
+<p><strong>csrf</strong>: <span class="datatype">String</span> the token.</p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="keepalive">
+<h3>_keepAlive<a class="headerlink" href="#keepalive" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Function that gets called by <a class="reference internal" href="#heartbeat"><span class="std std-ref">_heartbeat</span></a> to
+check if the connection to the server is still open. The check happens by a
+constant delta offset. If the server hasn’t responded after 4 checks the
+connection will be reset by the client.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Fires</strong>:</p>
+<blockquote>
+<div><p><span class="event">CONN_WARNING</span> after every failed check</p>
+<p><span class="event">CONN_PART</span> after 6 consequent fails</p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="heartbeat">
+<span id="id1"></span><h3>_heartbeat<a class="headerlink" href="#heartbeat" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Calls _keepAlive for consequent checks of an etablished server connection.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="log">
+<h3>_log<a class="headerlink" href="#log" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Internal logging function that calls the invoked logger.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><span class="datatype">number</span> verbosity level of message</p>
+<p><span class="datatype">string</span> message to be logged</p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="loggedin">
+<h3>_loggedIn<a class="headerlink" href="#loggedin" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Last step in the login chain, this finally sets up the WebSocket connection
+and sets the initial state.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">function</span> callback</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="login">
+<h3>_login<a class="headerlink" href="#login" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Logs user in with the given credentials.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>credentials</strong>: <span class="datatype">Object</span> account information</p>
+<p><strong>callback</strong>: <span class="datatype">Function</span> callback</p>
+<p><strong>tries</strong>: <span class="datatype">Number</span> amount of unsuccessful tries</p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="processchatqueue">
+<h3>_processChatQueue<a class="headerlink" href="#processchatqueue" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Processes a chat message from the buffer and sends it off to the server with
+some delay. The delay is set after the amount of messages that was sent in
+the past few seconds. If no messages were sent for a while, the delay will
+be reset to zero.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>lastMessage</strong>: <span class="datatype">Number</span> unix time when last message was sent.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="removechatmessagebydelay">
+<h3>_removeChatMessageByDelay<a class="headerlink" href="#removechatmessagebydelay" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Delete a chat message based on its body. This is used by _processChatQueue
+when a message has the removal tag set.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>message</strong>: <span class="datatype">String</span> message to delete</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="removechatmessage">
+<h3>_removeChatMessage<a class="headerlink" href="#removechatmessage" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Delete a chat message. This is the core function of all chat deletion methods.
+It takes a function (comparator) which decides whether a message should be deleted or
+not.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt><strong>compare</strong>: <span class="datatype">Function</span> comparing function to decide whether a message should</dt>
+<dd>be deleted. The passed argument is the chat message object</dd>
+</dl>
+<p><strong>cacheOnly</strong>: <span class="datatype">Boolean</span> if the message should only be deleted in cache</p>
+<dl class="docutils">
+<dt><strong>count</strong>: <span class="datatype">Number</span> how many messages should be removed before the function</dt>
+<dd>quits. If not set, it will run through the whole chat cache.</dd>
+</dl>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Number</span> amount of messages deleted</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="sendmessage">
+<h3>_sendMessage<a class="headerlink" href="#sendmessage" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Sends a message to the server via WebSocket.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>type</strong>: <span class="datatype">String</span> message type</p>
+<p><strong>data</strong>: <span class="datatype">String|Number</span> JSON encoded data</p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Boolean</span> true when the message was sent successfully</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="setlogin">
+<h3>_setLogin<a class="headerlink" href="#setlogin" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Logs an account in.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>credentials</strong>: <span class="datatype">Object</span> login data to use.</p>
+<p><strong>csrf</strong>: <span class="datatype">String</span> cross site request forgery token.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">String</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="eventprocessor">
+<h3>_eventProcessor<a class="headerlink" href="#eventprocessor" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>It processes every message received by the
+WebSocket and turns them into events and data.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>msg</strong>: <span class="datatype">String</span> JSON encoded message as String</p>
+<p><strong>flags</strong>: <span class="datatype">Object</span> contains two Boolean options, binary and masked</p>
+</div></blockquote>
+<p><strong>Fires</strong>:</p>
+<blockquote>
+<div><ul class="simple">
+<li><span class="event">ADVANCE</span></li>
+<li><span class="event">BAN</span></li>
+<li><span class="event">BAN_IP</span></li>
+<li><span class="event">CHAT</span></li>
+<li><span class="event">CHAT_COMMAND</span></li>
+<li><span class="event">CHAT_DELETE</span></li>
+<li><span class="event">CHAT_MENTION</span></li>
+<li><span class="event">CHAT_RATE_LIMIT</span></li>
+<li><span class="event">CONN_SUCCESS</span></li>
+<li><span class="event">CONN_ERROR</span></li>
+<li><span class="event">DJ_LIST_CYCLE</span></li>
+<li><span class="event">DJ_LIST_LOCKED</span></li>
+<li><span class="event">EARN</span></li>
+<li><span class="event">FLOOD_API</span></li>
+<li><span class="event">FLOOD_CHAT</span></li>
+<li><span class="event">FRIEND_ACCEPT</span></li>
+<li><span class="event">FRIEND_JOIN</span></li>
+<li><span class="event">FRIEND_REQUEST</span></li>
+<li><span class="event">GIFTED</span></li>
+<li><span class="event">GRAB</span></li>
+<li><span class="event">GUEST_JOIN</span></li>
+<li><span class="event">GUEST_LEAVE</span></li>
+<li><span class="event">KILL_SESSION</span></li>
+<li><span class="event">LEVEL_UP</span></li>
+<li><span class="event">MAINTENANCE_MODE</span></li>
+<li><span class="event">MAINTENANCE_MODE_ALERT</span></li>
+<li><span class="event">MOD_ADD_DJ</span></li>
+<li><span class="event">MOD_BAN</span></li>
+<li><span class="event">MOD_MOVE_DJ</span></li>
+<li><span class="event">MOD_MUTE</span></li>
+<li><span class="event">MOD_REMOVE_DJ</span></li>
+<li><span class="event">MOD_SKIP</span></li>
+<li><span class="event">MOD_STAFF</span></li>
+<li><span class="event">NAME_CHANGED</span></li>
+<li><span class="event">NOTIFY</span></li>
+<li><span class="event">PLAYLIST_CYCLE</span></li>
+<li><span class="event">ROOM_DESCRIPTION_UPDATE</span></li>
+<li><span class="event">ROOM_MIN_CHAT_LEVEL_UPDATE</span></li>
+<li><span class="event">ROOM_NAME_UPDATE</span></li>
+<li><span class="event">ROOM_WELCOME_UPDATE</span></li>
+<li><span class="event">SKIP</span></li>
+<li><span class="event">USER_JOIN</span></li>
+<li><span class="event">USER_LEAVE</span></li>
+<li><span class="event">VOTE</span></li>
+<li><span class="event">WAITLIST_UPDATE</span></li>
+</ul>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../contribute.html" class="btn btn-neutral float-right" title="Plugged 3.0.0 contribution guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="events.html" class="btn btn-neutral" title="Events" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Sooyou.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'3.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

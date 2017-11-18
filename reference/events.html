@@ -1,0 +1,756 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Events &mdash; Plugged v3.0.0</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../_static/css/datatypes.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Plugged v3.0.0" href="../index.html"/>
+        <link rel="up" title="Plugged 3.0.0 reference" href="index.html"/>
+        <link rel="next" title="Private Functions" href="private.html"/>
+        <link rel="prev" title="Functions" href="functions.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Plugged
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../changes/index.html">CHANGELOG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/index.html">Plugged 3.0.0 cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datatypes/index.html">Plugged 3.0.0 datamodels</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Plugged 3.0.0 reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Events</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Events</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ack">ACK</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#advance">ADVANCE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ban">BAN</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ban-ip">BAN_IP</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#chat">CHAT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#chat-delete">CHAT_DELETE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#chat-command">CHAT_COMMAND</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#chat-rate-limit">CHAT_RATE_LIMIT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#conn-part">CONN_PART</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#conn-warning">CONN_WARNING</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dj-list-cycle">DJ_LIST_CYCLE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#earn">EARN</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#flood-api">FLOOD_API</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#flood-chat">FLOOD_CHAT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#friend-accept">FRIEND_ACCEPT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#friend-join">FRIEND_JOIN</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#friend-request">FRIEND_REQUEST</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gifted">GIFTED</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#grab">GRAB</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#guest-join">GUEST_JOIN</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#guest-leave">GUEST_LEAVE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#level-up">LEVEL_UP</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#maintenance-mode">MAINTENANCE_MODE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#maintenance-mode-alert">MAINTENANCE_MODE_ALERT</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mod-add-dj">MOD_ADD_DJ</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mod-ban">MOD_BAN</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mod-waitlist-ban">MOD_WAITLIST_BAN</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mod-move-dj">MOD_MOVE_DJ</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mod-mute">MOD_MUTE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mod-skip">MOD_SKIP</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mod-staff">MOD_STAFF</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notify">NOTIFY</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#playlist-cycle">PLAYLIST_CYCLE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#plug-update">PLUG_UPDATE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#room-description-update">ROOM_DESCRIPTION_UPDATE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#room-min-chat-level-update">ROOM_MIN_CHAT_LEVEL_UPDATE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#room-name-update">ROOM_NAME_UPDATE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#room-welcome-update">ROOM_WELCOME_UPDATE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#skip">SKIP</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sock-closed">SOCK_CLOSED</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sock-error">SOCK_ERROR</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sock-open">SOCK_OPEN</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#user-join">USER_JOIN</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#user-leave">USER_LEAVE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#user-update">USER_UPDATE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#vote">VOTE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#waitlist-update">WAITLIST_UPDATE</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="private.html">Private Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Plugged 3.0.0 contribution guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../thankyou.html">Thank you</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Plugged</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Plugged 3.0.0 reference</a> &raquo;</li>
+        
+      <li>Events</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/reference/events.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="events">
+<h1>Events<a class="headerlink" href="#events" title="Permalink to this headline">¶</a></h1>
+<p>Plugged works with a wide variety of events to emit information throughout the
+system. This site lists all events that are emitted and what they do.</p>
+<p>For further information about the events and how to use them you should consider
+hitting up the cookbook.</p>
+<div class="section" id="id1">
+<h2>Events<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="ack">
+<h3>ACK<a class="headerlink" href="#ack" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when the server acknowledged the connection request.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="advance">
+<span id="id2"></span><h3>ADVANCE<a class="headerlink" href="#advance" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when the next media is played.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>booth</strong>: <a class="reference internal" href="../datatypes/booth.html"><span class="doc">Booth</span></a></p>
+<p><strong>playback</strong>: <a class="reference internal" href="../datatypes/playback.html"><span class="doc">Playback</span></a></p>
+<p><strong>previous</strong>: <a class="reference internal" href="../datatypes/previous.html"><span class="doc">Previous</span></a></p>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="ban">
+<h3>BAN<a class="headerlink" href="#ban" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when you get banned from a room.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>ban</strong>: <a class="reference internal" href="../datatypes/ban.html"><span class="doc">Ban</span></a></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="ban-ip">
+<h3>BAN_IP<a class="headerlink" href="#ban-ip" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when you receive an IP Ban from plug.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="chat">
+<h3>CHAT<a class="headerlink" href="#chat" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when someone sent a chat message in the room you are connected to.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>chat</strong>: <a class="reference internal" href="../datatypes/chat.html"><span class="doc">Chat</span></a></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="chat-delete">
+<span id="id3"></span><h3>CHAT_DELETE<a class="headerlink" href="#chat-delete" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when a staff member deletes a chat message.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>chat</strong>: <a class="reference internal" href="../datatypes/chatdelete.html"><span class="doc">ChatDelete</span></a> deleted Chat object.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="chat-command">
+<h3>CHAT_COMMAND<a class="headerlink" href="#chat-command" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when someone issues a chat command.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>chat</strong>: <a class="reference internal" href="../datatypes/chat.html"><span class="doc">Chat</span></a></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="chat-rate-limit">
+<h3>CHAT_RATE_LIMIT<a class="headerlink" href="#chat-rate-limit" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when chat enters slow mode.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="conn-part">
+<h3>CONN_PART<a class="headerlink" href="#conn-part" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted on loss of connection.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>meta</strong>: <a class="reference internal" href="../datatypes/meta.html"><span class="doc">Meta</span></a></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="conn-warning">
+<h3>CONN_WARNING<a class="headerlink" href="#conn-warning" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when server is not exchanging any information with us for a longer
+period of time.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>time</strong>: <span class="datatype">Number</span> Time in seconds since the last message. This has an
+incrementation rate of 30 seconds per call. The client will close the
+connection after 6 emitted warnings, or 3 minutes of no connection.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="dj-list-cycle">
+<h3>DJ_LIST_CYCLE<a class="headerlink" href="#dj-list-cycle" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when a staff member changes the state of the waitlist cycle.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>Cycle</strong>: <a class="reference internal" href="../datatypes/cycle.html"><span class="doc">Cycle</span></a></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="earn">
+<h3>EARN<a class="headerlink" href="#earn" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when you earn XP. This also includes your Plug points as well as
+your current level.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>Level</strong>: <a class="reference internal" href="../datatypes/earn.html"><span class="doc">Earn</span></a></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="flood-api">
+<h3>FLOOD_API<a class="headerlink" href="#flood-api" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when you send too many requests to the API at a time.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Plugged takes care of the effect of rate limiters in plug so that
+you don’t have to care about this happening.</p>
+</div>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="flood-chat">
+<h3>FLOOD_CHAT<a class="headerlink" href="#flood-chat" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when you send too many chat messages at once.</p>
+<p>Plugged takes care of this as well as it does for FLOOD_API. In a
+default environment, this event will never fire.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="friend-accept">
+<h3>FRIEND_ACCEPT<a class="headerlink" href="#friend-accept" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when someone accepted your friend request.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>user</strong>: <span class="datatype">String</span> username.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="friend-join">
+<h3>FRIEND_JOIN<a class="headerlink" href="#friend-join" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when a friend joins the room you are in.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>user</strong>: <a class="reference internal" href="../datatypes/user.html"><span class="doc">User</span></a></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="friend-request">
+<h3>FRIEND_REQUEST<a class="headerlink" href="#friend-request" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when you receive a friend request.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>user</strong>: <span class="datatype">String</span> username.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="gifted">
+<h3>GIFTED<a class="headerlink" href="#gifted" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when someone sends a gift to another user.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>sender</strong>: <span class="datatype">String</span> sender’s name.
+<strong>recipient</strong>: <span class="datatype">String</span> recipient’s name.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="grab">
+<h3>GRAB<a class="headerlink" href="#grab" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when someone saves the current media.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>grab</strong>: <span class="datatype">Number</span> User’s ID.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="guest-join">
+<h3>GUEST_JOIN<a class="headerlink" href="#guest-join" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when a guest joins the room.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="guest-leave">
+<h3>GUEST_LEAVE<a class="headerlink" href="#guest-leave" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when a guest leaves the room.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="level-up">
+<h3>LEVEL_UP<a class="headerlink" href="#level-up" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when you gained enough XP to level up.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>level</strong>: <span class="datatype">Number</span> your new level.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="maintenance-mode">
+<h3>MAINTENANCE_MODE<a class="headerlink" href="#maintenance-mode" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when plug enters maintenance mode.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="maintenance-mode-alert">
+<h3>MAINTENANCE_MODE_ALERT<a class="headerlink" href="#maintenance-mode-alert" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when plug is about to enter maintenance mode.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="mod-add-dj">
+<h3>MOD_ADD_DJ<a class="headerlink" href="#mod-add-dj" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when a mod adds a user to the waitlist.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>modadd</strong>: <a class="reference internal" href="../datatypes/modadddj.html"><span class="doc">ModAddDJ</span></a></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="mod-ban">
+<span id="id4"></span><h3>MOD_BAN<a class="headerlink" href="#mod-ban" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when a mod bans a user from a room.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>modban</strong>: <a class="reference internal" href="../datatypes/modban.html"><span class="doc">ModBan</span></a></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="mod-waitlist-ban">
+<h3>MOD_WAITLIST_BAN<a class="headerlink" href="#mod-waitlist-ban" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when a mod bans a user from the booth.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>modwaitlistban</strong>: <a class="reference internal" href="../datatypes/modwaitlistban.html"><span class="doc">ModWaitlistBan</span></a></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="mod-move-dj">
+<h3>MOD_MOVE_DJ<a class="headerlink" href="#mod-move-dj" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when a moderator moves a user in othe waitlist to another position.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>modmove</strong>: <a class="reference internal" href="../datatypes/modmove.html"><span class="doc">ModMove</span></a></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="mod-mute">
+<h3>MOD_MUTE<a class="headerlink" href="#mod-mute" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when a moderator mutes a user.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>mute</strong>: <a class="reference internal" href="../datatypes/mute.html"><span class="doc">Mute</span></a></p>
+<p><strong>duration</strong>: <a class="reference internal" href="../datatypes/muteduration.html"><span class="doc">MuteDuration</span></a></p>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="mod-skip">
+<h3>MOD_SKIP<a class="headerlink" href="#mod-skip" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when a moderator skips the current media.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>skip</strong>: <a class="reference internal" href="../datatypes/modskip.html"><span class="doc">ModSkip</span></a></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="mod-staff">
+<h3>MOD_STAFF<a class="headerlink" href="#mod-staff" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when a user gets promoted</p>
+<p>The promotion argument is always an array since it can happen that the staff
+level of two users is changed, namely when the host is giving his position to
+another user.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>promotions</strong>: <a class="reference internal" href="../datatypes/promotion.html"><span class="doc">[Promotion]</span></a></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="notify">
+<h3>NOTIFY<a class="headerlink" href="#notify" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when you receive a notification from plug for example when your
+level raises.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>notification</strong>: <a class="reference internal" href="../datatypes/notification.html"><span class="doc">Notification</span></a></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="playlist-cycle">
+<h3>PLAYLIST_CYCLE<a class="headerlink" href="#playlist-cycle" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when you finish playing a song.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>Cycle</strong>: <span class="datatype">Number</span> playlist ID.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="plug-update">
+<h3>PLUG_UPDATE<a class="headerlink" href="#plug-update" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when plug was updated. This enforces a refresh on the web app.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="room-description-update">
+<span id="id5"></span><h3>ROOM_DESCRIPTION_UPDATE<a class="headerlink" href="#room-description-update" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when the room’s description was updated.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>update</strong>: <a class="reference internal" href="../datatypes/roomupdate.html"><span class="doc">RoomUpdate</span></a></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="room-min-chat-level-update">
+<span id="min-chat-level-update"></span><h3>ROOM_MIN_CHAT_LEVEL_UPDATE<a class="headerlink" href="#room-min-chat-level-update" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when the room’s minimum chat level was updated.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>update</strong>: <a class="reference internal" href="../datatypes/minchatlevel.html"><span class="doc">MinChatLevel</span></a></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="room-name-update">
+<h3>ROOM_NAME_UPDATE<a class="headerlink" href="#room-name-update" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when the room name was updated.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>update</strong>: <a class="reference internal" href="../datatypes/roomupdate.html"><span class="doc">RoomUpdate</span></a></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="room-welcome-update">
+<h3>ROOM_WELCOME_UPDATE<a class="headerlink" href="#room-welcome-update" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when the room’s welcome message was updated.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>update</strong>: <a class="reference internal" href="../datatypes/roomupdate.html"><span class="doc">RoomUpdate</span></a></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="skip">
+<h3>SKIP<a class="headerlink" href="#skip" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when a user skips their play.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>userid</strong>: <span class="datatype">Number</span> User’s ID.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="sock-closed">
+<h3>SOCK_CLOSED<a class="headerlink" href="#sock-closed" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when socket is closed</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="sock-error">
+<h3>SOCK_ERROR<a class="headerlink" href="#sock-error" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted on failure of etablishing a websocket connection to plug.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">String</span> containing the error message.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="sock-open">
+<h3>SOCK_OPEN<a class="headerlink" href="#sock-open" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted on successfully etablishing a websocket connection to plug.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="user-join">
+<span id="id6"></span><h3>USER_JOIN<a class="headerlink" href="#user-join" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when a user joins the room you are connected to.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>user</strong>: <a class="reference internal" href="../datatypes/user.html"><span class="doc">User</span></a></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="user-leave">
+<span id="id7"></span><h3>USER_LEAVE<a class="headerlink" href="#user-leave" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when a user leaves the room.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>user</strong>: <a class="reference internal" href="../datatypes/user.html"><span class="doc">User</span></a></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="user-update">
+<span id="id8"></span><h3>USER_UPDATE<a class="headerlink" href="#user-update" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when a user updates anything about their profile.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>user</strong>: <a class="reference internal" href="../datatypes/userupdate.html"><span class="doc">UserUpdate</span></a></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="vote">
+<h3>VOTE<a class="headerlink" href="#vote" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when someone presses the woot or meh button.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>vote</strong>: <a class="reference internal" href="../datatypes/vote.html"><span class="doc">Vote</span></a></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="waitlist-update">
+<span id="id9"></span><h3>WAITLIST_UPDATE<a class="headerlink" href="#waitlist-update" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Emitted when a user joins or leaves the waitlist, or right after the advance
+event was fired.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>waitlist</strong>: <span class="datatype">[Number]</span> waitlist with user IDs</div></blockquote>
+</div></blockquote>
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="private.html" class="btn btn-neutral float-right" title="Private Functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="functions.html" class="btn btn-neutral" title="Functions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Sooyou.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'3.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

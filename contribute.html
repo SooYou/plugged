@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Plugged 3.0.0 documentation &mdash; Plugged v3.0.0</title>
+  <title>Plugged 3.0.0 contribution guide &mdash; Plugged v3.0.0</title>
   
 
   
@@ -39,8 +39,9 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Plugged v3.0.0" href="#"/>
-        <link rel="next" title="CHANGELOG" href="changes/index.html"/> 
+    <link rel="top" title="Plugged v3.0.0" href="index.html"/>
+        <link rel="next" title="Thank you" href="thankyou.html"/>
+        <link rel="prev" title="Private Functions" href="reference/private.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -59,7 +60,7 @@
           
 
           
-            <a href="#" class="icon icon-home"> Plugged
+            <a href="index.html" class="icon icon-home"> Plugged
           
 
           
@@ -93,13 +94,23 @@
               
             
             
-              <ul>
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="changes/index.html">CHANGELOG</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cookbook/quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cookbook/index.html">Plugged 3.0.0 cookbook</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datatypes/index.html">Plugged 3.0.0 datamodels</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reference/index.html">Plugged 3.0.0 reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="contribute.html">Plugged 3.0.0 contribution guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Plugged 3.0.0 contribution guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#rules">Rules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#keep-in-style-with-the-code">Keep in style with the code.</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#make-reasonable-changes">Make reasonable changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#have-fun-and-be-positive">Have fun and be positive</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#changes-should-be-pr-d-on-the-dev-branch">Changes should be PR’d on the dev branch</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#don-t-be-shy-to-open-a-pr-or-issue">Don’t be shy to open a PR or issue</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="thankyou.html">Thank you</a></li>
 </ul>
 
@@ -115,7 +126,7 @@
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="#">Plugged</a>
+          <a href="index.html">Plugged</a>
         
       </nav>
 
@@ -143,15 +154,15 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="#">Docs</a> &raquo;</li>
+      <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Plugged 3.0.0 documentation</li>
+      <li>Plugged 3.0.0 contribution guide</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/contribute.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -164,54 +175,43 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="plugged-version-documentation">
-<h1>Plugged 3.0.0 documentation<a class="headerlink" href="#plugged-version-documentation" title="Permalink to this headline">¶</a></h1>
-<table border="1" class="docutils">
-<colgroup>
-<col width="21%" />
-<col width="79%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Documentation</th>
-<th class="head">&#160;</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>&#160;</td>
-<td><a class="reference internal" href="changes/index.html"><span class="doc">Changelog</span></a> <br />
-What changed in 3.0.0</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td><a class="reference internal" href="cookbook/quickstart.html"><span class="doc">Quickstart</span></a> <br />
-Start here if you’re new</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td><a class="reference internal" href="cookbook/index.html"><span class="doc">Cookbook</span></a> <br />
-Cooking by the book</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td><a class="reference internal" href="datatypes/index.html"><span class="doc">Models</span></a> <br />
-All Models used in the Module</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td><a class="reference internal" href="reference/events.html"><span class="doc">Events</span></a> <br />
-All Events used in the Module</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td><a class="reference internal" href="reference/functions.html"><span class="doc">Functions</span></a> <br />
-All Functions used in the Module</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td><a class="reference internal" href="contribute.html"><span class="doc">Contribute</span></a> <br />
-Read this first if you want to contribute</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td><a class="reference internal" href="thankyou.html"><span class="doc">A Thank you message</span></a> <br />
-A thank you message to all of you</td>
-</tr>
-</tbody>
-</table>
-<div class="toctree-wrapper compound">
+  <div class="section" id="plugged-version-contribution-guide">
+<h1>Plugged 3.0.0 contribution guide<a class="headerlink" href="#plugged-version-contribution-guide" title="Permalink to this headline">¶</a></h1>
+<p>Let’s keep this short for once, I think most of the rules are pretty basic and should
+be common sense.</p>
+<p>but <em>thanks</em> for reading!</p>
+<div class="section" id="rules">
+<h2>Rules<a class="headerlink" href="#rules" title="Permalink to this headline">¶</a></h2>
+<p>The rules to contribute are simple:</p>
+<div class="section" id="keep-in-style-with-the-code">
+<h3>Keep in style with the code.<a class="headerlink" href="#keep-in-style-with-the-code" title="Permalink to this headline">¶</a></h3>
+<p>This makes it easier for others to read the whole codebase
+since otherwise they need to concentrate on the style of the
+code more than what it actually does.</p>
+</div>
+<div class="section" id="make-reasonable-changes">
+<h3>Make reasonable changes<a class="headerlink" href="#make-reasonable-changes" title="Permalink to this headline">¶</a></h3>
+<p>The code should stay clean and mostly general. Plugged is a toolbox, not a chair. So
+changes that would only make sense for one very particular thing that is not in the
+general sense of what you want to do with plug and can’t be used without context of
+the program you are using it in should not end up in Plugged itself.</p>
+</div>
+<div class="section" id="have-fun-and-be-positive">
+<h3>Have fun and be positive<a class="headerlink" href="#have-fun-and-be-positive" title="Permalink to this headline">¶</a></h3>
+<p>This one should be obvious. This is an open source effort, driven by people who do this
+out of the love for programming and the idea of a platform. This means first and foremost
+that everyone should have fun. Otherwise this turns into a job and a job without getting
+paid is slavory.</p>
+</div>
+<div class="section" id="changes-should-be-pr-d-on-the-dev-branch">
+<h3>Changes should be PR’d on the dev branch<a class="headerlink" href="#changes-should-be-pr-d-on-the-dev-branch" title="Permalink to this headline">¶</a></h3>
+<p>Just to keep the master branch clean.</p>
+</div>
+<div class="section" id="don-t-be-shy-to-open-a-pr-or-issue">
+<h3>Don’t be shy to open a PR or issue<a class="headerlink" href="#don-t-be-shy-to-open-a-pr-or-issue" title="Permalink to this headline">¶</a></h3>
+<p>Without voice, there is no change. I appreciate every effort to make this project better
+for everyone!</p>
+</div>
 </div>
 </div>
 
@@ -225,8 +225,10 @@ A thank you message to all of you</td>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="changes/index.html" class="btn btn-neutral float-right" title="CHANGELOG" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="thankyou.html" class="btn btn-neutral float-right" title="Thank you" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
+      
+        <a href="reference/private.html" class="btn btn-neutral" title="Private Functions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

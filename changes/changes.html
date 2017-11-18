@@ -1,0 +1,525 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Changes &mdash; Plugged v3.0.0</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../_static/css/datatypes.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Plugged v3.0.0" href="../index.html"/>
+        <link rel="up" title="CHANGELOG" href="index.html"/>
+        <link rel="next" title="Quickstart" href="../cookbook/quickstart.html"/>
+        <link rel="prev" title="CHANGELOG" href="index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Plugged
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">CHANGELOG</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Changes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#use-the-latest-stable-es6-features">use the latest, stable es6 features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#score-now-represents-an-actual-model">score now represents an actual model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#updated-getcsrf-to-use-the-new-api-endpoint">updated getCSRF to use the new API endpoint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#validateroomname-and-validateusername-return-the-sanitized-string-now-instead-of-an-object">validateRoomName and validateUsername return the sanitized string now instead of an object</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#added-data-checks-to-grab-event">added data checks to GRAB event</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#added-return-value-to-clearuserfromlists">added return value to clearUserFromLists</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cachechat-now-returns-boolean-value-indicating-if-it-was-set">cacheChat now returns boolean value indicating if it was set</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#flattened-the-response-of-activateplaylist-to-just-return-the-playlist-id">flattened the response of activatePlaylist to just return the playlist ID</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#refactored-all-models-to-use-unix-time-now">refactored all models to use unix time now</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#refactored-connectsocket">refactored _connectSocket</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#refactored-login">refactored login</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#refactored-keepalive-as-well-to-better-suit-everyone-s-needs">refactored keepAlive as well to better suit everyone’s needs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#refactored-log">refactored log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#refactored-wsaprocessor-and-renamed-to-eventprocessor">refactored _wsaprocessor and renamed to _eventProcessor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#refactored-chat-into-an-object">refactored chat into an object</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#refactored-the-removechatmessage-functions">refactored the removeChatMessage* functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#refactored-query-to-hold-all-options-in-an-object">refactored query to hold all options in an object</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#refactored-all-tests-to-adapt-to-the-new-code">refactored all tests to adapt to the new code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fixed-timing-bug-with-query-and-chat">fixed timing bug with query and chat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fixed-bug-in-requestself">fixed bug in requestSelf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#a-new-documentation-this-should-solve-a-lot-of-starter-issues">a new documentation (This should solve a lot of starter issues)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-previous-model-was-added-into-the-documentation">the previous model was added into the documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mapped-playlistcycle">mapped PlaylistCycle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mapped-levelup">mapped LevelUp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mapped-transaction">mapped Transaction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#added-setheartbeatrate-function-in-action-of-refactoring-keepalive">added setHeartbeatRate function in action of refactoring keepAlive</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#added-getheartbeatrate-function-in-action-of-refactoring-keepalive">added getHeartbeatRate function in action of refactoring keepAlive</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#added-setverbosity-function-in-action-of-refactoring-log">added setVerbosity function in action of refactoring log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#added-getverbosity-function-in-action-of-refactoring-log">added getVerbosity function in action of refactoring log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#added-waitlistban-event">added waitlistBan event</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#added-sendsos-method">added sendSOS method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#added-removechatmessage">added _removeChatMessage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#added-setmaxtimeout">added setMaxTimeout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#added-getmaxtimeout">added getMaxTimeout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#added-clearheartbeat">added _clearHeartbeat</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#removed-logger-from-the-package-since-it-served-its-purpose">removed logger from the package since it served its purpose</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#removed-joined-room-and-plug-error-were-removed-you-have-to-use-a-callback-now">removed JOINED_ROOM and PLUG_ERROR were removed, you have to use a callback now</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#removed-login-successfull-logout-successfull-login-error-and-logout-error">removed LOGIN_SUCCESSFULL, LOGOUT_SUCCESSFULL, LOGIN_ERROR and LOGOUT_ERROR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#removed-the-previous-waitlist-from-the-waitlist-event">removed the previous waitlist from the waitlist event</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#removed-insertmedia-function">removed insertMedia function</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#id1">3.0.0</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/index.html">Plugged 3.0.0 cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datatypes/index.html">Plugged 3.0.0 datamodels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/index.html">Plugged 3.0.0 reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Plugged 3.0.0 contribution guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../thankyou.html">Thank you</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Plugged</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">CHANGELOG</a> &raquo;</li>
+        
+      <li>Changes</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/changes/changes.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="changes">
+<h1>Changes<a class="headerlink" href="#changes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="use-the-latest-stable-es6-features">
+<h2>use the latest, stable es6 features<a class="headerlink" href="#use-the-latest-stable-es6-features" title="Permalink to this headline">¶</a></h2>
+<p>The code is now updated to the ECMA2015 standard, also known as ES6.
+This allows for a much cleaner codebase as well as some nifty and logical updates
+that were much needed.</p>
+</div>
+<div class="section" id="score-now-represents-an-actual-model">
+<h2>score now represents an actual model<a class="headerlink" href="#score-now-represents-an-actual-model" title="Permalink to this headline">¶</a></h2>
+<p>Score is now represented by an actual model… yes, ain’t nothin more to it.</p>
+</div>
+<div class="section" id="updated-getcsrf-to-use-the-new-api-endpoint">
+<h2>updated getCSRF to use the new API endpoint<a class="headerlink" href="#updated-getcsrf-to-use-the-new-api-endpoint" title="Permalink to this headline">¶</a></h2>
+<p>getCSRF was pretty flaky before because it had to receive the plug.dj landing page first
+and then had to parse the token out of the head of the page. This was quite a bit of data
+to be processed and understood by the function. Ever since plug.dj set out to make their
+mobile client, they have an endpoint to receive the token. Obviously this was the perfect
+opportunity to make use of it.
+A thank you goes to <cite>Nodle &lt;https://github.com/Nodle&gt;</cite>. Who notified me about the endpoint
+being available in #22</p>
+</div>
+<div class="section" id="validateroomname-and-validateusername-return-the-sanitized-string-now-instead-of-an-object">
+<h2>validateRoomName and validateUsername return the sanitized string now instead of an object<a class="headerlink" href="#validateroomname-and-validateusername-return-the-sanitized-string-now-instead-of-an-object" title="Permalink to this headline">¶</a></h2>
+<p>validateRoomName and validateUsername both returned an object which encapsuled the actual
+string again. This was pretty useless since every developer who wanted to make use of that
+function had to extract the string before using it. This is now a thing of the past.
+To all developers using it, please remember to change that in your codebase, thank you!</p>
+</div>
+<div class="section" id="added-data-checks-to-grab-event">
+<h2>added data checks to GRAB event<a class="headerlink" href="#added-data-checks-to-grab-event" title="Permalink to this headline">¶</a></h2>
+<p>The grab event was parsed without many checks about the what and when, this also is fixed
+with this version. So better behave, data. We are onto you!</p>
+</div>
+<div class="section" id="added-return-value-to-clearuserfromlists">
+<h2>added return value to clearUserFromLists<a class="headerlink" href="#added-return-value-to-clearuserfromlists" title="Permalink to this headline">¶</a></h2>
+<p>clearUserFromLists had no return value before, so you couldn’t know for sure whether the
+user was cleared from the list or not. It was just a guess kind of thing. Now whenever the
+user is found and cleared from the lists, the function will tell you so.</p>
+</div>
+<div class="section" id="cachechat-now-returns-boolean-value-indicating-if-it-was-set">
+<h2>cacheChat now returns boolean value indicating if it was set<a class="headerlink" href="#cachechat-now-returns-boolean-value-indicating-if-it-was-set" title="Permalink to this headline">¶</a></h2>
+<p>Same goes for cacheChat, it returns its set value now, so you can save it if needed.</p>
+</div>
+<div class="section" id="flattened-the-response-of-activateplaylist-to-just-return-the-playlist-id">
+<h2>flattened the response of activatePlaylist to just return the playlist ID<a class="headerlink" href="#flattened-the-response-of-activateplaylist-to-just-return-the-playlist-id" title="Permalink to this headline">¶</a></h2>
+<p>Quite like validateRoomName and validateUsername and validateRoomName. Now returns the
+plain number of the activated playlist.</p>
+</div>
+<div class="section" id="refactored-all-models-to-use-unix-time-now">
+<h2>refactored all models to use unix time now<a class="headerlink" href="#refactored-all-models-to-use-unix-time-now" title="Permalink to this headline">¶</a></h2>
+<p>This was done before, but not for all models. Plug has some really awkward way of
+representing the current time. <cite>schrobby &lt;https://github.com/schrobby&gt;</cite> and I fixed that
+early in development. Now all models used in plugged that hold a date or time will
+give you the proper unix representation.</p>
+</div>
+<div class="section" id="refactored-connectsocket">
+<h2>refactored _connectSocket<a class="headerlink" href="#refactored-connectsocket" title="Permalink to this headline">¶</a></h2>
+<p>connectSocket was kind of messy. I would like to write more about it but that’s pretty
+much it. It is cleaner now, everybody likes neat, clean stuff am I right? right.</p>
+</div>
+<div class="section" id="refactored-login">
+<h2>refactored login<a class="headerlink" href="#refactored-login" title="Permalink to this headline">¶</a></h2>
+<p>Login was kind of messy for others to read and open source is all about fun, contribution
+and openness. I want to appeal to a lot of people who want to dive into making their room
+a special place on plug.dj. So making it easy for people to know how the interface they
+want to use works, is one of the uppermost priorities of this project. This is why the
+refactor was long overdue. I hope this makes it a bit more readable for everybody.</p>
+</div>
+<div class="section" id="refactored-keepalive-as-well-to-better-suit-everyone-s-needs">
+<h2>refactored keepAlive as well to better suit everyone’s needs<a class="headerlink" href="#refactored-keepalive-as-well-to-better-suit-everyone-s-needs" title="Permalink to this headline">¶</a></h2>
+<p>keepAlive was not as much of a problem of readability but much more of the way it was
+handled. It had a lot of magic values and fixed constants to work. This is now all
+customizable if wanted by the following functions:</p>
+<blockquote>
+<div><ul class="simple">
+<li>setMaxTimeout</li>
+<li>getMaxTimeout</li>
+<li>setHeartbeatRate</li>
+<li>getHeartbeatRate</li>
+</ul>
+</div></blockquote>
+<p>Otherwise the default max timeout is 60 seconds and the heartbeat rate is 20 seconds.</p>
+</div>
+<div class="section" id="refactored-log">
+<h2>refactored log<a class="headerlink" href="#refactored-log" title="Permalink to this headline">¶</a></h2>
+<p>Log was kind of off putting. It didn’t really fit in, it was kind of an early development
+thing that was carried around for longer than it should. This is why the logger got
+pulled completely and the log function internally got refactored.
+You can just invoke your own logger and set the verbosity needed for your application now.
+Everything else is done internally and you’ll get notified whether the verbosity is
+satisfied.
+I hope that makes life easier for everybody!</p>
+</div>
+<div class="section" id="refactored-wsaprocessor-and-renamed-to-eventprocessor">
+<h2>refactored _wsaprocessor and renamed to _eventProcessor<a class="headerlink" href="#refactored-wsaprocessor-and-renamed-to-eventprocessor" title="Permalink to this headline">¶</a></h2>
+<p>_connectSocket was a huge switch statement which did hold all websocket events before.
+Now, with some javascript object “trickery” and the _call_ function, this has been reduced
+to a mere couple of lines. The work to be done on the event is now outsourced into
+functions which reside in events.js</p>
+</div>
+<div class="section" id="refactored-chat-into-an-object">
+<h2>refactored chat into an object<a class="headerlink" href="#refactored-chat-into-an-object" title="Permalink to this headline">¶</a></h2>
+<p>All chat related functionality was directly added to the Plugged class. To group things
+up a bit and make it easier to read I put every chat related member into an object
+literal.</p>
+</div>
+<div class="section" id="refactored-the-removechatmessage-functions">
+<h2>refactored the removeChatMessage* functions<a class="headerlink" href="#refactored-the-removechatmessage-functions" title="Permalink to this headline">¶</a></h2>
+<p>The removeChatMessage* functions were a bit messy and all over the place, now they share
+the important parts and use a comparator function instead. If this goes on I should just
+call 3.0 “Squeaky clean” but then again we don’t want to go down that road of naming major
+releases, do we?</p>
+</div>
+<div class="section" id="refactored-query-to-hold-all-options-in-an-object">
+<h2>refactored query to hold all options in an object<a class="headerlink" href="#refactored-query-to-hold-all-options-in-an-object" title="Permalink to this headline">¶</a></h2>
+<p>Like with chat, but it is requests!</p>
+</div>
+<div class="section" id="refactored-all-tests-to-adapt-to-the-new-code">
+<h2>refactored all tests to adapt to the new code<a class="headerlink" href="#refactored-all-tests-to-adapt-to-the-new-code" title="Permalink to this headline">¶</a></h2>
+<p>Obligatory refactor of all tests</p>
+</div>
+<div class="section" id="fixed-timing-bug-with-query-and-chat">
+<h2>fixed timing bug with query and chat<a class="headerlink" href="#fixed-timing-bug-with-query-and-chat" title="Permalink to this headline">¶</a></h2>
+<p>Both query and chat had a bug which allowed to spam requests in a way that would trigger
+the floodAPI event. It was enough to do request in recurring order without enough time
+in between. This is now fixed and instead, the requests will be slowed down earlier, but
+allow you to code your requests freely without having to check not to flood the API.
+If this should in any case be a problem for someone’s program, please contact me, this
+either needs to be adjusted then or a different fix must be found.</p>
+</div>
+<div class="section" id="fixed-bug-in-requestself">
+<h2>fixed bug in requestSelf<a class="headerlink" href="#fixed-bug-in-requestself" title="Permalink to this headline">¶</a></h2>
+<p>Before, when requestSelf was called, the self object was updated with it as well, this
+allowed for some inconsistencies on your account object when you are in a room while
+calling it.</p>
+</div>
+<div class="section" id="a-new-documentation-this-should-solve-a-lot-of-starter-issues">
+<h2>a new documentation (This should solve a lot of starter issues)<a class="headerlink" href="#a-new-documentation-this-should-solve-a-lot-of-starter-issues" title="Permalink to this headline">¶</a></h2>
+<p>Oi, you are reading this right now mate. At long last, plugged gets a proper, not awfully
+written, not hard to navigate and actual full documentation. Which is also included in the
+code itself! So if you are using a neat editor like Visual Studio Code or any other which
+allows for JSDoc to be parsed, you are good to go!</p>
+<p>I hope this makes everyones lives easier.</p>
+</div>
+<div class="section" id="the-previous-model-was-added-into-the-documentation">
+<h2>the previous model was added into the documentation<a class="headerlink" href="#the-previous-model-was-added-into-the-documentation" title="Permalink to this headline">¶</a></h2>
+<p>Previous is now a model, end of message.</p>
+</div>
+<div class="section" id="mapped-playlistcycle">
+<h2>mapped PlaylistCycle<a class="headerlink" href="#mapped-playlistcycle" title="Permalink to this headline">¶</a></h2>
+<p>PlaylistCycle was just passed as is from the websocket. Which was a no go in case plug.dj
+changes the model. So now it gets mapped. hurray for standardized models!</p>
+</div>
+<div class="section" id="mapped-levelup">
+<h2>mapped LevelUp<a class="headerlink" href="#mapped-levelup" title="Permalink to this headline">¶</a></h2>
+<p>Also LevelUp is mapped now as well as…</p>
+</div>
+<div class="section" id="mapped-transaction">
+<h2>mapped Transaction<a class="headerlink" href="#mapped-transaction" title="Permalink to this headline">¶</a></h2>
+<p>the Transaction model!</p>
+</div>
+<div class="section" id="added-setheartbeatrate-function-in-action-of-refactoring-keepalive">
+<h2>added setHeartbeatRate function in action of refactoring keepAlive<a class="headerlink" href="#added-setheartbeatrate-function-in-action-of-refactoring-keepalive" title="Permalink to this headline">¶</a></h2>
+<p>Comes in pair with getHeartbeatRate. Which means you can now set how often plugged should
+check if the websocket connection is still alive.</p>
+</div>
+<div class="section" id="added-getheartbeatrate-function-in-action-of-refactoring-keepalive">
+<h2>added getHeartbeatRate function in action of refactoring keepAlive<a class="headerlink" href="#added-getheartbeatrate-function-in-action-of-refactoring-keepalive" title="Permalink to this headline">¶</a></h2>
+<p>See above.</p>
+</div>
+<div class="section" id="added-setverbosity-function-in-action-of-refactoring-log">
+<h2>added setVerbosity function in action of refactoring log<a class="headerlink" href="#added-setverbosity-function-in-action-of-refactoring-log" title="Permalink to this headline">¶</a></h2>
+<p>Comes in pair with getVerbosity. Which means you can now set the verbosity of the log
+function! The higher the value, the more info you get from plugged!</p>
+</div>
+<div class="section" id="added-getverbosity-function-in-action-of-refactoring-log">
+<h2>added getVerbosity function in action of refactoring log<a class="headerlink" href="#added-getverbosity-function-in-action-of-refactoring-log" title="Permalink to this headline">¶</a></h2>
+<p>See above.</p>
+</div>
+<div class="section" id="added-waitlistban-event">
+<h2>added waitlistBan event<a class="headerlink" href="#added-waitlistban-event" title="Permalink to this headline">¶</a></h2>
+<p>A new functionality that was added by plug.dj, so obviously it is now available in plugged
+as well.</p>
+</div>
+<div class="section" id="added-sendsos-method">
+<h2>added sendSOS method<a class="headerlink" href="#added-sendsos-method" title="Permalink to this headline">¶</a></h2>
+<p>Allows to send an SOS message to the global mods. Please only use it if absolutely
+necessary.</p>
+</div>
+<div class="section" id="added-removechatmessage">
+<h2>added _removeChatMessage<a class="headerlink" href="#added-removechatmessage" title="Permalink to this headline">¶</a></h2>
+<p>Internal function which basically allows for both removeChatMessage* functions to share
+most of their code.</p>
+</div>
+<div class="section" id="added-setmaxtimeout">
+<h2>added setMaxTimeout<a class="headerlink" href="#added-setmaxtimeout" title="Permalink to this headline">¶</a></h2>
+<p>Similar to heartbeatRate, except that this sets how long plugged should wait before it
+declares the websocket connection as lost.</p>
+</div>
+<div class="section" id="added-getmaxtimeout">
+<h2>added getMaxTimeout<a class="headerlink" href="#added-getmaxtimeout" title="Permalink to this headline">¶</a></h2>
+<p>See above.</p>
+</div>
+<div class="section" id="added-clearheartbeat">
+<h2>added _clearHeartbeat<a class="headerlink" href="#added-clearheartbeat" title="Permalink to this headline">¶</a></h2>
+<p>Clears the heartbeat. An internal function which gets used mostly by _clearState.</p>
+</div>
+<div class="section" id="removed-logger-from-the-package-since-it-served-its-purpose">
+<h2>removed logger from the package since it served its purpose<a class="headerlink" href="#removed-logger-from-the-package-since-it-served-its-purpose" title="Permalink to this headline">¶</a></h2>
+<p>As describe earlier, logger is now gone. Please revert to using a different logging
+library or write your own.</p>
+</div>
+<div class="section" id="removed-joined-room-and-plug-error-were-removed-you-have-to-use-a-callback-now">
+<h2>removed JOINED_ROOM and PLUG_ERROR were removed, you have to use a callback now<a class="headerlink" href="#removed-joined-room-and-plug-error-were-removed-you-have-to-use-a-callback-now" title="Permalink to this headline">¶</a></h2>
+<p>This is one of the most important changes for all plugged users out there!!!</p>
+<p>In light of the situation and how it was implemented, it was kind of out of place for
+what it did. almost as if unnecessary. Which is why it was removed. You now have to use
+the callback to retrieve the result.</p>
+</div>
+<div class="section" id="removed-login-successfull-logout-successfull-login-error-and-logout-error">
+<h2>removed LOGIN_SUCCESSFULL, LOGOUT_SUCCESSFULL, LOGIN_ERROR and LOGOUT_ERROR<a class="headerlink" href="#removed-login-successfull-logout-successfull-login-error-and-logout-error" title="Permalink to this headline">¶</a></h2>
+<p>It showed over time that these events were mostly unnecessary and the more logical
+thing was to use callbacks.</p>
+</div>
+<div class="section" id="removed-the-previous-waitlist-from-the-waitlist-event">
+<h2>removed the previous waitlist from the waitlist event<a class="headerlink" href="#removed-the-previous-waitlist-from-the-waitlist-event" title="Permalink to this headline">¶</a></h2>
+<p>I don’t know if someone really needed this but it was kind not really needed and it case
+it actually was, you can probably implement it within seconds in your own program.</p>
+</div>
+<div class="section" id="removed-insertmedia-function">
+<h2>removed insertMedia function<a class="headerlink" href="#removed-insertmedia-function" title="Permalink to this headline">¶</a></h2>
+<p>Also a function that was weirdly implemented and not needed at all.</p>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../cookbook/quickstart.html" class="btn btn-neutral float-right" title="Quickstart" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="CHANGELOG" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Sooyou.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'3.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

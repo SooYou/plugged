@@ -1,0 +1,2683 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Functions &mdash; Plugged v3.0.0</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../_static/css/datatypes.css" type="text/css" />
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Plugged v3.0.0" href="../index.html"/>
+        <link rel="up" title="Plugged 3.0.0 reference" href="index.html"/>
+        <link rel="next" title="Events" href="events.html"/>
+        <link rel="prev" title="Plugged 3.0.0 reference" href="index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Plugged
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                3.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../changes/index.html">CHANGELOG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/quickstart.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/index.html">Plugged 3.0.0 cookbook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datatypes/index.html">Plugged 3.0.0 datamodels</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Plugged 3.0.0 reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#clearchatcache">clearChatCache</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clearchatqueue">clearChatQueue</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clearusercache">clearUserCache</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#deletenotification">deleteNotification</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getchat">getChat</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getchatbyusername">getChatByUsername</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getinventory">getInventory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getproducts">getProducts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gettransactions">getTransactions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cachechat">cacheChat</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ischatcached">isChatCached</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#setchatcachesize">setChatCacheSize</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getchatcachesize">getChatCacheSize</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cacheuseronleave">cacheUserOnLeave</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#isusercachedonleave">isUserCachedOnLeave</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clearuserfromlists">clearUserFromLists</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#setjar">setJar</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getjar">getJar</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#setheartbeatrate">setHeartbeatRate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getheartbeatrate">getHeartbeatRate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#setmaxtimeout">setMaxTimeout</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getmaxtimeout">getMaxTimeout</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#defaultmessageproc">defaultMessageProc</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#setmessageprocessor">setMessageProcessor</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sendchat">sendChat</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#invokelogger">invokeLogger</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#setverbosity">setVerbosity</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getverbosity">getVerbosity</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#login">login</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#guest">guest</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#connect">connect</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getuserbyid">getUserById</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getuserbyname">getUserByName</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getuserrole">getUserRole</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getusers">getUsers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getself">getSelf</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#setsetting">setSetting</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getsetting">getSetting</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getsettings">getSettings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#isfriend">isFriend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getdj">getDJ</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getmedia">getMedia</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getstarttime">getStartTime</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getbooth">getBooth</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getroom">getRoom</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getroommeta">getRoomMeta</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getroomname">getRoomName</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getfx">getFX</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#checkglobalrole">checkGlobalRole</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gethostname">getHostName</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gethostid">getHostID</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getpopulation">getPopulation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getguests">getGuests</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getminchatlevel">getMinChatLevel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#isfavorite">isFavorite</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getdescription">getDescription</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getwelcomemessage">getWelcomeMessage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getslug">getSlug</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getwaitlist">getWaitlist</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#iswaitlistlocked">isWaitlistLocked</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#doeswaitlistcycle">doesWaitlistCycle</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getvotes">getVotes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getgrabs">getGrabs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cacheuser">cacheUser</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#removecacheduserbyid">removeCachedUserById</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#removecacheduserbyusername">removeCachedUserByUsername</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getstaffonline">getStaffOnline</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getstaffonlinebyrole">getStaffOnlineByRole</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getstaffbyrole">getStaffByRole</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getnews">getNews</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getauthtoken">getAuthToken</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getroomstats">getRoomStats</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#findrooms">findRooms</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getroomlist">getRoomList</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getstaff">getStaff</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getuser">getUser</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getroomhistory">getRoomHistory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#validateroomname">validateRoomName</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#validateusername">validateUsername</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getmutes">getMutes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getbans">getBans</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#savesettings">saveSettings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#setlock">setLock</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#setcycle">setCycle</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#resetpassword">resetPassword</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#requestusers">requestUsers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#joinroom">joinRoom</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#joinwaitlist">joinWaitlist</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#addtowaitlist">addToWaitlist</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#addplaylist">addPlaylist</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#grab">grab</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#skipdj">skipDJ</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#movedj">moveDJ</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#createroom">createRoom</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sendsos">sendSOS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#updateroominfo">updateRoomInfo</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#setminchatlevel">setMinChatLevel</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#banuser">banUser</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#banbooth">banBooth</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#deletebanbooth">deleteBanBooth</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muteuser">muteUser</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#addstaff">addStaff</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ignoreuser">ignoreUser</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#deleteplaylist">deletePlaylist</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#removeignore">removeIgnore</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#removestaff">removeStaff</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#removedj">removeDJ</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#leavewaitlist">leaveWaitlist</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#unbanuser">unbanUser</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#unmuteuser">unmuteUser</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#deletemessage">deleteMessage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#logout">logout</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#requestself">requestSelf</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getmyhistory">getMyHistory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getfriends">getFriends</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getfriendrequests">getFriendRequests</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#findplaylist">findPlaylist</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#findmedia">findMedia</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#findmediaplaylist">findMediaPlaylist</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getplaylist">getPlaylist</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getplaylists">getPlaylists</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getignores">getIgnores</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#getfavoriterooms">getFavoriteRooms</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#setprofilemessage">setProfileMessage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#renameplaylist">renamePlaylist</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#setavatar">setAvatar</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#setbadge">setBadge</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#setlanguage">setLanguage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rejectfriendrequest">rejectFriendRequest</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#activateplaylist">activatePlaylist</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#movemedia">moveMedia</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#updatemedia">updateMedia</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#shuffleplaylist">shufflePlaylist</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#addfriend">addFriend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#deletemedia">deleteMedia</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#addmedia">addMedia</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#woot">woot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#meh">meh</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#favoriteroom">favoriteRoom</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#removefriend">removeFriend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#purchaseusername">purchaseUsername</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#purchaseitem">purchaseItem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#removechatmessage">removeChatMessage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#removechatmessagebyuser">removeChatMessageByUser</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#watchusercache">watchUserCache</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="events.html">Events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="private.html">Private Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">Plugged 3.0.0 contribution guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../thankyou.html">Thank you</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Plugged</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Plugged 3.0.0 reference</a> &raquo;</li>
+        
+      <li>Functions</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/reference/functions.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="functions">
+<h1>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h1>
+<p>Plugged works with a wide variety of functions to provide you with a lot of
+great functionality to interface with plug.dj
+On this page you can find a quick summary about what each function does and how
+you can interface with it.</p>
+<p>All functions have certain levels at which they can be used. Two at pre login
+level, quite a bit at global level and a whole lot at room level. All of them
+have a set background as seen above to make it easier to indicate which function
+can be accessed at which level.</p>
+<p>For further information about the events and how to use them you should consider
+hitting up the cookbook.</p>
+<div class="section" id="id1">
+<h2>Functions<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="clearchatcache">
+<h3>clearChatCache<a class="headerlink" href="#clearchatcache" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Clears the log.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="clearchatqueue">
+<h3>clearChatQueue<a class="headerlink" href="#clearchatqueue" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Clears the queue.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="clearusercache">
+<h3>clearUserCache<a class="headerlink" href="#clearusercache" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Clears the usercache.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="deletenotification">
+<h3>deleteNotification<a class="headerlink" href="#deletenotification" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Deletes a notification received by plug.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">Number</span> notification ID.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getchat">
+<h3>getChat<a class="headerlink" href="#getchat" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets chat log.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">[Object]</span> <a class="reference internal" href="../datatypes/chat.html"><span class="doc">Chat</span></a> time sorted array of all chat messages.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getchatbyusername">
+<h3>getChatByUsername<a class="headerlink" href="#getchatbyusername" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets all messages of a user.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>username</strong>: <span class="datatype">String</span> name of a user.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">[Object]</span> <a class="reference internal" href="../datatypes/chat.html"><span class="doc">Chat</span></a> list of all their messages.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getinventory">
+<h3>getInventory<a class="headerlink" href="#getinventory" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Retrieves the items you own.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>inventory</strong>: <a class="reference internal" href="../datatypes/inventory.html"><span class="doc">[Inventory]</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getproducts">
+<h3>getProducts<a class="headerlink" href="#getproducts" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Retrieves all products of a type.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>type</strong>: <span class="datatype">String</span> type of product.</p>
+<p><strong>category</strong>: <span class="datatype">String</span> category of product.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>products</strong>: <a class="reference internal" href="../datatypes/product.html"><span class="doc">[Product]</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="gettransactions">
+<h3>getTransactions<a class="headerlink" href="#gettransactions" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Retrieves all transactions made in the store.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>transactions</strong>: <a class="reference internal" href="../datatypes/transaction.html"><span class="doc">[Transaction]</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="cachechat">
+<h3>cacheChat<a class="headerlink" href="#cachechat" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Sets chat caching. It’s enabled by default.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>enable</strong>: <span class="datatype">Boolean</span> boolean value indicating state.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Boolean</span> value that is now set.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="ischatcached">
+<h3>isChatCached<a class="headerlink" href="#ischatcached" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Checks if chat is being cached.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Boolean</span> indicating status.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="setchatcachesize">
+<span id="set-chat-cache-size"></span><h3>setChatCacheSize<a class="headerlink" href="#setchatcachesize" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Sets the chat cache size. the default size is 256 messages.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>size</strong>: <span class="datatype">Number</span> size of the cache in messages</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Number</span> size of the cache.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getchatcachesize">
+<span id="get-chat-cache-size"></span><h3>getChatCacheSize<a class="headerlink" href="#getchatcachesize" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Number</span> the chat cache size.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="cacheuseronleave">
+<h3>cacheUserOnLeave<a class="headerlink" href="#cacheuseronleave" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Caches users when they leave the room.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>enable</strong>: <span class="datatype">Boolean</span> toggle when true caches users.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Boolean</span> the current state.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="isusercachedonleave">
+<h3>isUserCachedOnLeave<a class="headerlink" href="#isusercachedonleave" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Checks if users are cached when they leave the room.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Boolean</span> the current state.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="clearuserfromlists">
+<h3>clearUserFromLists<a class="headerlink" href="#clearuserfromlists" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Clears a user from the voting and grab list.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>id</strong>: <span class="datatype">Number</span> user’s ID.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Boolean</span> true when user was found and cleared, false otherwise</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="setjar">
+<h3>setJar<a class="headerlink" href="#setjar" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Sets a cookie jar or creates a new one based on a storage object.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>jar</strong>: <span class="datatype">Object</span> cookie jar to use.</p>
+<p><strong>storage</strong>: <span class="datatype">Object</span> (optional) can create a cookie jar.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">jar will be ignored when storage is set.</p>
+</div>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getjar">
+<h3>getJar<a class="headerlink" href="#getjar" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets the currently used jar.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Object</span> the cookie jar.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="setheartbeatrate">
+<h3>setHeartbeatRate<a class="headerlink" href="#setheartbeatrate" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Sets the time in between heartbeats in seconds</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">Number</span> time in between heartbeats in seconds.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getheartbeatrate">
+<h3>getHeartbeatRate<a class="headerlink" href="#getheartbeatrate" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets the time in between heartbeats in seconds.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Number</span> time in between heartbeats in seconds.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="setmaxtimeout">
+<h3>setMaxTimeout<a class="headerlink" href="#setmaxtimeout" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Sets the maximum connection timeout in seconds.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">Number</span> time in seconds until the connection is lost.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getmaxtimeout">
+<h3>getMaxTimeout<a class="headerlink" href="#getmaxtimeout" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets the maximum connection timeout in seconds.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Number</span> time until the connection is lost in seconds.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="defaultmessageproc">
+<h3>defaultMessageProc<a class="headerlink" href="#defaultmessageproc" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>The default message processor used for chat messages, this function can be
+overridden or exchanged, see Options.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>message</strong>: <span class="datatype">String</span> chat message to send.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">[String]</span> msgs formatted message.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="setmessageprocessor">
+<h3>setMessageProcessor<a class="headerlink" href="#setmessageprocessor" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Exchanges the message processor dynamically at runtime.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>func</strong>: <span class="datatype">function</span> func message processor function.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Boolean</span> true when function was set.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="sendchat">
+<span id="send-chat"></span><h3>sendChat<a class="headerlink" href="#sendchat" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Sends a chat message.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>message</strong>: <span class="datatype">String</span> message message to send.</p>
+<p><strong>deleteTimeout</strong>: <span class="datatype">Number</span> delay in ms until message is deleted.</p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">[String]</span> message the formatted message.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="invokelogger">
+<h3>invokeLogger<a class="headerlink" href="#invokelogger" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Hooks up a logging library into plug.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>func</strong>: <span class="datatype">function</span> logging function to register.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Boolean</span> true when logger has been registered.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="setverbosity">
+<h3>setVerbosity<a class="headerlink" href="#setverbosity" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Defines verbosity to use for logging. Lowest logging level is 0.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>verbosity</strong>: <span class="datatype">Number</span> sets verbosity.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getverbosity">
+<h3>getVerbosity<a class="headerlink" href="#getverbosity" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Number</span> verbosity.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="login">
+<span id="id2"></span><h3>login<a class="headerlink" href="#login" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Log into <a class="reference external" href="https://www.plug.dj">https://www.plug.dj</a>.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>credentials</strong>: <span class="datatype">Object</span> formatted loging info, see Options.</p>
+<p><strong>authToken</strong>: <span class="datatype">Object</span> last session token.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called after logging in.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>self</strong>: <a class="reference internal" href="../datatypes/modelself.html"><span class="doc">[Self]</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="guest">
+<h3>guest<a class="headerlink" href="#guest" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Logs into a room as a guest.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>slug</strong>: <span class="datatype">String</span> room name.</p>
+<p><strong>callback</strong>: <span class="datatype">String</span> called after entering the room.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>stats</strong>: <a class="reference internal" href="../datatypes/room.html"><span class="doc">[Room]</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="connect">
+<span id="id3"></span><h3>connect<a class="headerlink" href="#connect" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Connects to a room.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>slug</strong>: <span class="datatype">String</span> room name.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called after entering the room.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>stats</strong>: <a class="reference internal" href="../datatypes/room.html"><span class="doc">[Room]</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getuserbyid">
+<h3>getUserById<a class="headerlink" href="#getuserbyid" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets a user by their ID.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">Number</span> user’s ID.</p>
+<p><strong>cache</strong>: <a class="reference internal" href="../datatypes/cache.html"><span class="doc">CACHE</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Object</span> <a class="reference internal" href="../datatypes/user.html"><span class="doc">User</span></a></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getuserbyname">
+<h3>getUserByName<a class="headerlink" href="#getuserbyname" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets a user by their name.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>username</strong>: <span class="datatype">String</span> user’s name</p>
+<p><strong>cache</strong>: <a class="reference internal" href="../datatypes/cache.html"><span class="doc">CACHE</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Object</span> <a class="reference internal" href="../datatypes/user.html"><span class="doc">User</span></a></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getuserrole">
+<h3>getUserRole<a class="headerlink" href="#getuserrole" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets user by role.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>id</strong>: <span class="datatype">Number</span> user’s ID.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Number</span> user’s role.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getusers">
+<h3>getUsers<a class="headerlink" href="#getusers" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets all users in a room.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">[Object]</span> <a class="reference internal" href="../datatypes/user.html"><span class="doc">User</span></a> all users.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getself">
+<h3>getSelf<a class="headerlink" href="#getself" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets <a class="reference internal" href="../datatypes/modelself.html"><span class="doc">Self</span></a> object.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Object</span> <a class="reference internal" href="../datatypes/modelself.html"><span class="doc">Self</span></a> Account.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="setsetting">
+<h3>setSetting<a class="headerlink" href="#setsetting" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Sets a personal setting.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>key</strong>: <span class="datatype">String</span> key setting name.</p>
+<p><strong>value</strong>: <span class="datatype">*</span> value to set.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called when data was saved.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Boolean</span> true when save went to server.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getsetting">
+<h3>getSetting<a class="headerlink" href="#getsetting" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets a personal setting.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>key</strong>: <span class="datatype">String</span> key setting name.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">*</span> value saved at key.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getsettings">
+<h3>getSettings<a class="headerlink" href="#getsettings" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets all personal settings.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Object</span> Settings’ object.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="isfriend">
+<h3>isFriend<a class="headerlink" href="#isfriend" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Checks if user is a friend.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>id</strong>: <span class="datatype">Number</span> user’s ID.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Boolean</span> true when befriended.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getdj">
+<h3>getDJ<a class="headerlink" href="#getdj" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets the DJ.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Object</span> <a class="reference internal" href="../datatypes/user.html"><span class="doc">User</span></a></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getmedia">
+<h3>getMedia<a class="headerlink" href="#getmedia" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets the Media.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Object</span> <a class="reference internal" href="../datatypes/media.html"><span class="doc">Media</span></a></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getstarttime">
+<h3>getStartTime<a class="headerlink" href="#getstarttime" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets the Media start time.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">String</span> start time. Ex.: “2017-01-01T00:00:00.000000Z”</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getbooth">
+<h3>getBooth<a class="headerlink" href="#getbooth" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets the Booth.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Object</span> <a class="reference internal" href="../datatypes/booth.html"><span class="doc">Booth</span></a></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getroom">
+<h3>getRoom<a class="headerlink" href="#getroom" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets the Room.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Object</span> <a class="reference internal" href="../datatypes/room.html"><span class="doc">Room</span></a></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getroommeta">
+<h3>getRoomMeta<a class="headerlink" href="#getroommeta" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets the Metadata of a Room.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Object</span> <a class="reference internal" href="../datatypes/meta.html"><span class="doc">Metadata</span></a></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getroomname">
+<h3>getRoomName<a class="headerlink" href="#getroomname" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets the name of a Room.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">String</span> Room’s name.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getfx">
+<h3>getFX<a class="headerlink" href="#getfx" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets FX data.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">[String]</span> FX settings.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="checkglobalrole">
+<h3>checkGlobalRole<a class="headerlink" href="#checkglobalrole" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Rectifies the given role. There’s several roles but only 3 are set for the UI
+namely:</p>
+<ul class="simple">
+<li>NONE</li>
+<li>BRAND_AMBASSADOR</li>
+<li>ADMIN</li>
+</ul>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>role</strong>: <span class="datatype">Number</span> global role.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Number</span> rectified level.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="gethostname">
+<h3>getHostName<a class="headerlink" href="#gethostname" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets host name.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">String</span> Host’s name.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="gethostid">
+<h3>getHostID<a class="headerlink" href="#gethostid" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets host ID.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Number</span> Host’s ID.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getpopulation">
+<h3>getPopulation<a class="headerlink" href="#getpopulation" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets population of a room.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Number</span> Amount of users connected.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getguests">
+<h3>getGuests<a class="headerlink" href="#getguests" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets the number of guests.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Number</span> Guests connected.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getminchatlevel">
+<h3>getMinChatLevel<a class="headerlink" href="#getminchatlevel" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets the minimum chat level.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Number</span> Minimumin chat level.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="isfavorite">
+<h3>isFavorite<a class="headerlink" href="#isfavorite" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Checks if room is favorited.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Boolean</span> true when favorited.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getdescription">
+<h3>getDescription<a class="headerlink" href="#getdescription" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets the description.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">String</span> Room’s description.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getwelcomemessage">
+<h3>getWelcomeMessage<a class="headerlink" href="#getwelcomemessage" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets the welcome message.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">String</span> Room’s welcome message.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getslug">
+<h3>getSlug<a class="headerlink" href="#getslug" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets the slug.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">String</span> Room’s slug.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getwaitlist">
+<h3>getWaitlist<a class="headerlink" href="#getwaitlist" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets the waitlist.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">[Number]</span> Waitlist in ascending order.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="iswaitlistlocked">
+<h3>isWaitlistLocked<a class="headerlink" href="#iswaitlistlocked" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Checks if the waitlist is locked.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Boolean</span> true when waitlist is locked.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="doeswaitlistcycle">
+<h3>doesWaitlistCycle<a class="headerlink" href="#doeswaitlistcycle" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Checks if the waitlist cycles.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Boolean</span> true when waitlist cycles.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getvotes">
+<h3>getVotes<a class="headerlink" href="#getvotes" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets all votes.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>withUserObject</strong>: <span class="datatype">Boolean</span> replaces IDs with User objects.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><a class="reference internal" href="../datatypes/vote.html"><span class="doc">[Number]|[Vote]</span></a> number array when param is false,
+object array otherwise.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getgrabs">
+<h3>getGrabs<a class="headerlink" href="#getgrabs" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets all grabs.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">[Number][Object]</span> <a class="reference internal" href="../datatypes/user.html"><span class="doc">User</span></a> number array when param is
+false, object array otherwise.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="cacheuser">
+<h3>cacheUser<a class="headerlink" href="#cacheuser" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Saves a User.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>user</strong>: <span class="datatype">Object</span> <a class="reference internal" href="../datatypes/user.html"><span class="doc">User</span></a></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Boolean</span> true when saved, false when user is already cached.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="removecacheduserbyid">
+<h3>removeCachedUserById<a class="headerlink" href="#removecacheduserbyid" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Removes a User from cache.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>id</strong>: <span class="datatype">Number</span> user’s ID.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Boolean</span> true when the user was found and removed.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="removecacheduserbyusername">
+<h3>removeCachedUserByUsername<a class="headerlink" href="#removecacheduserbyusername" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Removes a User from cache.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>username</strong>: <span class="datatype">String</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Boolean</span> true when the user was found and removed.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getstaffonline">
+<h3>getStaffOnline<a class="headerlink" href="#getstaffonline" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets staff online.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">[Object]</span> <a class="reference internal" href="../datatypes/user.html"><span class="doc">User</span></a> Staff online.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getstaffonlinebyrole">
+<h3>getStaffOnlineByRole<a class="headerlink" href="#getstaffonlinebyrole" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets staff online by role.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>role</strong>: <span class="datatype">Number</span> <a class="reference internal" href="../datatypes/role.html"><span class="doc">USERROLE</span></a> staff by role.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">[Object]</span> <a class="reference internal" href="../datatypes/user.html"><span class="doc">User</span></a> staff currently online with role specified.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getstaffbyrole">
+<h3>getStaffByRole<a class="headerlink" href="#getstaffbyrole" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets all staff by role.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>role</strong>: <span class="datatype">Number</span> <a class="reference internal" href="../datatypes/role.html"><span class="doc">USERROLE</span></a> staff by role.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>staff</strong>: <a class="reference internal" href="../datatypes/user.html"><span class="doc">[User]</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getnews">
+<h3>getNews<a class="headerlink" href="#getnews" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets news.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>news</strong>: <a class="reference internal" href="../datatypes/news.html"><span class="doc">[News]</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getauthtoken">
+<h3>getAuthToken<a class="headerlink" href="#getauthtoken" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets auth token.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>token</strong>: <span class="datatype">String</span> auth token.</p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getroomstats">
+<h3>getRoomStats<a class="headerlink" href="#getroomstats" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets room stats.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>room</strong>: <a class="reference internal" href="../datatypes/room.html"><span class="doc">Room</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="findrooms">
+<h3>findRooms<a class="headerlink" href="#findrooms" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Finds paginated results of rooms.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>page</strong>: <span class="datatype">Number</span> zero based index.</p>
+<p><strong>limit</strong>: <span class="datatype">Number</span> amount of rooms per page.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>rooms</strong>: <a class="reference internal" href="../datatypes/flatroom.html"><span class="doc">[FlatRoom]</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getroomlist">
+<h3>getRoomList<a class="headerlink" href="#getroomlist" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets unfiltered paginated results of rooms.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>page</strong>: <span class="datatype">Number</span> zero based index.</p>
+<p><strong>limit</strong>: <span class="datatype">Number</span> amount of rooms per page.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>rooms</strong>: <a class="reference internal" href="../datatypes/flatroom.html"><span class="doc">[FlatRoom]</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getstaff">
+<h3>getStaff<a class="headerlink" href="#getstaff" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets staff members.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>staff</strong>: <a class="reference internal" href="../datatypes/user.html"><span class="doc">[User]</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getuser">
+<h3>getUser<a class="headerlink" href="#getuser" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets a user.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">Number</span> user’s ID.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>user</strong>: <a class="reference internal" href="../datatypes/user.html"><span class="doc">User</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getroomhistory">
+<span id="get-room-history"></span><h3>getRoomHistory<a class="headerlink" href="#getroomhistory" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets room history.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>history</strong>: <a class="reference internal" href="../datatypes/history.html"><span class="doc">[History]</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="validateroomname">
+<h3>validateRoomName<a class="headerlink" href="#validateroomname" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Validates a room name.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>name</strong>: <span class="datatype">String</span> name to be validated.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>slug</strong>: <span class="datatype">String</span> url conform representation of room name.</p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="validateusername">
+<h3>validateUsername<a class="headerlink" href="#validateusername" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Validates a username.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>name</strong>: <span class="datatype">String</span> name to be validated.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>slug</strong>: <span class="datatype">String</span> url conform representation of name.</p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getmutes">
+<h3>getMutes<a class="headerlink" href="#getmutes" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets mutes.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>mutes</strong>: <a class="reference internal" href="../datatypes/mute.html"><span class="doc">[Mute]</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getbans">
+<h3>getBans<a class="headerlink" href="#getbans" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets bans.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>bans</strong>: <a class="reference internal" href="../datatypes/ban.html"><span class="doc">[Ban]</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="savesettings">
+<h3>saveSettings<a class="headerlink" href="#savesettings" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Saves settings.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="setlock">
+<h3>setLock<a class="headerlink" href="#setlock" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Sets up a lock.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>lock</strong>: <span class="datatype">Boolean</span> should waitlist be locked?</p>
+<p><strong>removeAllDJs</strong>: <span class="datatype">Boolean</span> remove all users in waitlist?</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="setcycle">
+<h3>setCycle<a class="headerlink" href="#setcycle" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Decides cycle mode.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>shouldCycle</strong>: <span class="datatype">Boolean</span> should waitlist cycle?</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="resetpassword">
+<h3>resetPassword<a class="headerlink" href="#resetpassword" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Sends a request to the server to reset the account’s password.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="requestusers">
+<h3>requestUsers<a class="headerlink" href="#requestusers" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets users in bulk.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>ids</strong>: <span class="datatype">[Number]</span> user IDs.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>users</strong>: <a class="reference internal" href="../datatypes/user.html"><span class="doc">[User]</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="joinroom">
+<h3>joinRoom<a class="headerlink" href="#joinroom" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Joins a room.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>slug</strong>: <span class="datatype">String</span> room name.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="joinwaitlist">
+<h3>joinWaitlist<a class="headerlink" href="#joinwaitlist" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Joins the waitlist.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="addtowaitlist">
+<h3>addToWaitlist<a class="headerlink" href="#addtowaitlist" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Adds a user to the waitlist.</p>
+<p>This fires the <a class="reference internal" href="events.html#waitlist-update"><span class="std std-ref">WAITLIST_UPDATE</span></a> event indirectly.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">Number</span> user’s ID.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="addplaylist">
+<h3>addPlaylist<a class="headerlink" href="#addplaylist" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Creates a new playlist with media objects.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>name</strong>: <span class="datatype">String</span> playlist name.</p>
+<p><strong>media</strong>: <span class="datatype">[Object]</span> <a class="reference internal" href="../datatypes/media.html"><span class="doc">Media</span></a> media to add.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>playlist</strong>: <a class="reference internal" href="../datatypes/playlist.html"><span class="doc">Playlist</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="grab">
+<h3>grab<a class="headerlink" href="#grab" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Grabs media.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">Number</span> playlist ID.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>playlist</strong>: <a class="reference internal" href="../datatypes/playlist.html"><span class="doc">Playlist</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="skipdj">
+<h3>skipDJ<a class="headerlink" href="#skipdj" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Skips the DJ.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">Number</span> user’s ID.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="movedj">
+<h3>moveDJ<a class="headerlink" href="#movedj" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Moves a user in the waitlist.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">Number</span> user’s ID.</p>
+<dl class="docutils">
+<dt><strong>position</strong>: <span class="datatype">Number</span> zero based index with zero being the first</dt>
+<dd>position.</dd>
+</dl>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="createroom">
+<h3>createRoom<a class="headerlink" href="#createroom" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Creates a new room.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>name</strong>: <span class="datatype">String</span> room name.</p>
+<p><strong>unlisted</strong>: <span class="datatype">Boolean</span> makes room private.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>room</strong>: <a class="reference internal" href="../datatypes/newroom.html"><span class="doc">NewRoom</span></a> info of new room.</p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="sendsos">
+<h3>sendSOS<a class="headerlink" href="#sendsos" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Sends an SOS to the admins and global moderators of plug.dj</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Please keep in mind that this is a function with power and should be used only in
+a real emergency. Don’t just spam this function at your leisure.</p>
+</div>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>message</strong>: <span class="datatype">String</span> message send to moderators.</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="updateroominfo">
+<h3>updateRoomInfo<a class="headerlink" href="#updateroominfo" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Updates the room info.</p>
+<p>This fires the <a class="reference internal" href="events.html#room-description-update"><span class="std std-ref">ROOM_DESCRIPTION_UPDATE</span></a> event indirectly.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>name</strong>: <span class="datatype">String</span> room name.</p>
+<p><strong>description</strong>: <span class="datatype">String</span> room description.</p>
+<p><strong>welcome</strong>: <span class="datatype">String</span> welcome message shown on entrance.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="setminchatlevel">
+<h3>setMinChatLevel<a class="headerlink" href="#setminchatlevel" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Sets the room’s minimum chat level.</p>
+<p>This will raise the <a class="reference internal" href="events.html#min-chat-level-update"><span class="std std-ref">ROOM_MIN_CHAT_LEVEL_UPDATE</span></a> event.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>level</strong>: <span class="datatype">Number</span> level required to chat.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="banuser">
+<h3>banUser<a class="headerlink" href="#banuser" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Bans a user.</p>
+<p>This will raise the <a class="reference internal" href="events.html#user-leave"><span class="std std-ref">USER_LEAVE</span></a> and <a class="reference internal" href="events.html#mod-ban"><span class="std std-ref">MOD_BAN</span></a> event indirectly.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">Number</span> user’s ID.</p>
+<p><strong>time</strong>: <span class="datatype">Enum</span> <a class="reference internal" href="../datatypes/banduration.html"><span class="doc">BANDURATION</span></a> duration of ban.</p>
+<p><strong>reason</strong>: <span class="datatype">Enum</span> <a class="reference internal" href="../datatypes/reason.html"><span class="doc">REASON</span></a> reason of ban.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="banbooth">
+<h3>banBooth<a class="headerlink" href="#banbooth" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Bans a user from the booth.</p>
+<p>This will raise the <a class="reference internal" href="events.html#waitlist-update"><span class="std std-ref">WAITLIST_UPDATE</span></a> as well as the <a class="reference internal" href="events.html#advance"><span class="std std-ref">ADVANCE</span></a> event
+indirectly.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">Number</span> user’s ID.</p>
+<dl class="docutils">
+<dt><strong>time</strong>: <span class="datatype">Enum</span> <a class="reference internal" href="../datatypes/boothbanduration.html"><span class="doc">BOOTHBANDURATION</span></a> duration</dt>
+<dd>of ban.</dd>
+<dt><strong>reason</strong>: <span class="datatype">Enum</span> <a class="reference internal" href="../datatypes/boothbanreason.html"><span class="doc">BOOTHBANREASON</span></a> reason of</dt>
+<dd>ban.</dd>
+</dl>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="deletebanbooth">
+<h3>deleteBanBooth<a class="headerlink" href="#deletebanbooth" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Removes a previously registered ban.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">Number</span> user’s ID.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="muteuser">
+<h3>muteUser<a class="headerlink" href="#muteuser" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Mutes a user.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">Number</span> user’s ID.</p>
+<p><strong>time</strong>: <span class="datatype">Enum</span> <a class="reference internal" href="../datatypes/muteduration.html"><span class="doc">MUTEDURATION</span></a> duration of mute.</p>
+<p><strong>reason</strong>: <span class="datatype">Enum</span> <a class="reference internal" href="../datatypes/reason.html"><span class="doc">REASON</span></a> reason of mute.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="addstaff">
+<h3>addStaff<a class="headerlink" href="#addstaff" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Adds a user to staff.</p>
+<p>This will raise the <a class="reference internal" href="events.html#user-update"><span class="std std-ref">USER_UPDATE</span></a> event.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">Number</span> user’s ID.</p>
+<p><strong>role</strong>: <span class="datatype">Enum</span> <a class="reference internal" href="../datatypes/role.html"><span class="doc">USERROLE</span></a> role to give.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="ignoreuser">
+<h3>ignoreUser<a class="headerlink" href="#ignoreuser" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Ignores a user.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">Number</span> user’s ID.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>ignored</strong>: <a class="reference internal" href="../datatypes/ignore.html"><span class="doc">Ignore</span></a> ignored user.</p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="deleteplaylist">
+<h3>deletePlaylist<a class="headerlink" href="#deleteplaylist" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Deletes a playlist.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">Number</span> playlist to delete.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="removeignore">
+<h3>removeIgnore<a class="headerlink" href="#removeignore" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Unignores a user.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">Number</span> user’s ID.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<dl class="docutils">
+<dt><strong>unignored</strong>: <a class="reference internal" href="../datatypes/ignore.html"><span class="doc">Ignore</span></a> unignored</dt>
+<dd>user.</dd>
+</dl>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="removestaff">
+<h3>removeStaff<a class="headerlink" href="#removestaff" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Removes a user from staff.</p>
+<p>This will raise the <a class="reference internal" href="events.html#user-update"><span class="std std-ref">USER_UPDATE</span></a> event.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">Number</span> user’s ID.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="removedj">
+<h3>removeDJ<a class="headerlink" href="#removedj" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Removes a DJ.</p>
+<p>This will raise the <a class="reference internal" href="events.html#waitlist-update"><span class="std std-ref">WAITLIST_UPDATE</span></a> and <a class="reference internal" href="events.html#advance"><span class="std std-ref">ADVANCE</span></a> event indirectly.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">Number</span> user’s ID.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="leavewaitlist">
+<h3>leaveWaitlist<a class="headerlink" href="#leavewaitlist" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Leaves the waitlist.</p>
+<p>This will raise the <a class="reference internal" href="events.html#waitlist-update"><span class="std std-ref">WAITLIST_UPDATE</span></a> event indirectly.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="unbanuser">
+<h3>unbanUser<a class="headerlink" href="#unbanuser" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Unbans a user.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">Number</span> user’s ID.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="unmuteuser">
+<span id="unmute-user"></span><h3>unmuteUser<a class="headerlink" href="#unmuteuser" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Unmutes a user.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">Number</span> user’s ID.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="deletemessage">
+<h3>deleteMessage<a class="headerlink" href="#deletemessage" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Deletes a message.</p>
+<p>This will raise the <a class="reference internal" href="events.html#chat-delete"><span class="std std-ref">CHAT_DELETE</span></a> event.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>cid</strong>: <span class="datatype">Number</span> message ID.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="logout">
+<h3>logout<a class="headerlink" href="#logout" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Logs the account out.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="requestself">
+<h3>requestSelf<a class="headerlink" href="#requestself" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Request the account info.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>self</strong>: <a class="reference internal" href="../datatypes/modelself.html"><span class="doc">[Self]</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getmyhistory">
+<span id="get-my-history"></span><h3>getMyHistory<a class="headerlink" href="#getmyhistory" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets the account play history.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>history</strong>: <a class="reference internal" href="../datatypes/history.html"><span class="doc">[History]</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getfriends">
+<h3>getFriends<a class="headerlink" href="#getfriends" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets the account’s friends.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>friends</strong>: <a class="reference internal" href="../datatypes/user.html"><span class="doc">[User]</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getfriendrequests">
+<h3>getFriendRequests<a class="headerlink" href="#getfriendrequests" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets the account’s friend request.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>requests</strong>: <a class="reference internal" href="../datatypes/invitation.html"><span class="doc">[Invitation]</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="findplaylist">
+<h3>findPlaylist<a class="headerlink" href="#findplaylist" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Finds personal playlists.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>query</strong>: <span class="datatype">String</span> keywords to look for.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>playlist</strong>: <a class="reference internal" href="../datatypes/playlist.html"><span class="doc">[Playlist]</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="findmedia">
+<h3>findMedia<a class="headerlink" href="#findmedia" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Finds media in all playlists.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>query</strong>: <span class="datatype">String</span> keywords to look for.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>media</strong>: <a class="reference internal" href="../datatypes/media.html"><span class="doc">[Media]</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="findmediaplaylist">
+<h3>findMediaPlaylist<a class="headerlink" href="#findmediaplaylist" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Finds media in a playlist.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">Number</span> playlist to use for search.</p>
+<p><strong>query</strong>: <span class="datatype">String</span> keywords to look for.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>media</strong>: <a class="reference internal" href="../datatypes/media.html"><span class="doc">[Media]</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getplaylist">
+<h3>getPlaylist<a class="headerlink" href="#getplaylist" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets playlist.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">Number</span> playlist to retrieve.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>media</strong>: <a class="reference internal" href="../datatypes/media.html"><span class="doc">[Media]</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getplaylists">
+<h3>getPlaylists<a class="headerlink" href="#getplaylists" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets all playlists.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>playlists</strong>: <a class="reference internal" href="../datatypes/playlist.html"><span class="doc">[Playlist]</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getignores">
+<h3>getIgnores<a class="headerlink" href="#getignores" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets ignores.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>users</strong>: <a class="reference internal" href="../datatypes/ignore.html"><span class="doc">[Ignore]</span></a> ignored users.</p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="getfavoriterooms">
+<h3>getFavoriteRooms<a class="headerlink" href="#getfavoriterooms" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Gets favorite rooms.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>rooms</strong>: <a class="reference internal" href="../datatypes/flatroom.html"><span class="doc">[FlatRoom]</span></a> favorited rooms.</p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="setprofilemessage">
+<h3>setProfileMessage<a class="headerlink" href="#setprofilemessage" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Sets profile message.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>message</strong>: <span class="datatype">String</span> profile message.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="renameplaylist">
+<h3>renamePlaylist<a class="headerlink" href="#renameplaylist" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Renames a playlist.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">String</span> playlist to rename.</p>
+<p><strong>name</strong>: <span class="datatype">String</span> new name.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="setavatar">
+<h3>setAvatar<a class="headerlink" href="#setavatar" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Sets avatar.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">String</span> avatar to set.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="setbadge">
+<h3>setBadge<a class="headerlink" href="#setbadge" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Sets badge.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">String</span> badge to set.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="setlanguage">
+<h3>setLanguage<a class="headerlink" href="#setlanguage" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Sets language.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>language</strong>: <span class="datatype">String</span> ISO 3166-2 country code.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="rejectfriendrequest">
+<h3>rejectFriendRequest<a class="headerlink" href="#rejectfriendrequest" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Rejects a user’s friend request.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">Number</span> user to reject.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="activateplaylist">
+<h3>activatePlaylist<a class="headerlink" href="#activateplaylist" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Sets a playlist to play from.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">Number</span> playlist to set.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>activated</strong>: <span class="datatype">String</span> ID of activated playlist.</p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="movemedia">
+<h3>moveMedia<a class="headerlink" href="#movemedia" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Moves media in a playlist.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">Number</span> playlist in which the media resides.</p>
+<p><strong>media</strong>: <span class="datatype">[Number]</span> media to move.</p>
+<p><strong>beforeID</strong>: <span class="datatype">Number</span> where to insert the media at.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>media</strong>: <a class="reference internal" href="../datatypes/media.html"><span class="doc">[Media]</span></a> order after move.</p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="updatemedia">
+<h3>updateMedia<a class="headerlink" href="#updatemedia" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Updates a media item’s info.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">Number</span> playlist in which the media resides.</p>
+<p><strong>mediaID</strong>: <span class="datatype">Number</span> media to edit.</p>
+<p><strong>author</strong>: <span class="datatype">String</span> media author like artist.</p>
+<p><strong>title</strong>: <span class="datatype">String</span> media title like song title.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>update</strong>: <a class="reference internal" href="../datatypes/mediaupdate.html"><span class="doc">[Update]</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="shuffleplaylist">
+<h3>shufflePlaylist<a class="headerlink" href="#shuffleplaylist" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Shuffles a media item in a playlist.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">Number</span> playlist to shuffle.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>media</strong>: <a class="reference internal" href="../datatypes/media.html"><span class="doc">[Media]</span></a> order after shuffle.</p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="addfriend">
+<h3>addFriend<a class="headerlink" href="#addfriend" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Adds a user as a friend.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">Number</span> user to add as friend.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="deletemedia">
+<h3>deleteMedia<a class="headerlink" href="#deletemedia" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Deletes a media item in a playlist.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">Number</span> playlist in which the media resides.</p>
+<p><strong>mediaIDs</strong>: <span class="datatype">[Number]</span> media to delete.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>media</strong>: <a class="reference internal" href="../datatypes/media.html"><span class="doc">[Media]</span></a> in playlist after deletion.</p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="addmedia">
+<h3>addMedia<a class="headerlink" href="#addmedia" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Adds media to a playlist.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">Number</span> playlist to add the media to.</p>
+<p><strong>media</strong>: <span class="datatype">[Object]</span> media objects to add.</p>
+<p><strong>append</strong>: <span class="datatype">Boolean</span> append media to the end.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>mediaAdd</strong>: <a class="reference internal" href="../datatypes/mediaadd.html"><span class="doc">MediaAdd</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="woot">
+<h3>woot<a class="headerlink" href="#woot" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Woots the media (upvote).</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="meh">
+<h3>meh<a class="headerlink" href="#meh" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Mehs the media (downvote).</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="favoriteroom">
+<h3>favoriteRoom<a class="headerlink" href="#favoriteroom" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Favorites the room you are currently connected to.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">Number</span> room ID.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="removefriend">
+<h3>removeFriend<a class="headerlink" href="#removefriend" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Removes a user as a friend.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">Number</span> user ID.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="purchaseusername">
+<h3>purchaseUsername<a class="headerlink" href="#purchaseusername" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Purchases a username from the store.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>username</strong>: <span class="datatype">String</span> name to purchase.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>item</strong>: <a class="reference internal" href="../datatypes/purchase.html"><span class="doc">Purchase</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="purchaseitem">
+<h3>purchaseItem<a class="headerlink" href="#purchaseitem" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Purchases an item from the store.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>id</strong>: <span class="datatype">String</span> item to purchase.</p>
+<p><strong>callback</strong>: <span class="datatype">function</span> called on retrieval.</p>
+</div></blockquote>
+<p><strong>callback</strong>:</p>
+<blockquote>
+<div><p><strong>err</strong>: <span class="datatype">Object</span> possible error returned.</p>
+<p><strong>item</strong>: <a class="reference internal" href="../datatypes/purchase.html"><span class="doc">Purchase</span></a></p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="removechatmessage">
+<h3>removeChatMessage<a class="headerlink" href="#removechatmessage" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Removes a message.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>cid</strong>: <span class="datatype">String</span> unique message ID.</p>
+<p><strong>cacheOnly</strong>: <span class="datatype">Boolean</span> clears only the cache when true.</p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Boolean</span> whether the message was deleted</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="removechatmessagebyuser">
+<h3>removeChatMessageByUser<a class="headerlink" href="#removechatmessagebyuser" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Removes all messages of a user.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><p><strong>username</strong>: <span class="datatype">String</span> name of a user.</p>
+<p><strong>cacheOnly</strong>: <span class="datatype">Boolean</span> clears only the cache when true.</p>
+</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">Boolean</span> whether the messages were deleted</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="watchusercache">
+<h3>watchUserCache<a class="headerlink" href="#watchusercache" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>Enables time based cleanup of cached users.</p>
+<p>Default time is 5 minutes.</p>
+<p><strong>Parameters</strong>:</p>
+<blockquote>
+<div><strong>enable</strong>: <span class="datatype">Boolean</span> boolean value indicating state.</div></blockquote>
+<p><strong>Return Value</strong>:</p>
+<blockquote>
+<div><span class="datatype">undefined</span></div></blockquote>
+</div></blockquote>
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="events.html" class="btn btn-neutral float-right" title="Events" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Plugged 3.0.0 reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Sooyou.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'3.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
