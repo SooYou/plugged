@@ -149,15 +149,15 @@ look like the following:
 {
     "email": "youraccount@example.example",
     "password": "youpassword",
-    "room": "",
+    "room": "roomToJoin",
     "usernameToBuy": "",
     "parse": true
 }
 ```
 
-Remember, if you want to test the createRoom function you have to add a room, same goes
-for buying a username. The parse option is just a test for the raw objects send by plug.dj
-You should leave that to true.
+Remember, for testing out the purchaseUsername function you have to supply a username you
+want to buy (make sure it is free to get). parse should be just left to true since when
+false, it is used to test the unparsed objects plug.dj sends via websocket.
 
 To run the tests all you need to do is type:
 
