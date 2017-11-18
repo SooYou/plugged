@@ -1,50 +1,54 @@
 {
-    "name" : "plugged",
-    "description" : "plugged is a vast API for plug.dj",
-    "version" : "2.6.4",
-    "main" : "plugged",
-    "author" : "Sooyou",
-    "homepage" : "https://github.com/SooYou/plugged/wiki",
-    "license" : "MIT",
-    "bugs" : {
-        "url" : "https://github.com/SooYou/plugged/issues"
+    "name": "plugged",
+    "description": "plugged is a vast API for plug.dj",
+    "version": "3.0.0",
+    "main": "plugged",
+    "author": "Sooyou",
+    "homepage": "https://github.com/SooYou/plugged/wiki",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/SooYou/plugged/issues"
     },
-
-    "repository" : {
-        "type" : "git",
-        "url" : "https://github.com/SooYou/plugged.git"
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/SooYou/plugged.git"
     },
-
-    "files" : [
-        "logger.js",
+    "files": [
         "plugged.js",
+        "events.js",
         "query.js",
         "mapper.js",
         "utils.js",
+        "types.js",
         "package.json",
         "LICENSE",
         "README.md",
         "test/raw.js",
         "test/test.js",
+        "test/object.js",
+        "test/helper.js",
+        "test/functions.js",
         "test/README.md",
         "conf/config.json"
     ],
-
-    "keywords" : [
+    "keywords": [
         "plug",
         "dj",
         "plug.dj",
+        "plug api",
         "wrapper",
         "bot",
         "api"
     ],
-
     "scripts": {
         "test": "mocha test/test.js -t 10000"
     },
-
     "dependencies": {
-        "request": "^2.81",
-        "ws": "~3.1"
+        "request": "2.x",
+        "ws": "3.x"
+    },
+    "devDependencies": {
+        "chai": "4.x",
+        "mocha": "3.x"
     }
 }

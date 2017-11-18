@@ -1,259 +1,239 @@
-var isTravis = process.env.TRAVIS || false;
+const isTravis = process.env.TRAVIS || false;
 
-var testLogin = (isTravis ? {
+const testLogin = (isTravis ? {
     "email": process.env.EMAIL,
     "password": process.env.PASSWORD,
     "room": process.env.ROOM,
     "usernameToBuy": "",
-    "noParse": false
+    "parse": true
 } : require("./test.json"));
 
-var Plugged = require("../plugged");
-var Logger = require("../logger");
-var chai = require("chai");
-var expect = chai.expect;
-var client = new Plugged({
-    test: testLogin.noParse
-});
+// id needed for ban test
+let _id = null;
+// playlist id
+let _playlist = null;
+let _media = null;
+let _room = null;
+let _store = null;
 
-var logger = new Logger({
+
+const Plugged = require("../plugged");
+const Query = require("../query");
+const types = require("../types");
+
+const helper = require("./helper");
+const objects = require("./objects");
+const functions = require("./functions");
+
+const chai = require("chai");
+const expect = chai.expect;
+const client = new Plugged({
+    test: !testLogin.parse,
     verbosity: 5,
-    inspect: true
+    log: (msg) => {
+        console.log(msg);
+    }
 });
 
-var _playlists;
-var _playlist;
-var _message;
-var _store;
-var _media;
-var _user;
-var _room;
+client.cacheChat(true);
+client.cacheUser(true);
 
-function execTest() {
-    return isTravis ? describe.skip : describe;
-}
+// gets all users that are not you
+function getUsers() {
+    const users = client.getUsers();
+    const filtered = [];
 
-function isObjectTest() {
-    return testLogin.noParse ? describe.skip : describe;
-}
-
-function testUser(user) {
-    expect(user).to.contain.all.keys([
-        "username",
-        "avatarID",
-        "language",
-        "guest",
-        "slug",
-        "joined",
-        "level",
-        "gRole",
-        "badge",
-        "sub",
-        "id"
-    ]);
-
-    if(!testLogin.noParse)
-        expect(user.badge).to.be.a("string");
-
-    expect(user.username).to.be.a("string");
-    expect(user.avatarID).to.be.a("string");
-    expect(user.language).to.be.a("string");
-    expect(user.slug).to.be.a("string");
-    expect(user.joined).to.be.a("string");
-    expect(user.level).to.be.a("number");
-    expect(user.gRole).to.be.a("number");
-    expect(user.sub).to.be.a("number");
-    expect(user.id).to.be.a("number");
-}
-
-function testMedia(media) {
-    expect(media).to.have.all.keys([
-        "author",
-        "title",
-        "image",
-        "format",
-        "duration",
-        "cid",
-        "id"
-    ]);
-
-    expect(media.author).to.be.a("string");
-    expect(media.title).to.be.a("string");
-    expect(media.image).to.be.a("string");
-    expect(media.format).to.be.a("number");
-    expect(media.duration).to.be.a("number");
-    expect(media.cid).to.be.a("string");
-    expect(media.id).to.be.a("number");
-}
-
-function testRoom(room) {
-    if(testLogin.noParse) {
-        expect(room).to.have.all.keys([
-            "booth",
-            "fx",
-            "grabs",
-            "meta",
-            "playback",
-            "role",
-            "users",
-            "votes",
-            "mutes"
-        ]);
-
-        expect(room.grabs).to.be.an("object");
-        expect(room.votes).to.be.an("object");
-    } else {
-        expect(room).to.have.all.keys([
-            "booth",
-            "fx",
-            "grabs",
-            "meta",
-            "playback",
-            "role",
-            "users",
-            "votes"
-        ]);
-
-        expect(room.grabs).to.be.an("array");
-        expect(room.votes).to.be.an("array");
+    for(let i = 0, l = users.length; i < l; i++) {
+        if(users[i].role < client.getSelf().role) {
+            filtered.push(users[i]);
+        }
     }
 
-    expect(room.booth).to.be.an("object");
-    expect(room.fx).to.be.an("array");
-    expect(room.meta).to.be.an("object");
-    expect(room.playback).to.be.an("object");
-    expect(room.role).to.be.a("number");
-    expect(room.users).to.be.an("array");
+    return filtered;
 }
 
-function testExtendedRoom(room) {
-    expect(room).to.have.all.keys([
-        "capacity",
-        "cid",
-        "dj",
-        "favorite",
-        "format",
-        "host",
-        "id",
-        "image",
-        "media",
-        "name",
-        "nsfw",
-        "guests",
-        "population",
-        "private",
-        "slug"
-    ]);
+function extendedTestCheck(requiredUsers = 0, done) {
+    const users = getUsers();
 
-    if(typeof room.dj !== "string") {
-        expect(room.dj).to.be.an("object");
-        testUser(room.dj);
+    if (!users || users.length < requiredUsers) {
+        console.log(`could not run test since it requires ${requiredUsers} \
+        ${requiredUsers > 1 ? "users" : "user"} for this to pass. skipping.`);
+        if (done)
+            done();
+
+        return false;
     }
 
-    if(!testLogin.noParse) {
-        expect(room.capacity).to.be.a("number");
-        expect(room.population).to.be.a("number");
-        expect(room.format).to.be.a("number");
-    } else {
-        expect(room.format).to.be.a("string");
-    }
-
-    expect(room.favorite).to.be.a("boolean");
-    expect(room.host).to.be.a("string");
-    expect(room.cid).to.be.a("string");
-    expect(room.id).to.be.a("number");
-    expect(room.image).to.be.a("string");
-    expect(room.media).to.be.a("string");
-    expect(room.name).to.be.a("string");
-    expect(room.private).to.be.a("boolean");
-    expect(room.slug).to.be.a("string");
+    return true;
 }
 
-function testPlaylist(playlist) {
-    expect(playlist).to.have.all.keys([
-        "active",
-        "count",
-        "id",
-        "name"
-    ]);
-
-    expect(playlist.active).to.be.a("boolean");
-    expect(playlist.count).to.be.a("number");
-    expect(playlist.id).to.be.a("number");
-    expect(playlist.name).to.be.a("string");
+function skipIfTravis(travis) {
+    return travis ? describe.skip : describe;
 }
 
-function testHistoryObject(entry) {
-    expect(entry).to.be.an("object");
-    expect(entry).to.have.all.keys([
-        "id",
-        "media",
-        "room",
-        "score",
-        "timestamp",
-        "user"
-    ]);
+describe("Check basic functions", () => {
+    describe("#Utils", () => {
+        describe("#waterfall", () => {
+            it("should call functions asynchronously one after another", done => {
+                functions.testWaterfall(() => {
+                    done();
+                });
+            });
+        });
 
-    expect(entry.id).to.be.a("string").and.have.length.above(0);
-    expect(entry.media).to.be.an("object");
-    expect(entry.media).to.have.all.keys([
-        "cid",
-        "title",
-        "author",
-        "image",
-        "duration",
-        "format",
-        "id"
-    ]);
+        describe("#splitTitle", () => {
+            it("should split a string into two, defining an author and a title", () => {
+                functions.testSplitTitle();
+            });
+        });
 
-    expect(entry.media.cid).to.be.a("string").and.have.length.above(0);
-    expect(entry.media.title).to.be.a("string").and.have.length.above(0);
-    expect(entry.media.author).to.be.a("string").and.have.length.above(0);
-    expect(entry.media.image).to.be.a("string").and.have.length.above(0);
-    expect(entry.media.duration).to.be.a("number").and.not.equal(0);
-    expect(entry.media.format).to.be.a("number");
-    expect(entry.media.id).to.be.a("number").and.not.equal(-1);
+        describe("#convertPlugTimeToDate", () => {
+            it("should convert the time given by the plug servers to unix standard time", () => {
+                functions.testConvertPlugTimeToDate();
+            });
+        });
 
-    expect(entry.room).to.be.an("object");
-    expect(entry.room).to.have.all.keys([
-        "name",
-        "slug"
-    ]);
+        describe("#decode", () => {
+            it("should decode a message", () => {
+                functions.testDecode();
+            });
+        });
+    });
 
-    expect(entry.room.name).to.be.a("string").and.have.length.above(0);
-    expect(entry.room.slug).to.be.a("string").and.have.length.above(0);
+    describe("#types", () => {
+        describe("#RequestError", () => {
+            it("should accept a message, a status code and an error code", () => {
+                const msg = "example error message";
+                const err = new types.RequestError(msg, 0, -1);
 
-    expect(entry.score).to.be.an("object");
-    expect(entry.score).to.have.all.keys([
-        "grabs",
-        "listeners",
-        "negative",
-        "positive",
-        "skipped"
-    ]);
+                expect(err.code).to.be.a("number").and.equal(-1);
+                expect(err.status).to.be.a("number").and.equal(0);
+                expect(err.message).to.be.a("string").and.equal(msg);
+                expect(err.name).to.be.a("string").and.equal("RequestError");
+            });
 
-    expect(entry.score.grabs).to.be.a("number");
-    expect(entry.score.listeners).to.be.a("number");
-    expect(entry.score.negative).to.be.a("number");
-    expect(entry.score.positive).to.be.a("number");
-    expect(entry.score.skipped).to.be.a("number");
+            it("should be able to create an empty error", () => {
+                const err = new types.RequestError();
 
-    expect(entry.timestamp).to.be.a("string").and.have.length.above(0);
-    expect(entry.user).to.be.an("object");
-    expect(entry.user).to.have.all.keys([
-        "id",
-        "username"
-    ]);
+                expect(err.code).to.be.a("null").and.equal(null);
+                expect(err.status).to.be.a("null").and.equal(null);
+                expect(err.message).to.be.a("string").and.equal("no data returned");
+                expect(err.name).to.be.a("string").and.equal("RequestError");
+            });
+        });
+    });
 
-    expect(entry.user.id).to.be.a("number").and.not.equal(-1);
-    expect(entry.user.username).to.be.a("string").and.have.length.above(0);
-};
+    describe("#query", () => {
+        const query = new Query();
+        describe("#setEncoding", () => {
+            it("should default to utf-8 when calling setEncoding without a parameter", () => {
+                query.setEncoding();
 
-describe("Login", function () {
-    describe("#getCSRF", function () {
-        it("should retrieve the cross site request forgery token", function (done) {
-            client.getCSRF(function (err, csrf) {
-                expect(err).to.be.a("null");
+                expect(query.getEncoding()).to.be.a("string").and.equal("utf8");
+            });
+
+            it ("should be able to accept any encoding as a string parameter", () => {
+                query.setEncoding("pseudo");
+                expect(query.getEncoding()).to.be.a("string").and.equal("pseudo");
+
+                query.setEncoding("utf8");
+                expect(query.getEncoding()).to.be.a("string").and.equal("utf8");
+            });
+        });
+
+        describe("#getEncoding", () => {
+            it("should return the saved encoding", () => {
+                expect(query.getEncoding()).to.be.a("string").and.equal("utf8");
+            });
+        });
+
+        describe("#setJar", () => {
+            it("should accept a cookie jar given by request", () => {
+                query.setJar(null, null);
+
+                expect(query.getJar()).to.be.an("object");
+            });
+
+            it("should accept a storage like FileCookieStore", () => {
+                query.setJar(null, null);
+
+                expect(query.getJar()).to.be.an("object");
+            });
+        });
+
+        describe("#getJar", () => {
+            it("should return the saved jar", () => {
+                expect(query.getJar()).to.be.an("object");
+            });
+        });
+
+        describe("#setAccept", () => {
+            it("should set the accepting type of content", () => {
+                let accept = query.getAccept();
+
+                query.setAccept("application/text");
+                expect(query.getAccept()).to.be.equal("application/text");
+                query.setAccept(accept);
+            });
+        });
+
+        describe("#getAccept", () => {
+            it("should get the accepting type of content", () => {
+                expect(query.getAccept().indexOf("application/json")).to.not.equal(-1);
+            });
+        });
+
+        describe("#setContentType", () => {
+            it("should set the content type awaited for the response", () => {
+                let type = query.getContentType();
+
+                query.setContentType("application/text");
+                expect(query.getContentType()).to.equal("application/text");
+                query.setContentType(type);
+            });
+        });
+
+        describe("#getContentType", () => {
+            it("should get the content type awaited for the response", () => {
+                expect(query.getContentType().indexOf("application/json")).to.not.equal(-1);
+            });
+        });
+
+        describe("#query", () => {
+            it("should be able to retrieve a message from a server", done => {
+                let accept = query.getAccept();
+                let type = query.getContentType();
+
+                query.setAccept("text/html");
+                query.setContentType("text/html");
+
+                query.query(types.VERBS.GET, "https://www.google.com", null, (err, ret) => {
+                    expect(err).to.equal(null);
+
+                    query.setAccept(accept);
+                    query.setContentType(type);
+                    done();
+                });
+            });
+
+            it("should be able to query multiple requests", done => {
+                done();
+            });
+        });
+
+        describe("#flush", () => {
+            it("should be able to clear the queue", () => {
+                query.flushQueue();
+            });
+        });
+    });
+});
+
+describe("Login", () => {
+    describe("#_getCSRF", () => {
+        it("should retrieve the cross site request forgery token", done => {
+            client._getCSRF(null, (err, c, csrf) => {
+                expect(err).to.be.equal(null);
                 expect(csrf).to.be.a("string").and.have.length.above(0);
 
                 done();
@@ -261,55 +241,69 @@ describe("Login", function () {
         });
     });
 
-    describe("#success", function () {
-        beforeEach(function () {
-            client.setJar(null);
-        });
-        it("should emit LOGIN_SUCCESS without errors", function (done) {
-            client.login({email: testLogin.email, password: testLogin.password});
-
-            client.once(client.LOGIN_SUCCESS, function () {
+    describe("#login", () => {
+        it("should return an error when called without credentials", done => {
+            client.login(null, (err, self) => {
+                expect(err).to.be.an("Error");
+                expect(err.message).to.equal("credentials has to be of type object");
                 done();
             });
         });
-        it("should work with node-style callbacks", function (done) {
-            client.login({email: testLogin.email, password: testLogin.password}, function (err) {
-                if(err)
-                    throw err;
+
+        it("should return an error when given mixed credentials", () => {
+            try {
+                client.login({
+                    email: "examplemail@examplehost.com",
+                    clientID: 0
+                });
+            } catch (err) {
+                expect(err).to.be.an("Error");
+                expect(err.message).to.be.equal("password missing");
+            }
+        });
+
+        it("should log into plug without any issues", done => {
+            client.login({email: testLogin.email, password: testLogin.password}, (err, self) => {
+                expect(err).to.equal(null);
+                expect(self).to.be.an("object");
+                objects.testSelf(testLogin.parse, self);
+
                 done();
             });
         });
     });
 });
 
-describe("Joining a room", function () {
-    it("should return a room object with the current stats", function (done) {
-        client.connect(testLogin.room);
-
-        client.once(client.JOINED_ROOM, function (room) {
-            expect(room).to.be.an("object");
+describe("Joining a room", () => {
+    it("should return an error when given no room", done => {
+        client.connect(null, (err, room) => {
+            expect(err).to.not.equal(null);
+            expect(err.message).to.equal("slug has to be defined");
+            expect(room).to.equal(null);
             done();
         });
     });
-    it("should work with node-style callbacks", function (done) {
-        // trying to join the same room twice is fine by plug
-        client.connect(testLogin.room, function (err, room) {
-            if(err)
-                throw err;
+
+    it("should return a room object with the current stats", done => {
+        client.connect(testLogin.room, (err, room) => {
+            expect(err).to.equal(null);
             expect(room).to.be.an("object");
             done();
         });
     });
 });
 
-describe("Chat", function () {
-    describe("#sendChat", function () {
-        it("should send a message with the text 'test'", function (done) {
+describe("Chat", () => {
+    // used to keep a reference so we can delete it in another test
+    let _message;
 
-            var func = function (msg) {
+    describe("#sendChat", () => {
+        it("should send a message with the text 'test'", done => {
+
+            const func = (msg) => {
                 expect(msg).to.be.an("object");
 
-                if(testLogin.noParse) {
+                if(!testLogin.parse) {
                     expect(msg).to.have.all.keys([
                         "message",
                         "cid",
@@ -349,12 +343,12 @@ describe("Chat", function () {
         });
     });
 
-    describe("#deleteChat", function () {
-        it("should delete a message", function (done) {
-            var funcDel = function (msg) {
+    describe("#deleteChat", () => {
+        it("should delete a message", done => {
+            const funcDel = (msg) => {
                 expect(msg).to.be.an("object");
 
-                if(testLogin.noParse) {
+                if(!testLogin.parse) {
                     expect(msg).to.have.all.keys([
                         "c",
                         "mi"
@@ -380,11 +374,11 @@ describe("Chat", function () {
     });
 });
 
-describe("REST", function () {
-    describe("#getNews", function () {
-        it("should get an array of news objects", function (done) {
-            client.getNews(function (err, news) {
-                expect(err).to.be.a("null");
+describe("REST", () => {
+    describe("#getNews", () => {
+        it("should get an array of news objects", done => {
+            client.getNews((err, news) => {
+                expect(err).to.be.equal(null);
                 expect(news).to.be.an("array");
 
                 if(news.length > 0) {
@@ -404,46 +398,57 @@ describe("REST", function () {
         });
     });
 
-    describe("#getAuthToken", function () {
-        it("should retrieve the 152 character long authentication token", function (done) {
-            client.getAuthToken(function (err, token) {
-                expect(err).to.be.a("null");
-                expect(token).to.be.a("string").and.to.have.length(172);
+    describe("#getAuthToken", () => {
+        it("should retrieve the authentication token", done => {
+            client.getAuthToken((err, token) => {
+                expect(err).to.be.equal(null);
+                expect(token).to.be.a("string");
+                expect(token.length).to.be.above(0);
                 done();
             });
         });
     });
 
-    describe("#getRoomStats", function () {
-        it("should return the room object of the currently joined room", function (done) {
-            client.getRoomStats(function (err, room) {
-                expect(err).to.be.a("null");
-                expect(room).to.be.an("object");
-                testRoom(room);
+    describe("#getRoomStats", () => {
+        it("should return the room object of the currently joined room", done => {
+            client.getRoomStats((err, room) => {
+                expect(err).to.be.equal(null);
+                objects.testRoom(testLogin.parse, room);
+                _room = room;
 
-                // transform state when raw objects are enabled
-                if(testLogin.noParse) {
-                    client.state.room.votes = [];
-                    client.state.room.grabs = [];
+                done();
+            });
+        });
+    });
+
+    describe("#findRooms", () => {
+        it("should retrieve an array of room objects filtered by a keyword", done => {
+            client.findRooms("", 0, 1, (err, rooms) => {
+                expect(err).to.be.equal(null);
+                expect(rooms).to.be.an("array");
+                expect(rooms.length).to.be.equal(1);
+
+                if (rooms.length > 0) {
+                    expect(rooms[0]).to.be.an("object");
+                    objects.testExtendedRoom(testLogin.parse, rooms[0]);
                 }
 
-                if(!_room)
-                    _room = room;
-
                 done();
             });
         });
     });
 
-    execTest()("#findRooms", function () {
-        it("should retrieve an array of room objects filtered by a keyword", function (done) {
-            client.findRooms("kpop", 0, 2, function (err, rooms) {
-                expect(err).to.be.a("null");
+    describe("#getRoomList", () => {
+        it("should retrieve an array of rooms objects", done => {
+            client.getRoomList(0, 10, (err, rooms) => {
+                expect(err).to.be.equal(null);
                 expect(rooms).to.be.an("array");
+                // server does not always return 10 rooms
+                expect(rooms.length).to.be.greaterThan(0);
 
                 if(rooms.length > 0) {
                     expect(rooms[0]).to.be.an("object");
-                    testExtendedRoom(rooms[0]);
+                    objects.testExtendedRoom(testLogin.parse, rooms[0]);
                 }
 
                 done();
@@ -451,27 +456,12 @@ describe("REST", function () {
         });
     });
 
-    describe("#getRooms", function () {
-        it("should retrieve an array of rooms objects", function (done) {
-            client.getRooms(function (err, rooms) {
-                expect(err).to.be.a("null");
-                expect(rooms).to.be.an("array").and.to.have.length.above(0);
-                expect(rooms[0]).to.be.an("object");
-
-                if(!testLogin.noParse)
-                    testExtendedRoom(rooms[0]);
-
-                done();
-            });
-        });
-    });
-
-    execTest()("#getStaff", function () {
-        it("should retrieve all users online or not with a role > 0", function (done) {
-            client.getStaff(function (err, staff) {
-                expect(err).to.be.a("null");
+    describe("#getStaff", () => {
+        it("should retrieve all users online or not with a role > 0", done => {
+            client.getStaff((err, staff) => {
+                expect(err).to.be.equal(null);
                 expect(staff).to.be.an("array").and.to.have.length.above(0);
-                testUser(staff[0]);
+                objects.testUser(testLogin.parse, staff[0]);
 
                 expect(staff[0]).to.contain.key("role");
                 expect(staff[0].role).to.be.a("number");
@@ -481,84 +471,86 @@ describe("REST", function () {
         });
     });
 
-    execTest()("#getUser", function () {
-        it("should retrieve the user object for a user", function (done) {
-            var users = client.getUsers();
+    skipIfTravis(isTravis)("#getUser", () => {
+        it("should retrieve the user object for a user", done => {
+            if (!extendedTestCheck(1, done))
+                return;
 
-            for(var i = 0, l = users.length; i < l; i++) {
-                if(users[i].role < client.getSelf().role) {
-                    _user = users[i];
-                    break;
-                }
-            }
+            let user = getUsers()[0];
 
-            client.getUser(_user.id, function (err, user) {
-                expect(err).to.be.a("null");
+            client.getUser(user.id, (err, user) => {
+                expect(err).to.be.equal(null);
                 expect(user).to.be.an("object");
-                testUser(user);
+                objects.testUser(testLogin.parse, user);
 
                 done();
             });
         });
     });
 
-    describe("#getRoomHistory", function () {
-        it("should return an array of history objects", function (done) {
-            client.getRoomHistory(function (err, history) {
-                expect(err).to.be.a("null");
+    describe("#getRoomHistory", () => {
+        it("should return an array of history objects", done => {
+            client.getRoomHistory((err, history) => {
+                expect(err).to.be.equal(null);
                 expect(history).to.be.an("array");
 
                 if(history.length > 0)
-                    testHistoryObject(history[0]);
+                    objects.testHistoryEntry(testLogin.parse, history[0]);
 
                 done();
             });
         });
     });
 
-    describe("#validateRoomName", function () {
-        it("should return a validated room name based on the input", function (done) {
-            client.validateRoomName("test!-_||%22D", function (err, name) {
-                expect(err).to.be.a("null");
-                expect(name).to.be.an("object").and.to.contain.key("slug");
-                expect(name.slug).to.be.a("string").and.have.length.above(0);
+    describe("#validateRoomName", () => {
+        it("should return a validated room name based on the input", done => {
+            client.validateRoomName("test!-_||%22D", (err, name) => {
+                expect(err).to.be.equal(null);
+                expect(name).to.be.a("string").and.have.length.above(0);
                 done();
             });
         });
     });
 
-    describe("#validateUsername", function () {
-        it("should return a validated username based on the input", function (done) {
-            client.validateUsername("test!-_||%22D", function (err, name) {
-                expect(err).to.be.a("null");
-                expect(name).to.be.an("object").and.to.contain.key("slug");
-                expect(name.slug).to.be.a("string").and.have.length.above(0);
+    describe("#validateUsername", () => {
+        it("should return a validated username based on the input", done => {
+            client.validateUsername("test!-_||%22D", (err, name) => {
+                expect(err).to.be.equal(null);
+                expect(name).to.be.a("string").and.have.length.above(0);
                 done();
             });
         });
     });
 
-    describe("#saveSettings", function () {
-        it("should save the settings object on the server", function (done) {
-            client.saveSettings(done);
+    describe("#saveSettings", () => {
+        it("should save the settings object on the server", done => {
+            client.saveSettings(err => {
+                expect(err).to.be.equal(null);
+                done();
+            });
         });
     });
 
-    describe("#setLock", function () {
-        it("should unlock the waitlist", function (done) {
+    describe("#setLock", () => {
+        it("should unlock the waitlist", done => {
             client.setLock(false, false, done);
         });
     });
 
-    describe("#setCycle", function () {
-        it("should set if the waitlist should cycle", function (done) {
+    describe("#setCycle", () => {
+        it("should set if the waitlist should cycle", done => {
             client.setCycle(true, done);
         });
     });
 
-    execTest()("#addToWaitlist", function () {
-        it("should add a user by their ID to the waitlist", function (done) {
-            client.addToWaitlist(_user.id, function (err) {
+    skipIfTravis(isTravis)("#addToWaitlist", () => {
+        it("should add a user by their ID to the waitlist", done => {
+            if (!extendedTestCheck(1, done))
+                return;
+
+            const user = getUsers()[0];
+
+            client.addToWaitlist(user.id, err => {
 
                 if(err) {
                     if(err.code === 403)
@@ -570,43 +562,48 @@ describe("REST", function () {
         });
     });
 
-    execTest()("#meh", function () {
-        it("should meh a song", function (done) {
+    skipIfTravis(isTravis)("#meh", () => {
+        it("should meh a song", done => {
             client.meh(done);
         });
     });
 
-    execTest()("#woot", function () {
-        it("should woot a song", function (done) {
+    skipIfTravis(isTravis)("#woot", () => {
+        it("should woot a song", done => {
             client.woot(done);
         });
     });
 
-    describe("#addPlaylist", function () {
-        it("should create a new playlist", function (done) {
-            client.addPlaylist("testPlaylist", function (err, playlist) {
-                expect(err).to.be.a("null");
+    describe("#addPlaylist", () => {
+        it("should create a new playlist", done => {
+            client.addPlaylist("testPlaylist", (err, playlist) => {
+                expect(err).to.be.equal(null);
                 expect(playlist).to.be.an("object");
 
-                testPlaylist(playlist);
+                objects.testPlaylist(testLogin.parse, playlist);
 
                 if(!err)
                     _playlist = playlist.id;
+                else
+                    console.log("couldn't assign playlist, all functions which require a playlist won't be tested");
 
                 done();
             });
         });
     });
 
-    execTest()("#grab", function () {
-        it("should grab a song", function (done) {
-            client.grab(_playlist, done);
+    skipIfTravis(isTravis)("#grab", () => {
+        it("should grab a song", done => {
+            if (_playlist)
+                client.grab(_playlist, done);
+            else
+                console.log("playlist not set, skipping grab");
         });
     });
 
-    describe("#addMedia", function () {
-        it("a media file from youtube and soundcloud", function (done) {
-            var ytObj = {
+    describe("#addMedia", () => {
+        it("a media file from youtube and soundcloud", done => {
+            const ytObj = {
                 "title": "Nightstep - Army Of Two",
                 "id": "6DSOGA9HQM4",
                 "thumbnails": {
@@ -616,40 +613,46 @@ describe("REST", function () {
                 }
             };
 
-            var sndObj = {
+            const sndObj = {
                 "title": "Smosh - Legend of Zelda rap",
                 "id": 30271545,
                 "duration": 213475,
                 "artwork_url": "https://i1.sndcdn.com/artworks-000015183915-7m8l9z-large.jpg"
             };
 
-            client.addMedia(_playlist, [ytObj, sndObj], true, done);
+            if (_playlist)
+                client.addMedia(_playlist, [ytObj, sndObj], true, done);
+            else
+                console.log("playlist not set, skipping addMedia");
         });
     });
 
-    execTest()("#skipDJ", function () {
-        it("should skip the current DJ", function (done) {
-            client.skipDJ(testLogin.noParse ? client.getBooth().currentDJ : client.getDJ().id, done);
+    skipIfTravis(isTravis)("#skipDJ", () => {
+        it("should skip the current DJ", done => {
+            client.skipDJ(testLogin.parse ? client.getBooth().dj : client.getBooth().currentDJ, done);
         });
     });
 
-    execTest()("#moveDJ", function () {
-        it("should move a DJ to a new position in the waitlist", function (done) {
-            var waitlist = client.getWaitlist();
+    skipIfTravis(isTravis)("#moveDJ", () => {
+        it("should move a DJ to a new position in the waitlist", done => {
+            if (!extendedTestCheck(2, done))
+                return;
+
+            let waitlist = client.getWaitlist();
             client.moveDJ(waitlist[waitlist.length - 1], 0, done);
         });
     });
 
-    describe("#createRoom", function () {
-        it("should create a new room with a timestamp as the name", function (done) {
-            var date = Date.now().toString();
-            client.createRoom(date, true, function (err, room) {
+    describe("#createRoom", () => {
+        it("should create a new room with a timestamp as the name", done => {
+            const date = Date.now().toString();
+            client.createRoom(date, true, (err, room) => {
                 if(err) {
                     if(err.code === 403)
                         expect(err.message).to.equal("Host limit reached");
                 } else {
 
-                    expect(err).to.be.a("null");
+                    expect(err).to.be.equal(null);
                     expect(room).to.be.an("object");
                     expect(room).to.have.all.keys([
                         "id",
@@ -667,10 +670,10 @@ describe("REST", function () {
         });
     });
 
-    describe("#updateRoomInfo", function () {
-        it("should update the room description and welcome message", function (done) {
-            client.updateRoomInfo("testName", "testDesc", "testWelcome", function (err) {
-                var meta = client.getRoomMeta();
+    describe("#updateRoomInfo", () => {
+        it("should update the room description and welcome message", done => {
+            client.updateRoomInfo("testName", "testDesc", "testWelcome", err => {
+                const meta = client.getRoomMeta();
 
                 expect(meta.description).to.be.equal("testDesc");
                 expect(meta.welcome).to.be.equal("testWelcome");
@@ -679,73 +682,76 @@ describe("REST", function () {
         });
     });
 
-    execTest()("#muteUser", function () {
-        it("should mute a user", function (done) {
-            client.muteUser(_user.id, client.MUTEDURATION.SHORT, client.BANREASON.VIOLATING_COMMUNITY_RULES, function (err) {
+    skipIfTravis(isTravis)("#muteUser", () => {
+        it("should mute a user", done => {
+            if (!extendedTestCheck(1, done))
+                return;
 
-                if(err) {
-                    if(err.code === 403)
-                        expect(err.message).to.equal("This user cannot be muted");
-                }
+            const user = getUsers()[0];
 
-                done();
-            });
+            if (user) {
+                client.muteUser(user.id, client.MUTEDURATION.SHORT, client.BANREASON.VIOLATING_COMMUNITY_RULES, err => {
+
+                    if(err) {
+                        if(err.code === 403)
+                            expect(err.message).to.equal("This user cannot be muted");
+                    } else {
+                        expect(err).to.equal(null);
+                    }
+
+                    done();
+                });
+            }
         });
     });
 
-    describe("#getMutes", function () {
-        it("should retrieve an array of mute objects", function (done) {
-            client.getMutes(function (err, mutes) {
-                expect(err).to.be.a("null");
+    describe("#getMutes", () => {
+        it("should retrieve an array of mute objects", done => {
+            client.getMutes((err, mutes) => {
+                expect(err).to.be.equal(null);
                 expect(mutes).to.be.an("array");
 
-                if(mutes.length > 0) {
-                    expect(mutes[0]).to.be.an("object");
-                    expect(mutes[0]).to.have.all.keys([
-                        "moderator",
-                        "username",
-                        "expires",
-                        "reason",
-                        "id"
-                    ]);
-
-                    expect(mutes[0].moderator).to.be.a("string");
-                    expect(mutes[0].username).to.be.a("string");
-                    expect(mutes[0].expires).to.be.a("number");
-                    expect(mutes[0].reason).to.be.a("number");
-                    expect(mutes[0].id).to.be.a("number");
-                }
+                if (mutes.length > 0)
+                    objects.testMute(testLogin.parse, mutes[0]);
 
                 done();
             });
         });
     });
 
-    describe("#setMinChatLevel", function () {
-        it("should set the minimum chat level", function (done) {
-            client.setMinChatLevel(3, function () {
+    describe("#setMinChatLevel", () => {
+        it("should set the minimum chat level", done => {
+            client.setMinChatLevel(3, () => {
                 expect(client.getMinChatLevel()).to.be.a("number").and.equal(3);
                 done();
             });
         });
     });
 
-    execTest()("#addStaff", function () {
-        it("should add a user as staff", function (done) {
-            client.addStaff(_user.id, client.USERROLE.BOUNCER, done);
+    skipIfTravis(isTravis)("#addStaff", () => {
+        it("should add a user as staff", done => {
+            if (!extendedTestCheck(1, done))
+                return;
+
+            const user = getUsers()[0];
+            client.addStaff(user.id, client.USERROLE.BOUNCER, done);
         });
     });
 
-    execTest()("#ignoreUser", function () {
-        it("should ignore a user", function (done) {
-            client.ignoreUser(_user.id, done);
+    skipIfTravis(isTravis)("#ignoreUser", () => {
+        it("should ignore a user", done => {
+            if (!extendedTestCheck(1, done))
+                return;
+
+            const user = getUsers()[0];
+            client.ignoreUser(user.id, done);
         });
     });
 
-    describe("#getIgnores", function () {
-        it("should get all ignored users", function (done) {
-            client.getIgnores(function (err, ignores) {
-                expect(err).to.be.a("null");
+    describe("#getIgnores", () => {
+        it("should get all ignored users", done => {
+            client.getIgnores((err, ignores) => {
+                expect(err).to.be.equal(null);
                 expect(ignores).to.be.an("array");
 
                 if(ignores.length > 0) {
@@ -764,10 +770,15 @@ describe("REST", function () {
         });
     });
 
-    execTest()("#removeIgnore", function () {
-        it("should remove the previously ignored user", function (done) {
-            client.removeIgnore(_user.id, function (err, ignore) {
-                expect(err).to.be.a("null");
+    skipIfTravis(isTravis)("#removeIgnore", () => {
+        it("should remove the previously ignored user", done => {
+            if (!extendedTestCheck(1, done))
+                return;
+
+            const user = getUsers()[0];
+
+            client.removeIgnore(user.id, (err, ignore) => {
+                expect(err).to.be.equal(null);
 
                 expect(ignore).to.be.an("object");
                 expect(ignore).to.have.all.keys([
@@ -783,9 +794,14 @@ describe("REST", function () {
         });
     });
 
-    execTest()("#removeStaff", function () {
-        it("should remove the previously added staff member", function (done) {
-            client.removeStaff(_user.id, function (err) {
+    skipIfTravis(isTravis)("#removeStaff", () => {
+        it("should remove the previously added staff member", done => {
+            if (!extendedTestCheck(1, done))
+                return;
+
+            const user = getUsers()[0];
+
+            client.removeStaff(user.id, err => {
 
                 if(err) {
                     if(err.code === 403)
@@ -797,36 +813,39 @@ describe("REST", function () {
         });
     });
 
-    execTest()("#removeDJ", function () {
-        it("should remove a DJ from the waitlist", function (done) {
-            var user = client.getWaitlist()[0];
-            client.removeDJ(user, function (err) {
-                expect(err).to.be.a("null");
+    skipIfTravis(isTravis)("#removeDJ", () => {
+        it("should remove a DJ from the waitlist", done => {
+            if (!extendedTestCheck(1, done))
+                return;
 
-                client.addToWaitlist(user, done);
-            });
-        });
-    });
+            const users = getUsers();
 
-    describe("#leaveWaitlist", function () {
-        it("should leave the waitlist", function (done) {
-            client.leaveWaitlist(function (err, wl) {
-                expect(err).to.be.a("null");
-
+            client.removeDJ(users[0].id, err => {
+                expect(err).to.be.equal(null);
                 done();
             });
         });
     });
 
-    execTest()("#unmuteUser", function () {
-        it("should unmute the previously muted user", function (done) {
-            client.unmuteUser(_user.id, done);
+    skipIfTravis(isTravis)("#unmuteUser", () => {
+        it("should unmute the previously muted user", done => {
+            if (!extendedTestCheck(1, done))
+                return;
+
+            const user = getUsers()[0];
+            client.unmuteUser(user.id, done);
         });
     });
 
-    execTest()("#banUser", function () {
-        it("should ban a user", function (done) {
-            client.banUser(_user.id, client.BANDURATION.SHORT, client.BANREASON.VIOLATING_COMMUNITY_RULES, function (err) {
+    skipIfTravis(isTravis)("#banUser", () => {
+        it("should ban a user", done => {
+            if (!extendedTestCheck(1, done))
+                return;
+
+            _id = getUsers()[0].id;
+            expect(_id).to.be.a("number");
+
+            client.banUser(_id, client.BANDURATION.SHORT, client.BANREASON.VIOLATING_COMMUNITY_RULES, err => {
 
                 if(err) {
                     if(err.code === 403)
@@ -834,249 +853,130 @@ describe("REST", function () {
                 }
 
                 done();
-            })
+            });
         });
     });
 
-    execTest()("#unbanUser", function () {
-        it("should unban the previously banned user", function (done) {
-            client.unbanUser(_user.id, done);
+    skipIfTravis(isTravis)("#unbanUser", () => {
+        it("should unban the previously banned user", done => {
+            client.unbanUser(_id, done);
         });
     });
 
-    describe("#requestSelf", function () {
-        it("should request its own user state from the server", function (done) {
-            client.requestSelf(function (err, self) {
-                expect(err).to.be.a("null");
-                testUser(self);
-
-                expect(self).to.contain.keys([
-                    "notifications",
-                    "settings",
-                    "ignores",
-                    "friends",
-                    "pw",
-                    "pp",
-                    "xp"
-                    ]);
-
-                expect(Object.keys(self).length).to.equal(testLogin.noParse ? 19 : 20);
-                expect(self.notifications).to.be.an("array");
-                expect(self.ignores).to.be.an("array");
-                expect(self.friends).to.be.an("array");
-                expect(self.xp).to.be.a("number");
+    describe("#requestSelf", () => {
+        it("should request its own user state from the server", done => {
+            client.requestSelf((err, self) => {
+                expect(err).to.be.equal(null);
+                objects.testSelf(testLogin.parse, self);
 
                 done();
             });
         });
     });
 
-    describe("#getMyHistory", function () {
-        it("should request its own history", function (done) {
-            client.getMyHistory(function (err, history) {
-                expect(err).to.be.a("null");
+    describe("#getMyHistory", () => {
+        it("should request its own history", done => {
+            client.getMyHistory((err, history) => {
+                expect(err).to.be.equal(null);
                 expect(history).to.be.an("array");
 
-                if(history.length > 0) {
-                    expect(history[0]).to.have.all.keys([
-                        "id",
-                        "media",
-                        "room",
-                        "score",
-                        "timestamp",
-                        "user"
-                    ]);
-
-                    expect(history[0].id).to.be.a("string").and.have.length.above(0);
-
-                    expect(history[0].media).to.be.an("object");
-                    expect(history[0].media).to.have.all.keys([
-                        "author",
-                        "cid",
-                        "duration",
-                        "format",
-                        "id",
-                        "image",
-                        "title"
-                    ]);
-
-                    expect(history[0].media.author).to.be.a("string");
-                    expect(history[0].media.cid).to.be.a("string");
-                    expect(history[0].media.duration).to.be.a("number");
-                    expect(history[0].media.format).to.be.a("number");
-                    expect(history[0].media.id).to.be.a("number");
-                    expect(history[0].media.image).to.be.a("string");
-                    expect(history[0].media.title).to.be.a("string");
-
-                    expect(history[0].room).to.be.an("object");
-                    expect(history[0].room).to.have.all.keys([
-                        "name",
-                        "private",
-                        "slug"
-                    ]);
-
-                    expect(history[0].room.name).to.be.a("string");
-                    expect(history[0].room.slug).to.be.a("string");
-
-                    expect(history[0].score).to.be.an("object");
-                    expect(history[0].score).to.have.all.keys([
-                        "grabs",
-                        "listeners",
-                        "negative",
-                        "positive",
-                        "skipped"
-                    ]);
-
-                    expect(history[0].score.grabs).to.be.a("number");
-                    expect(history[0].score.listeners).to.be.a("number");
-                    expect(history[0].score.negative).to.be.a("number");
-                    expect(history[0].score.positive).to.be.a("number");
-                    expect(history[0].score.skipped).to.be.a("number");
-
-                    expect(history[0].timestamp).to.be.a("string");
-
-                    expect(history[0].user).to.be.an("object");
-                    expect(history[0].user).to.have.all.keys([
-                        "id",
-                        "username"
-                    ]);
-                    expect(history[0].user.id).to.be.a("number");
-                    expect(history[0].user.username).to.be.a("string");
-                }
+                if(history.length > 0)
+                    objects.testHistoryEntry(testLogin.parse, history[0]);
 
                 done();
             });
         });
     });
 
-    describe("#getFriends", function () {
-        it("should request all friends from the server", function (done) {
-            client.getFriends(function (err, friends) {
-                expect(err).to.be.a("null");
+    describe("#getFriends", () => {
+        it("should request all friends from the server", done => {
+            client.getFriends((err, friends) => {
+                expect(err).to.be.equal(null);
                 expect(friends).to.be.an("array");
 
                 if(friends.length > 0)
-                    testUser(friends[0]);
+                    objects.testUser(testLogin.parse, friends[0]);
 
                 done();
             });
         });
     });
 
-    describe("#getFriendRequests", function () {
-        it("should request all friend requests from the server", function (done) {
-            client.getFriendRequests(function (err, requests) {
-                expect(err).to.be.a("null");
-                expect(requests).to.be.an("array");
-
-                if(requests.length > 0) {
-                    expect(requests[0]).to.be.an("object");
-                    expect(requests[0]).to.have.all.keys([
-                        "avatarID",
-                        "gRole",
-                        "id",
-                        "joined",
-                        "level",
-                        "status",
-                        "timestamp",
-                        "username"
-                    ]);
-
-                    expect(requests[0].avatarID).to.be.a("string");
-                    expect(requests[0].gRole).to.be.a("number");
-                    expect(requests[0].id).to.be.a("number");
-                    expect(requests[0].joined).to.be.a("string");
-                    expect(requests[0].level).to.be.a("number");
-                    expect(requests[0].status).to.be.a("number");
-                    expect(requests[0].timestamp).to.be.a("string");
-                    expect(requests[0].username).to.be.a("string");
-                }
-
-                done();
-            });
-        });
-    });
-
-    describe("#findPlaylist", function () {
-        it("should search for playlists by their name", function (done) {
-            client.findPlaylist("a", function (err, playlists) {
-                expect(err).to.be.a("null");
+    describe("#findPlaylist", () => {
+        it("should search for playlists by their name", done => {
+            client.findPlaylist("a", (err, playlists) => {
+                expect(err).to.be.equal(null);
                 expect(playlists).to.be.an("array");
 
-                if(playlists.length > 0) {
-                    expect(playlists[0]).to.contain.all.keys([
-                        "id",
-                        "name",
-                        "count",
-                        "active"
-                    ]);
-
-                    expect(playlists[0].id).to.be.a("number");
-                    expect(playlists[0].name).to.be.a("string");
-                    expect(playlists[0].count).to.be.a("number");
-                    expect(playlists[0].active).to.be.a("boolean");
-                }
+                if(playlists.length > 0)
+                    objects.testPlaylist(testLogin.parse, playlists[0]);
 
                 done();
             });
         });
     });
 
-    describe("#findMediaPlaylist", function () {
-        it("should search for media in a playlist filtered by a keyword", function (done) {
-            client.findMediaPlaylist(_playlist, "a", function (err, media) {
-                expect(err).to.be.a("null");
-                expect(media).to.be.an("array");
+    describe("#findMediaPlaylist", () => {
+        it("should search for media in a playlist filtered by a keyword", done => {
+            if (_playlist) {
+                client.findMediaPlaylist(_playlist, "a", (err, media) => {
+                    expect(err).to.be.equal(null);
+                    expect(media).to.be.an("array");
 
-                if(media.length > 0) {
-                    testMedia(media[0]);
-                    _media = media[0];
-                }
+                    if(media.length > 0) {
+                        objects.testMedia(testLogin.parse, media[0]);
+                        _media = media[0];
+                    }
 
-                done();
-            });
+                    done();
+                });
+            } else {
+                console.log("playlist not set, skipping findMediaPlaylist");
+            }
         });
     });
 
-    describe("#getPlaylist", function () {
-        it("should return a playlist", function (done) {
-            client.getPlaylist(_playlist, function (err, playlist) {
-                expect(err).to.be.a("null");
-                expect(playlist).to.be.an("array");
-
-                if(playlist.length > 0)
-                    testMedia(playlist[0]);
-
-                done();
-            });
-        });
-    });
-
-    describe("#getPlaylists", function () {
-        it("should get all playlists", function (done) {
-            client.getPlaylists(function (err, playlists) {
-                expect(err).to.be.a("null");
+    describe("#getPlaylists", () => {
+        it("should get all playlists", done => {
+            client.getPlaylists((err, playlists) => {
+                expect(err).to.be.equal(null);
                 expect(playlists).to.be.an("array");
 
-                if(playlists.length > 0) {
-                    testPlaylist(playlists[0]);
-                    _playlists = playlists;
-                }
+                if (playlists.length > 0)
+                    objects.testPlaylist(testLogin.parse, playlists[0]);
 
                 done();
             });
         });
     });
 
-    describe("#getFavoriteRooms", function () {
-        it("should get all favorited rooms", function (done) {
-            client.getFavoriteRooms(function (err, rooms) {
-                expect(err).to.be.a("null");
+    describe("#getPlaylist", () => {
+        it("should return a playlist", done => {
+            if(_playlist) {
+                client.getPlaylist(_playlist, (err, playlist) => {
+                    expect(err).to.be.equal(null);
+                    expect(playlist).to.be.an("array");
+
+                    if(playlist.length > 0)
+                        objects.testMedia(testLogin.parse, playlist[0]);
+
+                    done();
+                });
+            } else {
+                console.log("playlist not set, skipping getPlaylist");
+            }
+        });
+    });
+
+    describe("#getFavoriteRooms", () => {
+        it("should get all favorited rooms", done => {
+            client.getFavoriteRooms((err, rooms) => {
+                expect(err).to.be.equal(null);
                 expect(rooms).to.be.an("array");
 
                 if(rooms.length > 0) {
                     expect(rooms[0]).to.be.an("object");
-                    testExtendedRoom(rooms[0]);
+                    objects.testExtendedRoom(testLogin.parse, rooms[0]);
                 }
 
                 done();
@@ -1084,162 +984,206 @@ describe("REST", function () {
         });
     });
 
-    describe("#setProfileMessage", function () {
-        it("should change its profile message", function (done) {
+    describe("#setProfileMessage", () => {
+        it("should change its profile message", done => {
             client.setProfileMessage("testProfileMessage", done);
         });
     });
 
-    describe("#renamePlaylist", function () {
-        it("should rename a playlist", function (done) {
-            client.renamePlaylist(_playlist, "testName", done);
+    describe("#renamePlaylist", () => {
+        it("should rename a playlist", done => {
+            if (_playlist)
+                client.renamePlaylist(_playlist, "testName", done);
+            else
+                console.log("playlist not set, skipping grab");
         });
     });
 
-    describe("#setAvatar", function () {
-        it("should set the avatar of itself to base01", function (done) {
+    describe("#setAvatar", () => {
+        it("should set the avatar of itself to base01", done => {
             client.setAvatar("base01", done);
         });
     });
 
-    execTest("#setBadge", function () {
-        it("should set the badge of itself to bt-g", function (done) {
-            client.setBadge(testLogin.badge, done);
+    skipIfTravis(isTravis)("#setBadge", () => {
+        it("should set the badge of itself to bt-g", done => {
+            client.setBadge("bt-g", done);
         });
     });
 
-    describe("#setLanguage", function () {
-        it("should set the language of itself to english (en)", function (done) {
+    describe("#setLanguage", () => {
+        it("should set the language of itself to english (en)", done => {
             client.setLanguage("en", done);
         });
     });
 
-    describe("#rejectFriendRequest", function () {
-        it("should reject a friend request", function (done) {
-            client.rejectFriendRequest(329048, function (err) {
-                expect(err).to.be.a("null");
-                // plug doesn't reallyID check if stated ID ever sent you a request
-                // so we will just check if this endpoint is still available
+    {
+        let _request = null;
 
-                done();
-            });
-        });
-    });
+        skipIfTravis(isTravis)("#getFriendRequests", () => {
+            it("should request all friend requests from the server", done => {
+                client.getFriendRequests((err, requests) => {
+                    expect(err).to.be.equal(null);
+                    expect(requests).to.be.an("array");
 
-    describe("#activatePlaylist", function () {
-        it("should activate a playlist", function (done) {
-            client.activatePlaylist(_playlist, function (err, status) {
-                expect(err).to.be.a("null");
-                expect(status).to.be.an("object");
-                expect(status).to.have.all.keys([
-                    "activated",
-                    "deactivated"
-                ]);
-
-                expect(status.activated).to.be.a("number");
-                expect(status.deactivated).to.be.a("number");
-
-                done();
-            });
-        });
-    });
-
-    describe("#moveMedia", function () {
-        it("should move a media entry to another position", function (done) {
-            client.moveMedia(_playlist, [_media.id], _media.id, function (err, playlist) {
-
-                if(err) {
-                    if(err.code === 400)
-                        expect(err.message).to.equal("ids is required");
-                } else {
-                    testMedia(playlist[0]);
-                }
-
-                done();
-            });
-        });
-    });
-
-    describe("#updateMedia", function () {
-        it("should update the media title and author with testTitle and testAuthor", function (done) {
-            client.updateMedia(_playlist, _media.id, "testAuthor", "testTitle", done);
-        });
-    });
-
-    describe("#shufflePlaylist", function () {
-        it("should shuffle a playlist", function (done) {
-            client.shufflePlaylist(_playlist, function (err, playlist) {
-                expect(err).to.be.a("null");
-                expect(playlist).to.be.an("array");
-
-                if(playlist.length > 0)
-                    testMedia(playlist[0]);
-
-                done();
-            });
-        });
-    });
-
-    execTest()("#addFriend", function () {
-        it("should add a user as a friend", function (done) {
-            client.addFriend(_user.id, done);
-        });
-    });
-
-    describe("#insertMedia", function () {
-        it("should add a media object to a playlist", function (done) {
-            client.insertMedia(_playlist, [_media], true, function (err, status) {
-                if(err) {
-                    if(err.code === 400)
-                        expect(err.message).to.equal("media is required");
-                } else {
-                    expect(status).to.be.an("array");
-
-                    if(status.length > 0) {
-                        expect(status[0]).to.have.all.keys([
-                            "count",
-                            "id"
-                        ]);
-                        expect(status[0].count).to.be.a("number");
-                        expect(status[0].id).to.be.a("number");
+                    if(requests.length > 0) {
+                        _request = requests[0].id;
+                        objects.testFriendRequest(testLogin.parse, requests[0]);
                     }
+
+                    done();
+                });
+            });
+        });
+
+        skipIfTravis(isTravis)("#rejectFriendRequest", () => {
+            it("should reject a friend request", done => {
+                if (_request !== null) {
+                    client.rejectFriendRequest(_request, err => {
+                        expect(err).to.be.equal(null);
+                        // plug doesn't reallyID check if stated ID ever sent you a request
+                        // so we will just check if this endpoint is still available
+
+                        done();
+                    });
+                } else {
+                    console.log("no friend requests to reject");
+                    done();
                 }
+            });
+        });
+    }
+
+    describe("#activatePlaylist", () => {
+        it("should activate a playlist", done => {
+            if (_playlist) {
+                client.activatePlaylist(_playlist, (err, status) => {
+                    expect(err).to.be.equal(null);
+                    expect(status).to.be.an("number");
+
+                    done();
+                });
+            } else {
+                console.log("playlist not set, skipping activatePlaylist");
+            }
+        });
+    });
+
+    describe("#joinWaitlist", () => {
+        it("should join the waitlist", done => {
+            client.joinWaitlist((err, waitlist) => {
+                expect(err).to.be.equal(null);
 
                 done();
             });
         });
     });
 
-    describe("#deleteMedia", function () {
-        it("should delete a media object from a playlist", function (done) {
-            client.deleteMedia(_playlist, [_media.id], function (err, media) {
-                expect(err).to.be.a("null");
-                expect(media).to.be.an("array");
-
-                if(media.length > 0)
-                    testMedia(media[0]);
+    describe("#leaveWaitlist", () => {
+        it("should leave the waitlist", done => {
+            client.leaveWaitlist((err, waitlist) => {
+                expect(err).to.be.equal(null);
 
                 done();
             });
         });
     });
 
-    describe("#deletePlaylist", function () {
-        it("should delete a playlist", function (done) {
-            client.deletePlaylist(_playlist, done);
+    describe("#moveMedia", () => {
+        it("should move a media entry to another position", done => {
+            if (_playlist) {
+                client.moveMedia(_playlist, [_media.id], _media.id, (err, playlist) => {
+
+                    if(err) {
+                        if(err.code === 400)
+                            expect(err.message).to.equal("ids is required");
+                    } else {
+                        objects.testMedia(testLogin.parse, playlist[0]);
+                    }
+
+                    done();
+                });
+            } else {
+                console.log("playlist not set, skipping moveMedia");
+            }
         });
     });
 
-    describe("#favoriteRoom", function () {
-        it("should favorite a room", function (done) {
+    describe("#updateMedia", () => {
+        it("should update the media title and author with testTitle and testAuthor", done => {
+            if (_playlist)
+                client.updateMedia(_playlist, _media.id, "testAuthor", "testTitle", done);
+            else
+                console.log("playlist not set, skipping updateMedia");
+        });
+    });
+
+    describe("#shufflePlaylist", () => {
+        it("should shuffle a playlist", done => {
+            if (_playlist) {
+                client.shufflePlaylist(_playlist, (err, playlist) => {
+                    expect(err).to.be.equal(null);
+                    expect(playlist).to.be.an("array");
+
+                    if(playlist.length > 0)
+                        objects.testMedia(testLogin.parse, playlist[0]);
+
+                    done();
+                });
+            } else {
+                console.log("playlist not set, skipping shufflePlaylist");
+            }
+        });
+    });
+
+    skipIfTravis(isTravis)("#addFriend", () => {
+        it("should add a user as a friend", done => {
+            const user = client.getUsers()[0];
+
+            if (user)
+                client.addFriend(user.id, done);
+            else
+                client._log(0, "could not test addFriend since user was not found in room");
+        });
+    });
+
+    describe("#deleteMedia", () => {
+        it("should delete a media object from a playlist", done => {
+            if (_playlist) {
+                client.deleteMedia(_playlist, [_media.id], (err, media) => {
+                    expect(err).to.be.equal(null);
+                    expect(media).to.be.an("array");
+
+                    if(media.length > 0)
+                        objects.testMedia(testLogin.parse, media[0]);
+
+                    done();
+                });
+            } else {
+                console.log("playlist not set, skipping deleteMedia");
+            }
+        });
+    });
+
+    describe("#deletePlaylist", () => {
+        it("should delete a playlist", done => {
+            if (_playlist)
+                client.deletePlaylist(_playlist, done);
+            else
+                console.log("playlist not set, skipping deletePlaylist");
+        });
+    });
+
+    describe("#favoriteRoom", () => {
+        it("should favorite a room", done => {
             client.favoriteRoom(_room.meta.id, done);
         });
     });
 
-    describe("#deleteNotification", function () {
-        it("should delete a notification or error if no notification is available", function (done) {
-            client.deleteNotification(329048, function (err) {
-                expect(err).to.be.a("null");
+    describe("#deleteNotification", () => {
+        it("should delete a notification or error if no notification is available", done => {
+            client.deleteNotification(329048, err => {
+                expect(err).to.be.equal(null);
                 // again plug doesn't tell us if that was successful or not
                 // so we just check for the endpoint
 
@@ -1248,16 +1192,21 @@ describe("REST", function () {
         });
     });
 
-    execTest()("#removeFriend", function () {
-        it("should remove a user as a friend", function (done) {
-            client.removeFriend(_user.id, done);
+    skipIfTravis(isTravis)("#removeFriend", () => {
+        it("should remove a user as a friend", done => {
+            const user = client.getUsers()[0];
+
+            if (user)
+                client.removeFriend(user.id, done);
+            else
+                client._log(0, "could not test removeFriend since user was not found in room");
         });
     });
 
-    describe("#getInventory", function () {
-        it("should retrieve the inventory", function (done) {
-            client.getInventory(function (err, inventory) {
-                expect(err).to.be.a("null");
+    describe("#getInventory", () => {
+        it("should retrieve the inventory", done => {
+            client.getInventory((err, inventory) => {
+                expect(err).to.be.equal(null);
                 expect(inventory).to.be.an("array");
 
                 if(inventory.length > 0) {
@@ -1277,10 +1226,10 @@ describe("REST", function () {
         });
     });
 
-    describe("#getProducts", function () {
-        it("should retrieve all the products of the base category", function (done) {
-            client.getProducts("avatars", "base", function (err, base) {
-                expect(err).to.be.a("null");
+    describe("#getProducts", () => {
+        it("should retrieve all the products of the base category", done => {
+            client.getProducts("avatars", "base", (err, base) => {
+                expect(err).to.be.equal(null);
                 expect(base).to.be.an("array");
 
                 if(base.length > 0) {
@@ -1310,36 +1259,23 @@ describe("REST", function () {
         });
     });
 
-    describe("#getTransactions", function () {
-        it("should retrieve an array of transactions", function (done) {
-            client.getTransactions(function (err, transactions) {
-                expect(err).to.be.a("null");
+    describe("#getTransactions", () => {
+        it("should retrieve an array of transactions", done => {
+            client.getTransactions((err, transactions) => {
+                expect(err).to.be.equal(null);
                 expect(transactions).to.be.an("array");
 
-                if(transactions.length > 0) {
-                    expect(transactions[0]).to.have.all.keys([
-                        "id",
-                        "item",
-                        "pp",
-                        "timestamp",
-                        "type"
-                    ]);
-
-                    expect(transactions[0].id).to.be.a("string");
-                    expect(transactions[0].item).to.be.a("string");
-                    expect(transactions[0].pp).to.be.a("number");
-                    expect(transactions[0].timestamp).to.be.a("string");
-                    expect(transactions[0].type).to.be.a("string");
-                }
+                if(transactions.length > 0)
+                    objects.testTransaction(testLogin.parse, transactions[0]);
 
                 done();
             });
         });
     });
 
-    describe("#purchaseUsername", function () {
-        it("should purchase a new username", function (done) {
-            client.purchaseUsername(testLogin.usernameToBuy, function (err, item) {
+    describe("#purchaseUsername", () => {
+        it("should purchase a new username", done => {
+            client.purchaseUsername(testLogin.usernameToBuy, (err, item) => {
                 if(item) {
                     expect(item).to.be.an("object");
                     expect(item).to.have.all.keys([
@@ -1358,9 +1294,9 @@ describe("REST", function () {
         });
     });
 
-    describe("#purchaseItem", function () {
-        it("should buy an item from the store", function (done) {
-            client.purchaseItem(_store.id, function (err, item) {
+    describe("#purchaseItem", () => {
+        it("should buy an item from the store", done => {
+            client.purchaseItem(_store.id, (err, item) => {
                 if(err) {
                     expect(err.message).to.equal("owned");
                 } else {
@@ -1384,26 +1320,27 @@ describe("REST", function () {
     });
 });
 
-isObjectTest()("Local", function () {
+describe("Local", () => {
 
-    describe("#getJar", function () {
-        it("should return the jar used for http requests", function() {
+    describe("#getJar", () => {
+        it("should return the jar used for http requests", () => {
             expect(client.getJar()).to.be.an("object");
         });
     });
 
-    describe("#setJar", function () {
-        it("should set the jar that is used for http requests", function () {
-            var jar = client.getJar();
+    describe("#setJar", () => {
+        it("should set the jar that is used for http requests", () => {
+            const jar = client.getJar();
             client.setJar(jar);
             expect(client.getJar()).to.equal(jar);
         });
     });
 
-    execTest()("#getChatByUser", function () {
-        it("should get the messages written by a user", function () {
-            _user = client.getUsers()[0];
-            var messages = client.getChatByUser(_user.username);
+    skipIfTravis(isTravis)("#getChatByUsername", () => {
+        it("should get the messages written by a user", () => {
+            const user = client.getSelf();
+
+            let messages = client.getChatByUsername(user.username);
 
             expect(messages).to.be.an("array");
 
@@ -1426,16 +1363,16 @@ isObjectTest()("Local", function () {
         });
     });
 
-    describe("#getChat", function () {
-        it("should get the whole chat", function () {
+    describe("#getChat", () => {
+        it("should get the whole chat", () => {
             expect(client.getChat()).to.be.an("array");
         });
     });
 
-    execTest()("#removeChatMessage", function () {
-        it("should remove a chat message", function () {
-            var chat = client.getChat();
-            var length = chat.length;
+    skipIfTravis(isTravis)("#removeChatMessage", () => {
+        it("should remove a chat message", () => {
+            let chat = client.getChat();
+            let length = chat.length;
 
             if(chat.length > 0) {
                 client.removeChatMessage(chat[0].cid, false);
@@ -1444,321 +1381,297 @@ isObjectTest()("Local", function () {
         });
     });
 
-    execTest()("#removeChatMessagesByUser", function () {
-        it("should delete all messages of a user", function () {
-            client.removeChatMessagesByUser(_user.username, true);
-            expect(client.getChatByUser(_user.username)).to.be.an("array").and.have.length(0);
+    skipIfTravis(isTravis)("#removeChatMessagesByUser", () => {
+        it("should delete all messages of a user", () => {
+            client.sendChat("test");
+            const user = client.getSelf();
+
+            if (user) {
+                client.removeChatMessagesByUser(user.username, true);
+                expect(client.getChatByUsername(user.username)).to.be.an("array").and.have.length(0);
+            } else {
+                client._log("could not test removeChatMessagesByUser since user was not found in room");
+            }
         });
     });
 
-    describe("#clearChatCache", function () {
-        it("should clear the chat cache", function () {
+    describe("#clearChatCache", () => {
+        it("should clear the chat cache", () => {
             client.clearChatCache();
             expect(client.getChat()).to.have.length(0);
         });
     });
 
-    describe("#watchUserCache", function () {
-        it("should activate the user cache", function () {
+    describe("#watchUserCache", () => {
+        it("should activate the user cache", () => {
             client.watchUserCache(true);
             expect(client.cleanCacheInterval).to.not.equal(-1);
         });
     });
 
-    describe("#cacheChat", function () {
-        it("should activate the chat cache", function () {
+    describe("#cacheChat", () => {
+        it("should activate the chat cache", () => {
             client.cacheChat(true);
             expect(client.isChatCached()).to.equal(true);
         });
     });
 
-    describe("#setChatCacheSize", function () {
-        it("should set the chat cache size to 128", function () {
+    describe("#setChatCacheSize", () => {
+        it("should set the chat cache size to 128", () => {
             expect(client.setChatCacheSize(128)).to.equal(128);
         });
     });
 
-    describe("#cacheUserOnLeave", function () {
-        it("should enable user caching for those who leave", function () {
+    describe("#cacheUserOnLeave", () => {
+        it("should enable user caching for those who leave", () => {
             client.cacheUserOnLeave(true);
             expect(client.isUserCachedOnLeave()).to.equal(true);
         });
     });
 
-    execTest()("#clearUserFromLists", function () {
-        it("should clear the user from the vote and grab list", function () {
-            client.clearUserFromLists(_user.id);
-            var done = true;
+    skipIfTravis(isTravis)("#clearUserFromLists", () => {
+        it("should clear the user from the vote and grab list", () => {
+            const user = client.getUsers()[0];
 
-            for(var i = 0, l = client.state.room.votes.length; i < l; i++) {
-                if(_user.id == client.state.room.votes[i]) {
-                    done = false;
-                    break;
+            if (user) {
+                client.clearUserFromLists(user.id);
+                let done = true;
+
+                for(let i = 0, l = client.state.room.votes.length; i < l; i++) {
+                    if(user.id == client.state.room.votes[i]) {
+                        done = false;
+                        break;
+                    }
                 }
-            }
 
-            expect(done).to.equal(true);
+                expect(done).to.equal(true);
+            } else {
+                client._log(0, "could not test clearUserFromLists since no user was found in room");
+            }
         });
     });
 
-    describe("#invokeLogger", function () {
-        it("should invoke a logging function", function () {
+    describe("#invokeLogger", () => {
+        it("should invoke a logging function", () => {
+            const logger = msg => {
+                console.log(msg);
+            };
+
             client.invokeLogger(logger);
             expect(client.log).to.equal(logger);
         });
     });
 
-    describe("#getRoom", function () {
-        it("should get the current room's stats", function () {
-            var room = client.getRoom();
+    describe("#getRoom", () => {
+        it("should get the current room's stats", () => {
+            const room = client.getRoom();
 
-            testRoom(room);
+            objects.testRoom(testLogin.parse, room);
         });
     });
 
-    execTest()("#getUserByName", function () {
-        it("should get a user by name", function () {
-            testUser(client.getUserByName(_user.username));
+    skipIfTravis(isTravis)("#getUserByName", () => {
+        it("should get a user by name", () => {
+            const user = client.getUsers()[0];
+            objects.testUser(testLogin.parse, client.getUserByName(user.username));
         });
     });
 
-    execTest()("#getUserByID", function () {
-        it("should get a user by their ID", function () {
-            testUser(client.getUserByID(_user.id));
+    skipIfTravis(isTravis)("#getUserById", () => {
+        it("should get a user by their ID", () => {
+            const user = client.getUsers()[0];
+            objects.testUser(testLogin.parse, client.getUserById(user.id));
         });
     });
 
-    execTest()("#getUserRole", function () {
-        it("should get a user's role", function () {
-            expect(client.getUserRole(_user.id)).to.equal(_user.role);
+    skipIfTravis(isTravis)("#getUserRole", () => {
+        it("should get a user's role", () => {
+            const user = client.getUsers()[0];
+            expect(client.getUserRole(user.id)).to.equal(user.role);
         });
     });
 
-    describe("#getUsers", function () {
-        it("should get all users that are currently in the room", function () {
-            var users = client.getUsers();
+    describe("#getUsers", () => {
+        it("should get all users that are currently in the room", () => {
+            const users = client.getUsers();
 
             expect(users).to.be.an("array");
 
             if(users.length > 0)
-                testUser(users[0]);
+                objects.testUser(testLogin.parse, users[0]);
         });
     });
 
-    describe("#getSelf", function () {
-        it("should get a representation of itself", function () {
-            testUser(client.getSelf());
+    describe("#getSelf", () => {
+        it("should get a representation of itself", () => {
+            objects.testUser(testLogin.parse, client.getSelf());
         });
     });
 
-    describe("#setSetting", function () {
-        it("should change a setting and save it", function (done) {
-            var chatImages = client.getSetting("chatImages");
-            client.setSetting("chatImages", !chatImages, function (err) {
-                expect(err).to.be.a("null");
+    describe("#setSetting", () => {
+        it("should change a setting and save it", done => {
+            const chatImages = client.getSetting("chatImages");
+            client.setSetting("chatImages", !chatImages, err => {
+                expect(err).to.be.equal(null);
                 expect(chatImages).to.not.equal(client.getSetting("chatImages"));
                 done();
             });
         });
     });
 
-    describe("#getSetting", function () {
-        it("should return one setting (exp: chatImages)", function () {
+    describe("#getSetting", () => {
+        it("should return one setting (exp: chatImages)", () => {
             expect(client.getSetting("chatImages")).to.be.a("boolean");
         });
     });
 
-    execTest()("#isFriend", function () {
-        it("should indicate whether a user is a friend or not", function () {
-            expect(client.isFriend(_user.id)).to.be.a("boolean");
+    skipIfTravis(isTravis)("#isFriend", () => {
+        it("should indicate whether a user is a friend or not", () => {
+            if (!extendedTestCheck(1))
+                return;
+
+            const user = getUsers()[0];
+            expect(client.isFriend(user.id)).to.be.a("boolean");
         });
     });
 
-    execTest()("#getDJ", function () {
-        it("should get the current DJ playing", function () {
-            var dj = client.getDJ();
+    skipIfTravis(isTravis)("#getDJ", () => {
+        it("should get the current DJ playing", () => {
+            const dj = client.getDJ();
 
             if(dj)
-                testUser(dj);
+                objects.testUser(testLogin.parse, dj);
         });
     });
 
-    execTest()("#getMedia", function () {
-        it("should return the current media object", function () {
-            testMedia(client.getMedia());
+    skipIfTravis(isTravis)("#getMedia", () => {
+        it("should return the current media object", () => {
+            objects.testMedia(testLogin.parse, client.getMedia());
         });
     });
 
-    describe("#getPlayback", function () {
-        it("should get the playback object", function () {
-            var playback = client.getPlayback();
-
-            expect(playback).to.be.an("object");
-            expect(playback).to.have.all.keys([
-                "media",
-                "historyID",
-                "playlistID",
-                "startTime"
-            ]);
-
-            testMedia(playback.media);
-            expect(playback.historyID).to.be.a("string");
-            expect(playback.playlistID).to.be.a("number");
-            expect(playback.startTime).to.be.a("string");
+    describe("#getPlayback", () => {
+        it("should get the playback object", () => {
+            const playback = client.getPlayback();
+            objects.testPlayback(testLogin.parse, playback);
         });
     });
 
-    describe("getStartTime", function () {
-        it("should get the start time from the playback object", function () {
+    describe("getStartTime", () => {
+        it("should get the start time from the playback object", () => {
             expect(client.getStartTime()).to.be.a("string");
         });
     });
 
-    describe("#getBooth", function () {
-        it("should get the booth", function () {
-            var booth = client.getBooth();
-
-            expect(booth).to.be.an("object");
-            expect(booth).to.have.all.keys([
-                "dj",
-                "isLocked",
-                "shouldCycle",
-                "waitlist"
-            ]);
-
-            expect(booth.dj).to.be.a("number");
-            expect(booth.isLocked).to.be.a("boolean");
-            expect(booth.shouldCycle).to.be.a("boolean");
-            expect(booth.waitlist).to.be.an("array");
+    describe("#getBooth", () => {
+        it("should get the booth", () => {
+            const booth = client.getBooth();
+            objects.testBooth(testLogin.parse, booth);
         });
     });
 
-    describe("#getRoomMeta", function () {
-        it("should get the metadata of the room", function () {
-            var meta = client.getRoomMeta();
-
-            expect(meta).to.be.an("object");
-            expect(meta).to.have.all.keys([
-                "description",
-                "favorite",
-                "guests",
-                "hostID",
-                "hostName",
-                "id",
-                "minChatLevel",
-                "name",
-                "population",
-                "slug",
-                "welcome"
-            ]);
-
-            expect(meta.description).to.be.a("string");
-            expect(meta.favorite).to.be.a("boolean");
-            expect(meta.hostID).to.be.a("number");
-            expect(meta.hostName).to.be.a("string");
-            expect(meta.id).to.be.a("number");
-            expect(meta.minChatLevel).to.be.a("number");
-            expect(meta.name).to.be.a("string");
-            expect(meta.population).to.be.a("number");
-            expect(meta.slug).to.be.a("string");
-            expect(meta.welcome).to.be.a("string");
+    describe("#getRoomMeta", () => {
+        it("should get the metadata of the room", () => {
+            const meta = client.getRoomMeta();
+            objects.testMeta(testLogin.parse, meta);
         });
     });
 
-    describe("#getFX", function () {
-        it("should get the fx settings of the room", function () {
+    describe("#getFX", () => {
+        it("should get the fx settings of the room", () => {
             expect(client.getFX()).to.be.an("array");
         });
     });
 
-    execTest()("#checkGlobalRole", function () {
-        it("should give back the global role of a user", function () {
-            expect(client.checkGlobalRole(_user.gRole)).to.be.a("number");
+    skipIfTravis(isTravis)("#checkGlobalRole", () => {
+        it("should give back the global role of a user", () => {
+            const user = client.getUsers()[0];
+            expect(client.checkGlobalRole(user.gRole)).to.be.a("number");
         });
     });
 
-    describe("#getHostName", function () {
-        it("should get the name of the host of the room", function () {
+    describe("#getHostName", () => {
+        it("should get the name of the host of the room", () => {
             expect(client.getHostName()).to.be.a("string");
         });
     });
 
-    describe("#getHostID", function () {
-        it("should get the ID of the host of the room", function () {
+    describe("#getHostID", () => {
+        it("should get the ID of the host of the room", () => {
             expect(client.getHostID()).to.be.a("number");
         });
     });
 
-    describe("#getPopulation", function () {
-        it("should return the population of the room", function () {
+    describe("#getPopulation", () => {
+        it("should return the population of the room", () => {
             expect(client.getPopulation()).to.be.a("number").and.be.above(0);
         });
     });
 
-    describe("#getGuests", function () {
-        it("should return the amount of guests in the room", function () {
+    describe("#getGuests", () => {
+        it("should return the amount of guests in the room", () => {
             expect(client.getGuests()).to.be.a("number");
         });
     });
 
-    describe("#getMinChatLevel", function () {
-        it("should return the minimum chat level needed to communicate", function () {
+    describe("#getMinChatLevel", () => {
+        it("should return the minimum chat level needed to communicate", () => {
             expect(client.getMinChatLevel()).to.be.a("number");
         });
     });
 
-    describe("#isFavorite", function () {
-        it("should return if the current room is favorited", function () {
+    describe("#isFavorite", () => {
+        it("should return if the current room is favorited", () => {
             expect(client.isFavorite()).to.be.a("boolean");
         });
     });
 
-    describe("#getRoomName", function () {
-        it("should return the room name", function () {
+    describe("#getRoomName", () => {
+        it("should return the room name", () => {
             expect(client.getRoomName()).to.be.a("string");
         });
     });
 
-    describe("#getDescription", function () {
-        it("should return the room description", function () {
+    describe("#getDescription", () => {
+        it("should return the room description", () => {
             expect(client.getDescription()).to.be.a("string");
         });
     });
 
-    describe("#getWelcomeMessage", function () {
-        it("should return the welcome message of the room", function () {
+    describe("#getWelcomeMessage", () => {
+        it("should return the welcome message of the room", () => {
             expect(client.getWelcomeMessage()).to.be.a("string");
         });
     });
 
-    describe("#getSlug", function () {
-        it("should return the URL conform name of the room", function () {
+    describe("#getSlug", () => {
+        it("should return the URL conform name of the room", () => {
             expect(client.getSlug()).to.be.a("string");
         });
     });
 
-    describe("#getWaitlist", function () {
-        it("should return an array with IDs representing the waitlist", function () {
+    describe("#getWaitlist", () => {
+        it("should return an array with IDs representing the waitlist", () => {
             expect(client.getWaitlist()).to.be.an("array");
         });
     });
 
-    describe("#isWaitlistLocked", function () {
-        it("should return a boolean indicating whether the waitlist is locked or not", function () {
+    describe("#isWaitlistLocked", () => {
+        it("should return a boolean indicating whether the waitlist is locked or not", () => {
             expect(client.isWaitlistLocked()).to.be.a("boolean");
         });
     });
 
-    describe("#doesWaitlistCycle", function () {
-        it("should return a boolean indicating whether the waitlist cycle is enabled or not", function () {
+    describe("#doesWaitlistCycle", () => {
+        it("should return a boolean indicating whether the waitlist cycle is enabled or not", () => {
             expect(client.doesWaitlistCycle()).to.be.a("boolean");
         });
     });
 
-    describe("#getVotes", function () {
-        describe("withUserObject", function () {
-            it("should return an array representing the current votes from their respective users", function() {
-                var votes = client.getVotes(true);
+    describe("#getVotes", () => {
+        describe("withUserObject", () => {
+            it("should return an array representing the current votes from their respective users", () => {
+                const votes = client.getVotes(true);
 
                 expect(votes).to.be.an("array");
 
@@ -1771,14 +1684,14 @@ isObjectTest()("Local", function () {
 
                     expect(votes[0].direction).to.be.a("number");
                     expect(votes[0].user).to.be.an("object");
-                    testUser(votes[0].user);
+                    objects.testUser(testLogin.parse, votes[0].user);
                 }
             });
         });
 
-        describe("withIDs", function () {
+        describe("withIDs", () => {
             it("should return an array representing the current votes", function() {
-                var votes = client.getVotes();
+                const votes = client.getVotes();
 
                 expect(votes).to.be.an("array");
 
@@ -1796,23 +1709,23 @@ isObjectTest()("Local", function () {
         });
     });
 
-    describe("#getGrabs", function () {
-        describe("withUserObject", function () {
-            it("should return an array representing the grabs with their respective users", function () {
-                var grabs = client.getGrabs(true);
+    describe("#getGrabs", () => {
+        describe("withUserObject", () => {
+            it("should return an array representing the grabs with their respective users", () => {
+                const grabs = client.getGrabs(true);
 
                 expect(grabs).to.be.an("array");
 
                 if(grabs.length > 0) {
                     expect(grabs[0]).to.be.an("object");
-                    testUser(grabs[0]);
+                    objects.testUser(testLogin.parse, grabs[0]);
                 }
             });
         });
 
-        describe("withoutUserObjects", function () {
-            it("should return an array representing the grabs", function () {
-                var grabs = client.getGrabs();
+        describe("withoutUserObjects", () => {
+            it("should return an array representing the grabs", () => {
+                const grabs = client.getGrabs();
 
                 expect(grabs).to.be.an("array");
 
@@ -1822,60 +1735,88 @@ isObjectTest()("Local", function () {
         });
     });
 
-    execTest()("#cacheUser", function () {
-        it("should cache a user", function () {
-            expect(client.cacheUser(_user)).to.be.a("boolean").and.equal(true);
+    skipIfTravis(isTravis)("#cacheUser", () => {
+        it("should cache a user", () => {
+            if (!extendedTestCheck(1))
+                return;
+
+            const user = getUsers()[0];
+            const cache = client.getUserById(user.id, client.CACHE.ONLY);
+
+            if (cache) {
+                expect(cache.id).to.be.equal(user.id);
+                expect(client.cacheUser(user)).to.be.a("boolean").and.equal(false);
+            } else {
+                expect(client.cacheUser(user)).to.be.a("boolean").and.equal(true);
+            }
         });
     });
 
-    execTest()("#removeCachedUserByID", function () {
-        it("should remove a cached user by their ID", function () {
-            expect(client.removeCachedUserByID(_user.id)).to.be.a("boolean").and.equal(true);
+    skipIfTravis(isTravis)("#removeCachedUserById", () => {
+        it("should remove a cached user by their ID", () => {
+            if (!extendedTestCheck(1))
+                return;
+
+            const user = getUsers()[0];
+            const cache = client.getUserById(user.id, client.CACHE.ONLY);
+
+            if (cache)
+                expect(client.cacheUser(user)).to.be.a("boolean").and.equal(true);
+
+            expect(client.removeCachedUserById(user.id)).to.be.a("boolean").and.equal(true);
         });
     });
 
-    execTest()("#removeCachedUserByName", function () {
-        it("should remove a cached user by their Name", function () {
-            client.cacheUser(_user);
-            expect(client.removeCachedUserByName(_user.username)).to.be.a("boolean").and.equal(true);
+    skipIfTravis(isTravis)("#removeCachedUserByUsername", () => {
+        it("should remove a cached user by their Name", () => {
+            if (!extendedTestCheck(1))
+                return;
+
+            const user = getUsers()[0];
+            const cache = client.getUserById(user.id, client.CACHE.ONLY);
+
+            if (!cache)
+                expect(client.cacheUser(user)).to.be.a("boolean").and.equal(true);
+
+            expect(client.removeCachedUserByUsername(user.username)).to.be.a("boolean").and.equal(true);
         });
     });
 
-    describe("#getStaffOnline", function () {
-        it("should get the staff that is currently online", function () {
-            var staff = client.getStaffOnline();
+    describe("#getStaffOnline", () => {
+        it("should get the staff that is currently online", () => {
+            const staff = client.getStaffOnline();
 
             expect(staff).to.be.an("array");
 
             if(staff.length > 0) {
                 expect(staff[0]).to.be.an("object");
-                testUser(staff[0]);
+                objects.testUser(testLogin.parse, staff[0]);
             }
         });
     });
 
-    describe("#getStaffOnlineByRole", function () {
-        it("should get the staff with a rank higher or equal that of a co-host", function () {
-            var staff = client.getStaffOnlineByRole(client.USERROLE.COHOST);
+    describe("#getStaffOnlineByRole", () => {
+        it("should get the staff with a rank higher or equal that of a co-host", () => {
+            const staff = client.getStaffOnlineByRole(client.USERROLE.COHOST);
 
             expect(staff).to.be.an("array");
 
             if(staff.length > 0) {
                 expect(staff[0]).to.be.an("object");
-                testUser(staff[0]);
+                objects.testUser(testLogin.parse, staff[0]);
             }
         });
     });
 
-    describe("#getStaffByRole", function () {
-        it("should get the staff filtered by a certain role (exp: CO-HOST)", function (done) {
-            client.getStaffByRole(client.USERROLE.COHOST, function (err, staff) {
+    describe("#getStaffByRole", () => {
+        it("should get the staff filtered by a certain role (exp: CO-HOST)", done => {
+            client.getStaffByRole(client.USERROLE.COHOST, (err, staff) => {
                 expect(staff).to.be.an("array");
 
                 if(staff.length > 0) {
                     expect(staff[0]).to.be.an("object");
                     expect(staff[0].role).to.be.equal(client.USERROLE.COHOST);
-                    testUser(staff[0]);
+                    objects.testUser(testLogin.parse, staff[0]);
                 }
 
                 done();
