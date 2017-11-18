@@ -54,7 +54,7 @@ gh-pages:
 	git checkout gh-pages
 	rm -rf ./*
 	git checkout master ./$(BASEDIR)
-	cd $(BASEDIR) && make html && mv -fv $(BUILDDIR)/html/* ../ && cd ..
+	cd $(BASEDIR) && make html && mv -fv $(BUILDDIR)/html/* ../
 	rm -rf $(BASEDIR)
 	touch .nojekyll
 	git add .
