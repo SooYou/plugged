@@ -1,18 +1,45 @@
+<p align="center">
+    <a href="#">
+        <img src="docs/.static/img/logo.svg" alt="" width=128 height=128>
+    </a>
+
+    <h3 align="center">Plugged</h3>
+    <hr>
+    <p align="center">
+        plugged is a (v|f)ast JavaScript API for the plug.dj service
+    </p>
+</p>
+
+Table of Contents
+=================
+
+- [Status](#status)
+- [Documentation](https://sooyou.github.io/plugged)
+- [Getting Started](#getting-started)
+- [Running the tests](#running-the-tests)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
+- [Facebook login](#facebook-login)
+- [Restart without logging in again](#restart-without-logging-in-again)
+- [Versioning](#versioning)
+- [Authors](#authors)
+- [License](#license)
+
+
+Status
+======
+
 [![](https://travis-ci.org/SooYou/plugged.svg)](https://travis-ci.org/SooYou/plugged) [![](https://david-dm.org/SooYou/plugged.svg)](https://david-dm.org/SooYou/plugged)
-
-Plugged
-=======
-plugged is a (v|f)ast JavaScript API for the plug.dj service.
-
 
 Getting started
 ===============
 plugged is relatively easy to use. Here is a simple guide to get you started quick!
 
-For a full tutorial on how to use plugged, please go to the [documentation page](TODO: add link)
+For a full tutorial on how to use plugged, please go to the [documentation page](https://sooyou.github.io/plugged/cookbook/quickstarts)
 
-It is a good idea to check out the [documentation](TODO: add link) as well. It can be super useful for your development!
-Otherwise there is still the [cookbook](TODO: add link) but that is maybe something for after the tutorial below.
+It is a good idea to check out the [documentation](https://sooyou.github.io/plugged) as well. It can be super useful for
+your development! Otherwise there is still the [cookbook](https://sooyou.github.io/plugged/cookbook) but that is maybe something for after the
+tutorial below.
 
 Requirements
 ------------
@@ -177,7 +204,8 @@ for everyone!
 
 
 Facebook login
-==========
+==============
+
 Some people might prefer taking the oauth route and use their fb login for plug. So this is possible since plugged@2.0.0 as well. All you have to do is to replace the login object with this one:
 
 ```JavaScript
@@ -192,8 +220,9 @@ plugged.login({
 to keep the behaivour clear, if you enter both email and facebook login credentials plug will return an "malformed credentials" error.
 
 
-Restart without the whole login procedure
-==========
+Restart without logging in again
+================================
+
 To save some time you can restart your application without going through the whole login procedure. All you have to do is to save the cookie jar and the auth token and return them to plugged once you start your application again.
 
 getting the necessary data:
