@@ -594,6 +594,9 @@ describe("REST", () => {
 
     skipIfTravis(isTravis)("#grab", () => {
         it("should grab a song", done => {
+            if (!extendedTestCheck(1, done))
+                return;
+
             if (_playlist)
                 client.grab(_playlist, done);
             else
@@ -629,6 +632,9 @@ describe("REST", () => {
 
     skipIfTravis(isTravis)("#skipDJ", () => {
         it("should skip the current DJ", done => {
+            if (!extendedTestCheck(1, done))
+                return;
+
             client.skipDJ(testLogin.parse ? client.getBooth().dj : client.getBooth().currentDJ, done);
         });
     });
@@ -859,6 +865,9 @@ describe("REST", () => {
 
     skipIfTravis(isTravis)("#unbanUser", () => {
         it("should unban the previously banned user", done => {
+            if (!extendedTestCheck(1, done))
+                return;
+
             client.unbanUser(_id, done);
         });
     });
@@ -1138,6 +1147,9 @@ describe("REST", () => {
 
     skipIfTravis(isTravis)("#addFriend", () => {
         it("should add a user as a friend", done => {
+            if (!extendedTestCheck(1, done))
+                return;
+
             const user = client.getUsers()[0];
 
             if (user)
@@ -1194,6 +1206,9 @@ describe("REST", () => {
 
     skipIfTravis(isTravis)("#removeFriend", () => {
         it("should remove a user as a friend", done => {
+            if (!extendedTestCheck(1, done))
+                return;
+
             const user = client.getUsers()[0];
 
             if (user)
@@ -1472,6 +1487,9 @@ describe("Local", () => {
 
     skipIfTravis(isTravis)("#getUserByName", () => {
         it("should get a user by name", () => {
+            if (!extendedTestCheck(1))
+                return;
+
             const user = client.getUsers()[0];
             objects.testUser(testLogin.parse, client.getUserByName(user.username));
         });
@@ -1479,6 +1497,9 @@ describe("Local", () => {
 
     skipIfTravis(isTravis)("#getUserById", () => {
         it("should get a user by their ID", () => {
+            if (!extendedTestCheck(1))
+                return;
+
             const user = client.getUsers()[0];
             objects.testUser(testLogin.parse, client.getUserById(user.id));
         });
@@ -1486,6 +1507,9 @@ describe("Local", () => {
 
     skipIfTravis(isTravis)("#getUserRole", () => {
         it("should get a user's role", () => {
+            if (!extendedTestCheck(1))
+                return;
+
             const user = client.getUsers()[0];
             expect(client.getUserRole(user.id)).to.equal(user.role);
         });
@@ -1585,6 +1609,9 @@ describe("Local", () => {
 
     skipIfTravis(isTravis)("#checkGlobalRole", () => {
         it("should give back the global role of a user", () => {
+            if (!extendedTestCheck(1))
+                return;
+
             const user = client.getUsers()[0];
             expect(client.checkGlobalRole(user.gRole)).to.be.a("number");
         });
@@ -1819,6 +1846,15 @@ describe("Local", () => {
                     objects.testUser(testLogin.parse, staff[0]);
                 }
 
+                done();
+            });
+        });
+    });
+
+    describe("#logout", () => {
+        it("should log out after being done with the test", done => {
+            client.logout(err => {
+                expect(err).to.equal(null);
                 done();
             });
         });
