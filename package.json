@@ -25,7 +25,7 @@
         "README.md",
         "test/raw.js",
         "test/test.js",
-        "test/object.js",
+        "test/objects.js",
         "test/helper.js",
         "test/functions.js",
         "test/README.md",
