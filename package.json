@@ -14,7 +14,6 @@
         "url": "https://github.com/SooYou/plugged.git"
     },
     "files": [
-        "logger.js",
         "plugged.js",
         "events.js",
         "query.js",
@@ -26,6 +25,9 @@
         "README.md",
         "test/raw.js",
         "test/test.js",
+        "test/object.js",
+        "test/helper.js",
+        "test/functions.js",
         "test/README.md",
         "conf/config.json"
     ],
@@ -33,6 +35,7 @@
         "plug",
         "dj",
         "plug.dj",
+        "plug api",
         "wrapper",
         "bot",
         "api"
