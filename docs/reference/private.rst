@@ -232,6 +232,8 @@ _login
       :dt:`undefined`
 
 
+.. _priv-process-chat-queue:
+
 _processChatQueue
 #################
 
@@ -252,8 +254,8 @@ _processChatQueue
 _removeChatMessageByDelay
 #########################
 
-   Delete a chat message based on its body. This is used by _processChatQueue
-   when a message has the removal tag set.
+   Delete a chat message based on its body. This is used by
+   :ref:`priv-process-chat-queue` when a message has the removal tag set.
 
    **Parameters**:
 
@@ -274,12 +276,13 @@ _removeChatMessage
    **Parameters**:
 
       **compare**: :dt:`Function` comparing function to decide whether a message should
-        be deleted. The passed argument is the chat message object
+        be deleted. The passed parameter is the `chat message</datatypes/chat>` object
 
       **cacheOnly**: :dt:`Boolean` if the message should only be deleted in cache
 
       **count**: :dt:`Number` how many messages should be removed before the function
-        quits. If not set, it will run through the whole chat cache.
+        quits. If not set, it will run through the whole chat cache. Default is -1 as in
+        unlimited.
 
    **Return Value**:
 
