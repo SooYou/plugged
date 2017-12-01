@@ -278,7 +278,7 @@ Versioning
 
 Plugged uses [SemVer](http://semver.org/) for versioning.
 
-We are currently at *3.0.2*
+We are currently at *3.0.3*
 
 [![](https://nodei.co/npm/plugged.png?downloadRank=true)](https://npmjs.com/package/plugged)
 

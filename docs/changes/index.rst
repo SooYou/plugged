@@ -8,6 +8,15 @@ CHANGELOG
    changes
 
 
+3.0.3
+-----
+
+    * fix removeChatMessage bug in which username was an undefined variable.
+    * fix documentation of removeChatMessagesByUsername which was missing a letter.
+    * fix chat message object documentation.
+    * fix removeChatMessage in which message was never deleted when found.
+
+
 3.0.0
 -----
 

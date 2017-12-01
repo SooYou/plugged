@@ -15,6 +15,7 @@ Thank you:
    * `goto-bus-stop <https://github.com/goto-bus-stop>`_
    * `Nodle <https://github.com/Nodle>`_
    * `schrobby <https://github.com/schrobby>`_
+   * `viniciosyals <https://github.com/viniciosyals>`_
 
 
 And also a special thank you to you reading the documentation right now. I hope this
