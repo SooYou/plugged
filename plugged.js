@@ -379,27 +379,32 @@ class Plugged extends EventEmitter {
             return;
         }
 
+        message = message.toLowerCase();
+
         let deleted = this._removeChatMessage(msg => {
-            return msg.message === message;
+            return msg.message.toLowerCase() === message;
         }, false, 1);
 
-        if (deleted > 0)
-            this._log(1, `delayed deletion of message \"${message}\"`);
-        else
+        if (deleted > 0) {
+            this._log(1,
+                `delayed deletion of message \"${message.substr(0, 20) + "..."}\" from user \"${msg.username}\"`
+            );
+        } else {
             this._log(1, `could not delete message \"${message}\"`);
+        }
     }
 
     /**
      * @describe deletes chat messages biased on a compare function
-     * @param {function} compare returns cid of message to be deleted
+     * @param {function} compare returns true when message was found
      * @param {string} identifier data to use for compare
      * @param {boolean} cacheOnly [cacheOnly=false] clears only the cache when true
      * @param {number=} count how many messages it should remove
      * @returns {number} the amount of deleted messages
      */
     _removeChatMessage(compare, cacheOnly = false, count = -1) {
-        if (cacheOnly === this.CACHE.ONLY && !this.chat.cached) {
-            this._log(1, "cache only does only work with enabled chat cache");
+        if (!this.chat.cached) {
+            this._log(0, "chat is not cached! you have to enable cacheChat first!");
             return 0;
         }
 
@@ -409,13 +414,13 @@ class Plugged extends EventEmitter {
         }
 
         let deletedMessages = 0;
-        let cid = null;
 
         for (let i = this.chat.cache.length - 1; i >= 0; i--) {
-            cid = compare(this.chat.cache[i]);
+            if (compare(this.chat.cache[i])) {
+                if (!cacheOnly)
+                    this.deleteMessage(this.chat.cache[i].cid);
 
-            if (cid) {
-                this.deleteMessage();
+                this.chat.cache.splice(i, 1);
                 deletedMessages++;
 
                 // boolean comparison ends early when count is -1
@@ -725,7 +730,7 @@ class Plugged extends EventEmitter {
             return msg.cid === cid;
         }, cacheOnly, 1);
 
-        this._log(3, `deleted ${deletedMessages} messages from user ${username}`);
+        this._log(3, `deleted ${deletedMessages} messages`);
 
         return deletedMessages > 0 ? true : false;
     }
@@ -751,7 +756,7 @@ class Plugged extends EventEmitter {
      * @param {boolean} enable
      */
     cacheChat(enable) {
-        return (this.chat.cache = enable);
+        return (this.chat.cached = enable);
     }
 
     /**
@@ -759,7 +764,7 @@ class Plugged extends EventEmitter {
      * @returns {boolean} indicating status
      */
     isChatCached() {
-        return this.chat.cache;
+        return this.chat.cached;
     }
 
     /**
