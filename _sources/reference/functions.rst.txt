@@ -2669,6 +2669,12 @@ removeChatMessage
 
    Removes a message.
 
+   .. note::
+
+      you have to enable cacheChat first! Otherwise you won't be able to delete any
+      messages since plugged has no record of them.
+
+
    **Parameters**:
 
       **cid**: :dt:`String` unique message ID.
@@ -2680,10 +2686,15 @@ removeChatMessage
       :dt:`Boolean` whether the message was deleted
 
 
-removeChatMessageByUser
-#######################
+removeChatMessagesByUser
+########################
 
    Removes all messages of a user.
+
+   .. note::
+
+      you have to enable cacheChat first! Otherwise you won't be able to delete any
+      messages since plugged has no record of them.
 
    **Parameters**:
 

@@ -246,7 +246,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#purchaseusername">purchaseUsername</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#purchaseitem">purchaseItem</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#removechatmessage">removeChatMessage</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#removechatmessagebyuser">removeChatMessageByUser</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#removechatmessagesbyuser">removeChatMessagesByUser</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#watchusercache">watchUserCache</a></li>
 </ul>
 </li>
@@ -2568,6 +2568,11 @@ indirectly.</p>
 <h3>removeChatMessage<a class="headerlink" href="#removechatmessage" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><p>Removes a message.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">you have to enable cacheChat first! Otherwise you won’t be able to delete any
+messages since plugged has no record of them.</p>
+</div>
 <p><strong>Parameters</strong>:</p>
 <blockquote>
 <div><p><strong>cid</strong>: <span class="datatype">String</span> unique message ID.</p>
@@ -2578,10 +2583,15 @@ indirectly.</p>
 <div><span class="datatype">Boolean</span> whether the message was deleted</div></blockquote>
 </div></blockquote>
 </div>
-<div class="section" id="removechatmessagebyuser">
-<h3>removeChatMessageByUser<a class="headerlink" href="#removechatmessagebyuser" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="removechatmessagesbyuser">
+<h3>removeChatMessagesByUser<a class="headerlink" href="#removechatmessagesbyuser" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><p>Removes all messages of a user.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">you have to enable cacheChat first! Otherwise you won’t be able to delete any
+messages since plugged has no record of them.</p>
+</div>
 <p><strong>Parameters</strong>:</p>
 <blockquote>
 <div><p><strong>username</strong>: <span class="datatype">String</span> name of a user.</p>

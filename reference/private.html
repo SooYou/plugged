@@ -387,7 +387,7 @@ and sets the initial state.</p>
 </div></blockquote>
 </div>
 <div class="section" id="processchatqueue">
-<h3>_processChatQueue<a class="headerlink" href="#processchatqueue" title="Permalink to this headline">¶</a></h3>
+<span id="priv-process-chat-queue"></span><h3>_processChatQueue<a class="headerlink" href="#processchatqueue" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><p>Processes a chat message from the buffer and sends it off to the server with
 some delay. The delay is set after the amount of messages that was sent in
@@ -404,8 +404,8 @@ be reset to zero.</p>
 <div class="section" id="removechatmessagebydelay">
 <h3>_removeChatMessageByDelay<a class="headerlink" href="#removechatmessagebydelay" title="Permalink to this headline">¶</a></h3>
 <blockquote>
-<div><p>Delete a chat message based on its body. This is used by _processChatQueue
-when a message has the removal tag set.</p>
+<div><p>Delete a chat message based on its body. This is used by
+<a class="reference internal" href="#priv-process-chat-queue"><span class="std std-ref">_processChatQueue</span></a> when a message has the removal tag set.</p>
 <p><strong>Parameters</strong>:</p>
 <blockquote>
 <div><strong>message</strong>: <span class="datatype">String</span> message to delete</div></blockquote>
@@ -424,12 +424,13 @@ not.</p>
 <blockquote>
 <div><dl class="docutils">
 <dt><strong>compare</strong>: <span class="datatype">Function</span> comparing function to decide whether a message should</dt>
-<dd>be deleted. The passed argument is the chat message object</dd>
+<dd>be deleted. The passed parameter is the <cite>chat message&lt;/datatypes/chat&gt;</cite> object</dd>
 </dl>
 <p><strong>cacheOnly</strong>: <span class="datatype">Boolean</span> if the message should only be deleted in cache</p>
 <dl class="docutils">
 <dt><strong>count</strong>: <span class="datatype">Number</span> how many messages should be removed before the function</dt>
-<dd>quits. If not set, it will run through the whole chat cache.</dd>
+<dd>quits. If not set, it will run through the whole chat cache. Default is -1 as in
+unlimited.</dd>
 </dl>
 </div></blockquote>
 <p><strong>Return Value</strong>:</p>

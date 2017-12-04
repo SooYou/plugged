@@ -2,6 +2,9 @@
 Changes
 =======
 
+Major changes with 3.0.0
+########################
+
 use the latest, stable es6 features
 -----------------------------------
 
