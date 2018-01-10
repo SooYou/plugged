@@ -8,6 +8,12 @@ CHANGELOG
    changes
 
 
+3.1.0
+-----
+
+    * remove request as a dependency and instead use needle
+
+
 3.0.3
 -----
 
