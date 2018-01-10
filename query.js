@@ -1,25 +1,28 @@
-const request = require("request");
+const needle = require("needle");
 const types = require("./types");
 const util = require("util");
+const conf = require("./conf/config");
 
 const QUERY_TIMEOUT_INC = 200;
 const QUERY_TIMEOUT_MAX = 1600;
 
 const processEntry = function(query, entry) {
-    request(entry.options, (err, res, body) => {
+    needle.request(entry.method, entry.url, entry.data, entry.options, (err, res) => {
         if (typeof entry.callback !== "undefined") {
             if (!err && res.statusCode === 200) {
+                let body = null;
+                query._parseCookies(res.cookies);
                 // remove unnecessary information like status and time
-                if (body && body.hasOwnProperty("data"))
-                    body = body.data;
+                if (res && res.body && res.body.hasOwnProperty("data"))
+                    body = res.body.data;
 
                 // received data is expected to be just one object
-                if (entry.extractArray) {
+                if (entry.extractArray && body) {
                     const length = body.length;
 
                     if (length > 1) {
                         err = new types.RequestError(
-                            `received data from endpoint [${entry.verb}] ${entry.url} contained
+                            `received data from endpoint [${entry.method}] ${entry.url} contained
                             more than one object. Enforced first object assignment anyway`,
                             "ok",
                             res.statusCode
@@ -47,8 +50,8 @@ const processEntry = function(query, entry) {
                 } else {
                     if (!err) {
                         err = new types.RequestError(
-                            body ? body.data : null,
-                            body ? body.status : null,
+                            res ? res.body ? res.body.data : res : null,
+                            res ? res.body ? res.body.status : res : null,
                             res ? res.statusCode : null
                         );
                     }
@@ -57,9 +60,9 @@ const processEntry = function(query, entry) {
                     entry.callback(err);
                 }
             }
-        } else {
-            entry = null;
         }
+
+        entry = null;
     });
 };
 
@@ -114,6 +117,67 @@ class Query {
         }
     }
 
+    _parseCookies(cookies) {
+        if (cookies) {
+            for (let cookie in cookies) {
+                this.options.jar[cookie] = cookies[cookie];
+            }
+        }
+    }
+
+    _parseStorage(storage) {
+        this.options.jar = {};
+
+        if (!storage)
+            return;
+
+        if (storage.hasOwnProperty("idx") && typeof storage.idx === "object") {
+            this.options.jar = this._jarToObject(storage.idx);
+        } else if (typeof storage.getAllCookies === "function") {
+            storage.getAllCookies((err, cookies) => {
+                this.options.jar = this._jarToObject(cookies);
+            });
+        }
+    }
+
+    _jarToObject(jar = {}) {
+        let obj = {};
+
+        for (let domain in jar) {
+            for (let path in domain) {
+                for (let key in path) {
+                        obj[key] = jar[domain][path][key];
+                }
+            }
+        }
+
+        return obj;
+    }
+
+    _objectToJar(obj) {
+        let jar = {}
+        let domain = "plug.dj";
+
+        if (!obj)
+            return null;
+
+        if (conf && conf.provider) {
+            if (conf.provider.indexOf("https://") !== -1)
+                domain = conf.provider.substr(8);
+            else if (conf.provider.indexOf("http://") !== -1)
+                domain = conf.provider.substr(7);
+        }
+
+        jar[domain] = {};
+        jar[domain]['/'] = {};
+
+        for (let cookie in obj) {
+            jar[domain]['/'][cookie] = obj[cookie];
+        }
+
+        return jar;
+    }
+
     /**
      * sets the encoding type to be used when building requests
      * @param {string} type - determines the encoding type to be used. Defaults to "utf8"
@@ -135,14 +199,17 @@ class Query {
      * @param {object} storage - allows for a custom cookie store to be used like FileCookieStore
      */
     setJar(jar, storage = null) {
-        this.options.jar = jar || request.jar(storage);
+        if (!storage)
+            this.options.jar = this._jarToObject(jar);
+        else
+            this._parseStorage(storage);
     }
 
     /**
      * @returns {object} jar - the currently used jar
      */
     getJar() {
-        return this.options.jar;
+        return this._objectToJar(this.options.jar);
     }
 
     /**
@@ -198,19 +265,19 @@ class Query {
 
         const entry = {
             tries: 0,
+            url: url,
+            method: verb,
+            data: data,
             flush: flush,
             extractArray: extractArray,
             callback: callback,
             options: {
-                url: url,
-                method: verb,
-                jar: this.options.jar,
-                encoding: this.options.encoding,
-                body: data,
+                cookies: this.options.jar,
                 json: this.options.json,
                 headers: {
                     "User-Agent": "Plugged/3.0",
                     "Accept": this.options.accept,
+                    "Accept-Charset": this.options.encoding,
                     "Content-Type": this.options.contentType
                 }
             }
