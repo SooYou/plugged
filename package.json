@@ -1,7 +1,7 @@
 {
     "name": "plugged",
     "description": "plugged is a vast API for plug.dj",
-    "version": "3.0.3",
+    "version": "3.0.4",
     "main": "plugged",
     "author": "Sooyou",
     "homepage": "https://github.com/SooYou/plugged/wiki",
@@ -44,8 +44,8 @@
         "test": "mocha test/test.js -t 10000"
     },
     "dependencies": {
-        "request": "^2.83",
-        "ws": "^3.3.1"
+        "request": "^2.85",
+        "ws": "^5.1"
     },
     "devDependencies": {
         "chai": "^4.1",
